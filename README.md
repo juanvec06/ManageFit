@@ -1,7 +1,10 @@
-# NOMBRE NEGOCIO
-    - NOMBRE
+# BODYTEC
+    - Nombre del negocio: BODYTEC
     - Ubicación: Distrito comercial, Popayán, Cauca, Colombia
     - Descripción general: NOMBRE es un gimnasio local enfocado en proporcionar una experiencia de entrenamiento autónoma. Haciendo uso de una amplia gama de instalaciones y equipos, además de un entorno cómodo y accesible para los clientes, NOMBRE ha mantenido una estabilidad en su base de clientes desde el año de apertura 
+
+## Analisis de estadísticas
+
 
 ## Necesidades del negocio 
   ### Necesidad #1
@@ -13,8 +16,9 @@
   ### Necesidad #3
     - Problema: El sistema actual de gestión de usuarios es manual, lo que reduce la eficacia en la administración de la información
     - Necesidad: Implementar un software que facilite la gestión tanto de clientes como de empleados
-  
-## Estadísticas
-
+    
 ## Impactos de la solución 
-La implementación de un sistema de gestión tiene un impacto positivo en las ventas al aumentar la eficacia administrativa y mejorar la experiencia del cliente. Al facilitar el acceso y la administración de los diferentes servicios, se busca la permanencia e incorporación de los clientes, lo que resulta en un crecimiento en las ventas de membresías 
+La implementación de un sistema de gestión (ManageFit) se espera tenga un impacto positivo en las ventas al aumentar la eficacia administrativa y mejorar la experiencia del cliente. Además al facilitar el acceso y la administración de los diferentes servicios, se busca la permanencia e incorporación de los clientes, lo que resulta en un crecimiento en las ventas de membresías 
+
+## Gráficas 
+
