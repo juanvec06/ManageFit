@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Página de Inicio</title>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo-container">
+                <img src="/img/logoOficial.png" alt="Logo de Spartan Box" class="logo">
+                <img src="/img/nombreBlanco 1.png" alt="Logo de Spartan Box" class="logo-text">
+            </div>
+            <a href="@Url.Action("Login", "Cuenta")" class="btn login-btn">Iniciar sesión</a>
+        </div>
+    </header>
+    <div class="hero">
+        <div class="hero-text">
+            <img src="/img/Frase1.png" alt="Logo de Spartan Box" class="hero-text">
+        </div>
+    </div>
+</body>
+</html>

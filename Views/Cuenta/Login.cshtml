@@ -1,0 +1,36 @@
+﻿@model LoginModel
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="login-container">
+        <h1>Iniciar Sesión</h1>
+        <form asp-action="Login" method="post">
+            <div class="form-group">
+                <label asp-for="Usuario"></label>
+                <input asp-for="Usuario" class="form-control" />
+                <span asp-validation-for="Usuario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Contraseña"></label>
+                <input asp-for="Contraseña" type="password" class="form-control" />
+                <span asp-validation-for="Contraseña" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+        </form>
+
+        @if (ViewBag.MensajeError != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.MensajeError
+            </div>
+        }
+    </div>
+</body>
+</html>

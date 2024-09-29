@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    background-image: url('/img/Fondo1.png'); 
+    background-size: cover;
+    background-position: center; 
+    overflow: hidden;
+}
+
+header {
+    width: 100%;
+    z-index: 1;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 20px 10px; 
+}
+
+.logo-container {
+    display: flex; 
+    align-items: center; 
+}
+
+.logo {
+    width: 100px; 
+    margin-right: 10px; 
+}
+
+
+.login-btn {
+    background-color: red; 
+    color: white; 
+    padding: 10px 20px; 
+    text-decoration: none; 
+    justify-content: center; 
+    align-items: center;
+    display: inline-flex;
+    font-weight: bold;
+    border-radius: 5px; 
+    transition: background-color 0.3s; 
+    width: 250px; 
+    height: 60px;
+    padding: 10px;
+    font-family: Inter, sans-serif; 
+    font-weight: bold;
+    background: #EE1C25; 
+    border-radius: 40px; 
+    font-weight: bold; 
+    line-height: 70px; 
+    word-wrap: break-word; 
+    font-size: 20px;
+    font-style: italic;
+}
+
+.login-btn:hover {
+   background-color: darkred; 
+}
+
+.hero {
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh; 
+    text-align: center;
+    position: relative; 
+}
+
+.hero-text {
+    position: absolute; 
+    bottom: 30%; 
+    right: 50%; 
+   
+}
+
+.hero h2 {
+    font-size: 3em; 
+    margin: 0;
+}
