@@ -6,31 +6,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/login.css" />
 </head>
 <body>
     <div class="login-container">
-        <h1>Iniciar Sesión</h1>
-        <form asp-action="Login" method="post">
-            <div class="form-group">
-                <label asp-for="Usuario"></label>
-                <input asp-for="Usuario" class="form-control" />
-                <span asp-validation-for="Usuario" class="text-danger"></span>
+        
+        <div class="wrapper">
+            <div class="logo">
+                <img src="/img/logoRojo.png" alt="Logo">
             </div>
-            <div class="form-group">
-                <label asp-for="Contraseña"></label>
-                <input asp-for="Contraseña" type="password" class="form-control" />
-                <span asp-validation-for="Contraseña" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-        </form>
 
-        @if (ViewBag.MensajeError != null)
-        {
-            <div class="alert alert-danger">
-                @ViewBag.MensajeError
+            <div class="text-center">
+                <img src="/img/iniciar_sesion.png" alt="Iniciar Sesión">
             </div>
-        }
+
+            <form asp-action="Login" asp-controller="Cuenta" method="post" class="form p-3 mt-3">
+
+                <div class="form-field">
+                    <img src="/img/id-card.png" alt="User Icon" class="input-icon"> <!-- Icono de usuario -->
+                    <input type="text" name="Usuario" id="userName" placeholder="Identificación:" required>
+                </div>
+
+                <div class="form-field">
+                    <img src="/img/key.png" alt="Key Icon" class="input-icon"> <!-- Icono de contraseña -->
+                    <input type="password" name="Contraseña" id="pwd" placeholder="Contraseña:" required>
+                </div>
+                <button type="submit" class="btn mt-3">Login</button>
+            </form>
+
+        </div>
+
     </div>
 </body>
 </html>
