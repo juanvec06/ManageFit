@@ -27,11 +27,20 @@
     right: 80%;
 }
 
-.form-field {
+.form-field, .data-field {
     display: flex;
     align-items: center;
     margin-left: 50px;
 }
+
+
+    .data-field h4 {
+        margin-right: 15px;
+        padding: 8px;
+        background-color: #969393;
+        border-radius: 10px;
+        color: black;
+    }
 
     .form-field h4 {
         margin-right: 15px;
@@ -53,6 +62,10 @@
         height: 40px;
     }
 
+.wrapper .datapicker-styles {
+    margin-bottom:3%;
+    margin-left: 8%;
+}
 
 .wrapper .btn {
     background-color: red;

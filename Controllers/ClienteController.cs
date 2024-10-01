@@ -8,5 +8,10 @@ namespace NET_MVC.Controllers
         {
             return View("RegistrarCliente");
         }
+
+        public IActionResult Guardar()
+        {
+            return View("AsignarEntrenadorCliente");
+        }
     }
 }

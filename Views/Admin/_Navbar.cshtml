@@ -1,7 +1,10 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    string currentAction = ViewContext.RouteData.Values["action"].ToString();
+    string currentController = ViewContext.RouteData.Values["controller"].ToString();
+
+    bool isInNavbarPage =
+        (currentController == "Cliente" && (currentAction == "Registrar" || currentAction == "Guardar" || currentAction == "Listar" || currentAction == "Informacion")) ||
+        (currentController == "Entrenador" && currentAction == "Registrar");
 }
 
 <head>
@@ -16,37 +19,56 @@
     <img class="admin-img" src="/img/administrador.png" alt="Logo">
     <ul>
         <li>
-            <!-- Enlace para registrar un cliente -->
-            <a href="@Url.Action("Registrar", "Cliente")" class="nav-btn">
+            <a href="@Url.Action("Registrar", "Cliente")"
+               class="nav-btn @(currentAction == "Registrar" && currentController == "Cliente" ? "active" : "")">
                 <i class="now-ui-icons design_bullet-list-67"></i> Registrar cliente
             </a>
         </li>
         <li>
-            <!-- Enlace para listar los clientes / aun no existe -->
             <a href="@Url.Action("Listar", "Cliente")" class="nav-btn">
                 <i class="now-ui-icons design_bullet-list-67"></i> Listar clientes
             </a>
         </li>
         <li>
-            <!-- Enlace para ver información de un cliente / aun no existe -->
             <a href="@Url.Action("Informacion", "Cliente")" class="nav-btn">
                 <i class="now-ui-icons shopping_cart-simple"></i> Información cliente
             </a>
         </li>
         <li>
-            <!-- Enlace para registrar un entrenador / aun no existe -->
             <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
                 <i class="now-ui-icons education_atom"></i> Registrar entrenador
             </a>
         </li>
         <li>
-            <!-- Enlace para información del cliente / aun no existe-->
-            <a href="@Url.Action("Informacion", "Cliente")" class="nav-btn">
-                <i class="now-ui-icons tech_laptop"></i> Información cliente
+            <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
+                <i class="now-ui-icons education_atom"></i> Registrar entrenador
+            </a>
+        </li>
+        <li>
+            <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
+                <i class="now-ui-icons education_atom"></i> Registrar entrenador
             </a>
         </li>
     </ul>
 
     <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
-    <img class="logout-img" src="/img/logout.png" alt="salir">
+
+    <div class="actions-img">
+        <img class="logout-img" src="/img/logout.png" alt="salir">
+
+        @* Muestra la imagen "home" solo si se está dentro de alguna página del navbar *@
+        @if (isInNavbarPage)
+        {
+            <img class="home-img visible" src="/img/home.png" alt="home">
+        }
+    </div>
+        
 </div>
+
+<style>
+    #navbar ul li a.nav-btn.active {
+        background-color: #EE1C25;
+        color: white;
+        font-weight: 600;
+    }
+</style>
