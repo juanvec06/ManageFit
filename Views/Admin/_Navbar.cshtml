@@ -1,0 +1,52 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboardAdmin.css">
+</head>
+
+<div id="navbar">
+    <img class="admin-img" src="/img/administrador.png" alt="Logo">
+    <ul>
+        <li>
+            <!-- Enlace para registrar un cliente -->
+            <a href="@Url.Action("Registrar", "Cliente")" class="nav-btn">
+                <i class="now-ui-icons design_bullet-list-67"></i> Registrar cliente
+            </a>
+        </li>
+        <li>
+            <!-- Enlace para listar los clientes / aun no existe -->
+            <a href="@Url.Action("Listar", "Cliente")" class="nav-btn">
+                <i class="now-ui-icons design_bullet-list-67"></i> Listar clientes
+            </a>
+        </li>
+        <li>
+            <!-- Enlace para ver información de un cliente / aun no existe -->
+            <a href="@Url.Action("Informacion", "Cliente")" class="nav-btn">
+                <i class="now-ui-icons shopping_cart-simple"></i> Información cliente
+            </a>
+        </li>
+        <li>
+            <!-- Enlace para registrar un entrenador / aun no existe -->
+            <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
+                <i class="now-ui-icons education_atom"></i> Registrar entrenador
+            </a>
+        </li>
+        <li>
+            <!-- Enlace para información del cliente / aun no existe-->
+            <a href="@Url.Action("Informacion", "Cliente")" class="nav-btn">
+                <i class="now-ui-icons tech_laptop"></i> Información cliente
+            </a>
+        </li>
+    </ul>
+
+    <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
+    <img class="logout-img" src="/img/logout.png" alt="salir">
+</div>

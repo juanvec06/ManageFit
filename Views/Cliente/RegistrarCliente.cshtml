@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Registrar Cliente";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/RegistroCliente.css">
+</head>
+
+
+<div class="container container-grande">
+
+          
+    <div class="login-container">
+
+        <div class="wrapper">
+
+            <img class="cliente-img" src="/img/user.png" alt="Logo">
+
+            <div class="text-registrar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">REGISTRAR CLIENTE</div>
+
+            <form asp-action="Login" asp-controller="Cuenta" method="post" class="form p-3 mt-3">
+
+                <div class="form-field">
+                    <h4>Nombre:</h4>
+                    <input type="text">
+                </div>
+
+                <div class="form-field">
+                    <h4>Identificación:</h4>
+                    <input type="text">
+                </div>
+
+                <div class="form-field">
+                    <h4>Teléfono:</h4>
+                    <input type="text">
+                </div>
+
+                <div class="form-field">
+                    <h4>Género:</h4>
+                   <div class="container-checkbox">
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="genero" value="femenino"> Femenino</label>
+                        </div>
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="genero" value="masculino"> Masculino</label>
+                        </div>
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="genero" value="no_especificado"> No especificado</label>
+                        </div>
+                   </div>
+                    
+                </div>
+
+                <div class="form-field">
+                    <h4>Membresía:</h4>
+                    <div class="container-checkbox">
+
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="membresia" value="general"> General</label>
+                        </div>
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="membresia" value="premium"> Premium</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn mt-3">Guardar</button>
+            </form>
+
+        </div>
+    </div>
+</div>

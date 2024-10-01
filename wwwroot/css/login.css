@@ -1,4 +1,3 @@
-/* Importing fonts from Google */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 
@@ -7,10 +6,10 @@ body {
     background-image: url('/img/Fondo2.png');
     background-size: cover;
     background-position: center;
-    display: flex; /* Activa el modelo de flexbox */
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
-    height: 100vh; /* Hace que el body tenga la altura completa de la ventana */
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
 }
 
 
@@ -37,7 +36,6 @@ body {
     width: 100%;
     padding: 0;
 }
-
 
 
 .form-field {
@@ -68,10 +66,10 @@ body {
     background: none;
     font-size: 1.2rem;
     color: #666;
-    padding: 10px 10px; /* Ajusta el padding del input */
+    padding: 10px 10px;
     background: white;
     border-radius: 20px;
-    height: 40px; /* Ajusta la altura del input */
+    height: 40px;
 }
 
 .wrapper .form-field {
