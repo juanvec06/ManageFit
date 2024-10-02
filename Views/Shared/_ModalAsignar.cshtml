@@ -1,0 +1,94 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@* Views/Shared/_ModalAsignar.cshtml *@
+<div id="modalAsignar" class="modal">
+    <div class="modal-content">
+        <h2>ASIGNAR CLIENTE @ViewBag.Cliente AL ENTRENADOR @ViewBag.Entrenador</h2>
+        <div class="modal-buttons">
+            <button class="btn-cancelar" onclick="closeModal()">Cancelar</button>
+            <button class="btn-confirmar">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function openModal() {
+        document.getElementById("modalAsignar").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("modalAsignar").style.display = "none";
+    }
+</script>
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100vh; 
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 15px;
+        width: 600px;
+        max-width: 90%; 
+        max-height: 90%; 
+        overflow-y: auto; 
+        text-align: center;
+    }
+
+        .modal-content h2 {
+            color: black;
+            font-weight: bold;
+            font-size: 32px; 
+            margin-bottom: 20px;
+        }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    .btn-cancelar, .btn-confirmar {
+        background-color: #EE1C25;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 40px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 190px;
+        height: 45px;
+        font-family: Inter, sans-serif;
+        font-weight: bold;
+        font-size: 20px;
+        font-style: italic;
+        line-height: 70px;
+        word-wrap: break-word;
+    }
+
+        .btn-cancelar:hover, .btn-confirmar:hover {
+            background-color: #c1121e;
+        }
+
+    
+
+</style>

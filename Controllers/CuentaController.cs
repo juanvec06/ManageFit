@@ -55,5 +55,21 @@ namespace NET_MVC.Controllers
             return false; // Credenciales no válidas
         }
 
+        // Acción para cerrar sesión
+        public IActionResult Logout()
+        {
+            return RedirectToAction("Login", "Cuenta"); 
+        }
+
+        public IActionResult Home()
+        {
+            return RedirectToAction("DashboardAdministrador", "Admin");
+        }
+
+        public IActionResult PaginaAnterior()
+        {
+            return RedirectToAction("DashboardAdministrador", "Admin");
+        }
+
     }
 }

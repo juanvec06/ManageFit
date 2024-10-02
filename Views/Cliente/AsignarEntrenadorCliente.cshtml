@@ -1,6 +1,18 @@
 ﻿@{
     ViewData["Title"] = "Asignar Entrenador";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+
+    ViewBag.Title = "Asignar Cliente";
+    ViewBag.Cliente = "1234";  // Info desde el controlador
+    ViewBag.Entrenador = "1111";  // Info desde el controlador
+
+}
+
+@model List<NET_MVC.Models.EntrenadorModel>
+
+@{
+    ViewData["Title"] = "Asignar Entrenador";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
 
 <div class="container-grande">
@@ -9,8 +21,10 @@
     <div class="search-bar">
         <label for="identificacion">Identificación:</label>
         <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
-        <button type="button">Asignar</button>
+        <button type="button" onclick="openModal()">Asignar</button>
     </div>
+
+    @Html.Partial("_ModalAsignar")
 
     <div class="table-container">
         <table class="table table-bordered">
@@ -23,26 +37,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>1</td><td>Juan Pérez</td><td>Marketing Digital</td><td>5</td></tr>
-                <tr><td>2</td><td>Ana Gómez</td><td>Desarrollo Web</td><td>3</td></tr>
-                <tr><td>3</td><td>Carlos López</td><td>Diseño Gráfico</td><td>7</td></tr>
-                <tr><td>4</td><td>Carlos López</td><td>Diseño Gráfico</td><td>7</td></tr>
-                <tr><td>5</td><td>Carlos López</td><td>Diseño Gráfico</td><td>7</td></tr>
-                <tr><td>6</td><td>Carlos López</td><td>Diseño Gráfico</td><td>7</td></tr>
-                <tr><td>7</td><td>María Rodríguez</td><td>Desarrollo de Software</td><td>4</td></tr>
-                <tr><td>8</td><td>Luis Fernández</td><td>Gestión de Proyectos</td><td>6</td></tr>
-                <tr><td>9</td><td>Carla Ruiz</td><td>Marketing Digital</td><td>8</td></tr>
-                <tr><td>10</td><td>Pedro Hernández</td><td>Redes Sociales</td><td>2</td></tr>
-                <tr><td>11</td><td>Eva Torres</td><td>SEO</td><td>10</td></tr>
-                <tr><td>12</td><td>Laura Jiménez</td><td>Publicidad</td><td>9</td></tr>
-                <tr><td>13</td><td>Andrés Martínez</td><td>Diseño Web</td><td>5</td></tr>
+                @foreach (var entrenador in Model)
+                {
+                    <tr>
+                        <td>@entrenador.Id</td>
+                        <td>@entrenador.Nombre</td>
+                        <td>@entrenador.Especialidad</td>
+                        <td>@entrenador.ClientesAsignados</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
 
+
 <style>
-    <style >
     .container-grande {
         display: flex;
         flex-direction: column;
@@ -114,33 +124,26 @@
         }
 
         .search-bar button {
-            background-color: #dc3545;
+            background-color: #EE1C25; 
             color: white;
-            padding: 10px 20px;
+            padding: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 40px; 
             margin-left: 10px;
-            color: white;
-            padding: 10px 10px;
             text-decoration: none;
+            display: inline-flex;
             justify-content: center;
             align-items: center;
-            display: inline-flex;
-            font-weight: bold;
-            border-radius: 5px;
             width: 190px;
             height: 45px;
-            padding: 10px;
             font-family: Inter, sans-serif;
-            font-weight: bold;
-            background: #EE1C25;
-            border-radius: 40px;
-            font-weight: bold;
-            line-height: 70px;
-            word-wrap: break-word;
+            font-weight: bold; 
             font-size: 20px;
             font-style: italic;
+            line-height: 70px;
+            word-wrap: break-word;
         }
+
 
     .table-container::-webkit-scrollbar {
         width: 18px; 
@@ -187,6 +190,5 @@
     .table-container::-webkit-scrollbar-corner {
         background: #e0e0e0; 
     }
-</style>
 
 </style>

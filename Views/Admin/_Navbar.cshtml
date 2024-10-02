@@ -3,8 +3,10 @@
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
 
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "Registrar" || currentAction == "Guardar" || currentAction == "Listar" || currentAction == "Informacion")) ||
+        (currentController == "Cliente" && (currentAction == "Registrar" || currentAction == "AsignarEntrenador" || currentAction == "Listar" || currentAction == "Informacion")) ||
         (currentController == "Entrenador" && currentAction == "Registrar");
+
+    bool isInAsignarEntrenador = currentController == "Cliente" && currentAction == "AsignarEntrenador";
 }
 
 <head>
@@ -54,13 +56,27 @@
     <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
 
     <div class="actions-img">
-        <img class="logout-img" src="/img/logout.png" alt="salir">
+
+        <a href="@Url.Action("Logout", "Cuenta")">
+            <img class="logout-img" src="/img/logout.png" alt="salir">
+        </a>
 
         @* Muestra la imagen "home" solo si se está dentro de alguna página del navbar *@
         @if (isInNavbarPage)
         {
-            <img class="home-img visible" src="/img/home.png" alt="home">
+            <a href="@Url.Action("Home", "Cuenta")">
+                <img class="home-img visible" src="/img/home.png" alt="home">
+            </a>
+           
         }
+
+        @if (isInAsignarEntrenador)
+        {
+            <a href="javascript:void(0);" onclick="history.back();">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+
     </div>
         
 </div>
