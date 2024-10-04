@@ -4,7 +4,7 @@
 
     bool isInNavbarPage =
         (currentController == "Cliente" && (currentAction == "Registrar" || currentAction == "AsignarEntrenador" || currentAction == "Listar" || currentAction == "Informacion")) ||
-        (currentController == "Entrenador" && currentAction == "Registrar");
+        (currentController == "Entrenador" && currentAction == "RegistrarEntrenador");
 
     bool isInAsignarEntrenador = currentController == "Cliente" && currentAction == "AsignarEntrenador";
 }
@@ -37,18 +37,19 @@
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
+            <a href="@Url.Action("RegistrarEntrenador", "Entrenador")" 
+            class="nav-btn @(currentAction == "RegistrarEntrenador" && currentController == "Entrenador" ? "active" : "")">
                 <i class="now-ui-icons education_atom"></i> Registrar entrenador
             </a>
         </li>
         <li>
             <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
-                <i class="now-ui-icons education_atom"></i> Registrar entrenador
+                <i class="now-ui-icons education_atom"></i> Listar Entrenador
             </a>
         </li>
         <li>
             <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
-                <i class="now-ui-icons education_atom"></i> Registrar entrenador
+                <i class="now-ui-icons education_atom"></i> Listar cliente
             </a>
         </li>
     </ul>

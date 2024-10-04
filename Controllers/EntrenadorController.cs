@@ -4,9 +4,10 @@ namespace NET_MVC.Controllers
 {
     public class EntrenadorController : Controller
     {
-        public IActionResult DashboardEntrenador()
+
+        public IActionResult RegistrarEntrenador()
         {
-            return View();
+            return View("RegistrarEntrenador");
         }
     }
 }
