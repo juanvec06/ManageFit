@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Models;
-
+using NET_MVC.Datos;
+using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
 namespace NET_MVC.Controllers
 {
     public class CuentaController : Controller
     {
+        public OracleConnection conexionBD = Conexion.GetConnection();
         public IActionResult Login()
         {
             return View(); // Devuelve la vista Login.cshtml
@@ -40,18 +43,81 @@ namespace NET_MVC.Controllers
         private bool EsUsuarioValido(string usuario, string contraseña, out string rol)
         {
             rol = null; // Inicializa rol
-
-            if (usuario == "admin" && contraseña == "12345")
+            try
             {
-                rol = "Administrador";
-                return true;
-            }
-            else if (usuario == "entrenador" && contraseña == "67890")
-            {
-                rol = "Entrenador";
-                return true;
-            }
+                int idUsuario;
+                bool esNumero = int.TryParse(usuario, out idUsuario);
+                if (!esNumero)
+                {
+                    return false;
+                }
+                if (Conexion.abrirConexion())
+                {
+                    //llamada a procedimiento almacenado en base de datos para validar Administrador
+                    using (OracleCommand cmd = new OracleCommand("validar_logina", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    {
+                        // Especifica que es una función
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
+                        // Agrega los parámetros de entrada
+                        cmd.Parameters.Add("p_usuario", OracleDbType.Int32).Value = idUsuario;
+                        cmd.Parameters.Add("p_contraseña", OracleDbType.Varchar2).Value = contraseña;
+
+                        // Parámetro de retorno (el valor que retorna la función)
+                        OracleParameter vCountParam = new OracleParameter("p_count", OracleDbType.Int32);
+                        vCountParam.Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add(vCountParam);
+                        // Ejecuta la función
+
+                        cmd.ExecuteNonQuery();
+
+                        // Obtiene el valor de retorno
+                        OracleDecimal resultadoOracle = (OracleDecimal)cmd.Parameters["p_count"].Value;
+                        int resultado = resultadoOracle.ToInt32();
+                        if (resultado > 0)
+                        {
+                            rol = "Administrador";
+                            return true;
+                        }
+                    }
+                    //llamada a procedimiento almacenado en base de datos para validar entrenador
+                    using (OracleCommand cmd = new OracleCommand("validar_logine", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    {
+                        // Especifica que es una función
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        // Agrega los parámetros de entrada
+                        cmd.Parameters.Add("p_usuario", OracleDbType.Int32).Value = idUsuario;
+                        cmd.Parameters.Add("p_contraseña", OracleDbType.Varchar2).Value = contraseña;
+
+                        // Parámetro de retorno (el valor que retorna la función)
+                        OracleParameter vCountParam = new OracleParameter("p_count", OracleDbType.Int32);
+                        vCountParam.Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add(vCountParam);
+                        // Ejecuta la función
+
+                        cmd.ExecuteNonQuery();
+
+                        // Obtiene el valor de retorno
+                        OracleDecimal resultadoOracle = (OracleDecimal)cmd.Parameters["p_count"].Value;
+                        int resultado = resultadoOracle.ToInt32();
+                        if (resultado > 0)
+                        {
+                            rol = "Entrenador";
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (OracleException Ex)
+            {
+                Console.WriteLine("Error de Oracle: " + Ex.Message);
+                return false;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
             return false; // Credenciales no válidas
         }
 
