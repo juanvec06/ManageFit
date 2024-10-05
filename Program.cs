@@ -3,6 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -13,6 +14,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 app.UseStaticFiles();
+
+app.UseSession();
 
 app.UseRouting();
 

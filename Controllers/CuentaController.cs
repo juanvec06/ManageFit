@@ -24,6 +24,8 @@ namespace NET_MVC.Controllers
                     return View(model);
                 }
 
+                HttpContext.Session.SetString("idUsuario", model.Usuario);
+                
                 // Redirigir según el rol
                 if (rol == "Administrador")
                 {

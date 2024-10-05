@@ -3,5 +3,11 @@
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
 
+@if (TempData["MensajeValidacion"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeValidacion"]
+    </div>
+}
 
     <img class="user-img" src="/img/user.png" alt="boton de salida">

@@ -1,10 +1,9 @@
-﻿@model ClienteModel
+﻿@model EntrenadorModel
 
 @{
     ViewData["Title"] = "Registrar Entrenador";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +25,12 @@
         REGISTRAR ENTRENADOR
     </div>
 
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.ErrorMessage
+        </div>
+    }
 
     <div class="login-container">
 
@@ -35,17 +40,20 @@
 
             <form method="post" class="form p-3 mt-3">
 
-                
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
                 <div class="form-field">
                     <h4>Nombre:</h4>
-                    <input type="text">
+                    <input asp-for="Nombre" type="text" required>
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Identificación:</h4>
-                    <input type="text">
+                    <input asp-for="Id" type="text" required>
+                    <span asp-validation-for="Id" class="text-danger"></span>
                 </div>
-
+                <!--BUSCAR-->
                 <div class="data-field">
                     <h4>Fecha de Contratación:</h4>
                     <div class="relative max-w-sm datapicker-styles">
@@ -55,55 +63,49 @@
                             </svg>
                         </div>
 
-                        <input datepicker id="default-datepicker" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               placeholder="Seleccionar fecha">
+                        <input datepicker id="default-datepicker" asp-for="fechaInicioContrato" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               placeholder="Seleccionar fecha" required>
+                        <span asp-validation-for="fechaInicioContrato" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-field">
                     <h4>Teléfono:</h4>
-                    <input type="text">
+                    <input asp-for="Telefono" type="text">
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
 
-             
-                <div class="form-field">
-                    <h4>Género:</h4>
-                    <div class="container-checkbox">
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="genero" value="femenino"> Femenino</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="genero" value="masculino"> Masculino</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="genero" value="no_especificado"> No especificado</label>
-                        </div>
-                    </div>
-
+                <div class="form-field form-field-especialidad">
+                    <h4>Genero:</h4>
+                    <select asp-for="Genero" class="form-control">
+                        <option value="NE">No especificado</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                    <span asp-validation-for="Genero" class="text-danger"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
                     <h4>Área de especialidad:</h4>
-                    <select>
+                    <select asp-for="Especialidad" class="form-control">
                         <option value="Crossfit">Crossfit</option>
                         <option value="Fuerza">Fuerza</option>
                         <option value="Reducción de peso">Reducción de peso</option>
                         <option value="Culturismo">Culturismo</option>
                     </select>
+                    <span asp-validation-for="Especialidad" class="text-danger"></span>
                 </div>
-
-
 
                 <div class="form-field">
                     <h4>Salario:</h4>
-                   <input type="text">
+                    <input asp-for="Salario" type="text" required>
+                    <span asp-validation-for="Salario" class="text-danger"></span>
                 </div>
 
-
-                
                 <div class="form-field">
                     <h4>Contraseña:</h4>
-                    <input type="text">
+                    <input asp-for="Contraseña" type="text" required>
+                    <span asp-validation-for="Contraseña" class="text-danger"></span>
                 </div>
 
                 <button type="submit" class="btn mt-3">Guardar</button>
@@ -121,25 +123,25 @@
         padding: 10px;
         font-size: 1.2rem;
         border: 2px solid #dcdcdc;
-        border-radius: 20px; 
+        border-radius: 20px;
         background-color: #f9f9f9;
-        appearance: none; 
+        appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        background-image: url('/img/flechaAbajo.png'); 
+        background-image: url('/img/flechaAbajo.png');
         background-position: right 10px center;
         background-repeat: no-repeat;
         background-size: 15px;
     }
 
-       
+
         .custom-select:focus {
             border-color: #EE1C25;
-            outline: none; 
+            outline: none;
         }
 
         .custom-select::-ms-expand {
-            display: none; 
+            display: none;
         }
 
         .custom-select option {
