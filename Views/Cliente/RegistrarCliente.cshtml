@@ -23,7 +23,7 @@
 
             <div class="text-registrar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">REGISTRAR CLIENTE</div>
 
-            <form asp-action="AsignarEntrenador" asp-controller="Cliente" method="post" class="form p-3 mt-3">
+            <form asp-action="RegistrarCliente" asp-controller="Cliente" method="post" class="form p-3 mt-3">
 
                 <div class="data-field">
                     <h4>Fecha nacimiento:</h4>
@@ -34,52 +34,49 @@
                             </svg>
                         </div>
 
-                        <input datepicker id="default-datepicker" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               placeholder="Seleccionar fecha">
+                        <input datepicker id="default-datepicker" asp-for="FechaNacimiento" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               placeholder="Seleccionar fecha" required>
+                        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+
+
                     </div>
                 </div>
                 <div class="form-field">
                     <h4>Nombre:</h4>
-                    <input type="text">
+                    <input asp-for="Nombre" type="text">
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Identificación:</h4>
-                    <input type="text">
+                    <input asp-for="Identificacion" type="text">
+                    <span asp-validation-for="Identificacion" class="text-danger"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Teléfono:</h4>
-                    <input type="text">
+                    <input asp-for="Telefono" type="text">
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Género:</h4>
-                   <div class="container-checkbox">
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="genero" value="femenino"> Femenino</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="genero" value="masculino"> Masculino</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="genero" value="no_especificado"> No especificado</label>
-                        </div>
-                   </div>
+                    <select asp-for="Genero" class="form-control">
+                        <option value="NE">No especificado</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                    <span asp-validation-for="Genero" class="text-danger"></span>
                     
                 </div>
 
                 <div class="form-field">
                     <h4>Membresía:</h4>
-                    <div class="container-checkbox">
-
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="membresia" value="general"> General</label>
-                        </div>
-                        <div class="checkbox-container">
-                            <label><input type="checkbox" name="membresia" value="premium"> Premium</label>
-                        </div>
-                    </div>
+                    <select asp-for="refMembresia" class="form-control">
+                        <option value="General">Plan General</option>
+                        <option value="Premium">Plan Premium</option>
+                    </select>
+                    <span asp-validation-for="refMembresia" class="text-danger"></span>
                 </div>
 
                 <button type="submit" class="btn mt-3">Guardar</button>

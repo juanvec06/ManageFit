@@ -1,37 +1,63 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NET_MVC.Datos;
 using NET_MVC.Models;
+using NuGet.Protocol.Plugins;
+using Oracle.ManagedDataAccess.Client;
 
 namespace NET_MVC.Controllers
 {
     public class ClienteController : Controller
     {
+        AdmCliente consulta = new AdmCliente();
         public IActionResult Registrar()
         {
             return View("RegistrarCliente");
         }
 
-        public IActionResult AsignarEntrenador()
+        [HttpPost]
+        public IActionResult RegistrarCliente(ClienteModel Cliente)
         {
-           
-            var entrenadores = new List<EntrenadorModel>
-            {
-                /*new EntrenadorModel { Id = 1, Nombre = "Juan Pérez", Especialidad = "Marketing Digital", ClientesAsignados = 5 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 2, Nombre = "Ana Gómez", Especialidad = "Desarrollo Web", ClientesAsignados = 3 },
-                new EntrenadorModel { Id = 3, Nombre = "Carlos López", Especialidad = "Diseño Gráfico", ClientesAsignados = 7 },
-                new EntrenadorModel { Id = 4, Nombre = "María Rodríguez", Especialidad = "Desarrollo de Software", ClientesAsignados = 4 },
-                new EntrenadorModel { Id = 5, Nombre = "Luis Fernández", Especialidad = "Gestión de Proyectos", ClientesAsignados = 6 },
-                */
-            };
+            string auxStringSession = HttpContext.Session.GetString("idUsuario"); 
+            Cliente.IdSede = int.Parse(auxStringSession);
 
-            return View("AsignarEntrenadorCliente", entrenadores);
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var respuesta = consulta.RegistrarCliente(Cliente);
+                    if (respuesta)
+                    {
+                        TempData["MensajeValidacion"] = "Cliente registrado";
+                        return RedirectToAction("DashboardAdministrador", "Admin");
+                    }
+                    else
+                        return View(Cliente);
+                }
+                catch (OracleException oex)
+                {
+
+                    if (oex.Number == -20002)
+                    {
+                        ViewBag.MensajeError = "Cliente existente";
+                        return View(Cliente);
+                    }
+                    else
+                    {
+                        ViewBag.MensajeError = "Error inesperado: " + oex.Message;
+                        return View(Cliente);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErrorMessage = ex.Message;
+                    return View(Cliente);
+                } 
+            }
+            return View(Cliente);
         }
     }
 }
+
+    
+
