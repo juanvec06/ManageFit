@@ -21,63 +21,66 @@
 
             <img class="cliente-img" src="/img/user.png" alt="Logo">
 
-            <div class="text-registrar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">REGISTRAR CLIENTE</div>
+            <div class="text-registrar" style="text-align: center;
+            color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900;
+            line-height: 70px; word-wrap: break-word">
+                REGISTRAR CLIENTE
+            </div>
 
             <form asp-action="RegistrarCliente" asp-controller="Cliente" method="post" class="form p-3 mt-3">
+
 
                 <div class="data-field">
                     <h4>Fecha nacimiento:</h4>
                     <div class="relative max-w-sm datapicker-styles">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                            </svg>
-                        </div>
-
-                        <input datepicker id="default-datepicker" asp-for="FechaNacimiento" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        <input id="default-datepicker" asp-for="FechaNacimiento" type="date"
+                               class="bg-white border border-gray-300 text-gray-900 text-sm
+                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5
+                      dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                      dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                placeholder="Seleccionar fecha" required>
-                        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
-
-
                     </div>
+                    <span asp-validation-for="FechaNacimiento" class="text-danger error-message"></span>
                 </div>
+
+
                 <div class="form-field">
                     <h4>Nombre:</h4>
                     <input asp-for="Nombre" type="text">
-                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <span asp-validation-for="Nombre" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Identificacion" type="text">
-                    <span asp-validation-for="Identificacion" class="text-danger"></span>
+                    <span asp-validation-for="Identificacion" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Teléfono:</h4>
                     <input asp-for="Telefono" type="text">
-                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                    <span asp-validation-for="Telefono" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Género:</h4>
-                    <select asp-for="Genero" class="form-control">
+                    <select asp-for="Genero" class="form-control custom-select">
                         <option value="NE">No especificado</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                     </select>
-                    <span asp-validation-for="Genero" class="text-danger"></span>
-                    
+                    <span asp-validation-for="Genero" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Membresía:</h4>
-                    <select asp-for="refMembresia" class="form-control">
+                    <select asp-for="refMembresia" class="form-control custom-select">
                         <option value="General">Plan General</option>
                         <option value="Premium">Plan Premium</option>
                     </select>
-                    <span asp-validation-for="refMembresia" class="text-danger"></span>
+                    <span asp-validation-for="refMembresia" class="text-danger error-message"></span>
                 </div>
+
 
                 <button type="submit" class="btn mt-3">Guardar</button>
             </form>
@@ -86,3 +89,137 @@
     </div>
 </div>
 
+<script>
+    $(function () {
+        $("#default-datepicker").datepicker({
+            dateFormat: "dd/mm/yy", // Formato día/mes/año
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1900:+0"
+        });
+    });
+</script>
+
+
+<script>
+
+    function validarFormulario() {
+        // Ocultar todas las imágenes de advertencia
+        document.querySelectorAll('.warning-icon').forEach(img => img.style.display = 'none');
+
+        let camposValidos = true;
+
+        // Validar el campo de fecha de nacimiento
+        if (document.getElementById("fechaNacimiento").value.trim() === "") {
+            document.getElementById("fechaError").style.display = "inline";
+            camposValidos = false;
+        }
+
+        // Validar el campo de nombre
+        if (document.getElementById("nombre").value.trim() === "") {
+            document.getElementById("nombreError").style.display = "inline";
+            camposValidos = false;
+        }
+
+
+        if (document.getElementById("identificacion").value.trim() === "") {
+            document.getElementById("identificacionError").style.display = "inline";
+            camposValidos = false;
+        }
+
+
+        if (document.getElementById("telefono").value.trim() === "") {
+            document.getElementById("telefonoError").style.display = "inline";
+            camposValidos = false;
+        }
+
+
+        if (!document.querySelector('input[name="genero"]:checked')) {
+            document.getElementById("generoError").style.display = "inline";
+            camposValidos = false;
+        }
+
+
+        if (!document.querySelector('input[name="membresia"]:checked')) {
+            document.getElementById("membresiaError").style.display = "inline";
+            camposValidos = false;
+        }
+
+        const identificacion = document.getElementById("Identificacion").value.trim();
+        const regex = /^[0-9]*$/;
+
+        if (!regex.test(identificacion)) {
+            document.getElementById("identificacionError").innerText = "Tipo de valor no válido.";
+            camposValidos = false;
+        } else {
+            document.getElementById("identificacionError").innerText = "";
+        }
+
+
+        if (camposValidos) {
+            document.getElementById("registroClienteForm").submit();
+        }
+    }
+</script>
+
+<style>
+
+    .error-message {
+        margin-top: 0;
+        color: #d9534f;
+        font-size: 0.9rem;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        white-space: nowrap;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Mostrar "..." si el texto es demasiado largo */
+    }
+
+    .form-field {
+        position: relative;
+        padding-right: 160px; /* Espacio a la derecha para el mensaje de error */
+    }
+
+    .datapicker-styles {
+        margin-right: 15px;
+    }
+
+    input[type="text"],
+    select {
+        width: 100%; /* Llenar todo el contenedor */
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .custom-select {
+        margin-top: 10px;
+        text-align: center;
+        text-align-last: center;
+        border-radius: 20px;
+        padding: 0;
+        font-size: 1.2rem;
+        border: 2px solid #dcdcdc;
+        background-color: #f9f9f9;
+        appearance: none;
+        background-image: url('/img/flechaAbajo.png');
+        background-position: right 10px center;
+        background-repeat: no-repeat;
+        background-size: 15px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .custom-select option {
+            text-align: center;
+            padding: 10px;
+            font-size: 1.2rem;
+        }
+</style>
