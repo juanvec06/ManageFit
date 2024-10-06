@@ -4,10 +4,9 @@
 
     public class LoginModel
     {
-        [Required(ErrorMessage = "El nombre de usuario es requerido")]
+        [Required(ErrorMessage = "   !")]
         public string? Usuario { get; set; }
-
-        [Required(ErrorMessage = "La contraseña es requerida")]
+        [Required(ErrorMessage = "   !")]
         public string? Contraseña { get; set; }
 
         public bool EsAdministrador { get; set; }

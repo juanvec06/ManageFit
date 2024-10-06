@@ -77,7 +77,11 @@ body {
     margin-bottom: 20px;
     border-radius: 20px;
 }
-
+/* Contenedor para alinear los elementos en horizontal */
+.horizontal-align {
+    display: flex;
+    align-items: center; /* Centra verticalmente los elementos */
+}
 .wrapper .btn {
     background-color: red;
     color: white;
@@ -101,9 +105,8 @@ body {
     word-wrap: break-word;
     font-size: 20px;
     font-style: italic;
-    margin-left:130px;
+    margin-left: 10px;
 }
-
     .wrapper .btn:hover {
         background-color: darkred;
     }

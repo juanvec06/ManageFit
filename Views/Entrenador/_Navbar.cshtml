@@ -1,0 +1,55 @@
+﻿@{
+    //Este Navbar es de Entrenador
+    string currentAction = ViewContext.RouteData.Values["action"].ToString();
+    string currentController = ViewContext.RouteData.Values["controller"].ToString();
+
+    bool isInNavbarPage =
+        (currentController == "Cliente" && (currentAction == "Consultar"));
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboardAdmin.css">
+</head>
+
+<div id="navbar">
+    <img class="admin-img" src="/img/administrador.png" alt="Logo">
+    <ul>
+        <li>
+            <a href="@Url.Action("Consultar", "Cliente")"
+               class="nav-btn @(currentAction == "Consultar" && currentController == "Cliente" ? "active" : "")">
+                <i class="now-ui-icons design_bullet-list-67"></i> Clientes asignados
+            </a>
+        </li>
+    </ul>
+
+    <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
+
+    <div class="actions-img">
+
+        <a href="@Url.Action("Logout", "Cuenta")">
+            <img class="logout-img" src="/img/logout.png" alt="salir">
+        </a>
+
+        @* Muestra la imagen "home" solo si se está dentro de alguna página del navbar *@
+        @if (isInNavbarPage)
+        {
+            <a href="@Url.Action("Home", "Cuenta")">
+                <img class="home-img visible" src="/img/home.png" alt="home">
+            </a>
+
+        }
+    </div>
+
+</div>
+
+<style>
+    #navbar ul li a.nav-btn.active {
+        background-color: #EE1C25;
+        color: white;
+        font-weight: 600;
+    }
+</style>

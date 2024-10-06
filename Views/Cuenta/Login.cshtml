@@ -10,7 +10,6 @@
 </head>
 <body>
     <div class="login-container">
-        
         <div class="wrapper">
             <div class="logo">
                 <img src="/img/logoRojo.png" alt="Logo">
@@ -21,21 +20,44 @@
             </div>
 
             <form asp-action="Login" asp-controller="Cuenta" method="post" class="form p-3 mt-3">
-
                 <div class="form-field">
-                    <img src="/img/id-card.png" alt="User Icon" class="input-icon"> 
-                    <input type="text" name="Usuario" id="userName" placeholder="Identificación:" required>
+                    <img src="/img/id-card.png" alt="User Icon" class="input-icon">
+                    <input type="text" name="Usuario" id="userName" placeholder="Identificación:">
+                    <!-- Mensaje de error para el campo Usuario -->
+                    <span asp-validation-for="Usuario" class="text-danger"></span>
                 </div>
 
                 <div class="form-field">
-                    <img src="/img/key.png" alt="Key Icon" class="input-icon"> 
-                    <input type="password" name="Contraseña" id="pwd" placeholder="Contraseña:" required>
+                    <img src="/img/key.png" alt="Key Icon" class="input-icon">
+                    <input type="password" name="Contraseña" id="pwd" placeholder="Contraseña:">
+                    <!-- Mensaje de error para el campo Contraseña -->
+                    <span asp-validation-for="Contraseña" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn mt-3">Login</button>
+
+                
+                <div class="form-group horizontal-align">
+                    <!-- Mensaje de error general -->
+                    @if (ViewBag.MensajeError != null)
+                    {
+                        <div class="text-center error-message" style="visibility: visible; color: red; text-align: start; margin-top: 10px;">
+                            @Html.Raw(ViewBag.MensajeError)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center error-message" style="visibility: hidden; color: red; text-align: start; margin-top: 10px;">
+                            Identificación o contraseña requeridos
+                        </div>
+                    }
+                    <button type="submit" class="btn mt-3">Login</button>
+                </div>
             </form>
 
         </div>
-
     </div>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.7/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

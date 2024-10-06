@@ -1,6 +1,13 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Dashboard Entrenador";
+    Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
 }
 
-<h1>Bienvenido al Dashboard Entrenador</h1>
+@if (TempData["MensajeValidacion"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajeValidacion"]
+    </div>
+}
+
+<img class="user-img" src="/img/user.png" alt="boton de salida">

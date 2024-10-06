@@ -1,12 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Datos;
 using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
 
 namespace NET_MVC.Controllers
 {
+    [Authorize]
     public class EntrenadorController : Controller
     {
+        public IActionResult DashboardEntrenador()
+        {
+            return View(); // Devuelve la vista Login.cshtml
+        }
         AdmEntrenador consulta = new AdmEntrenador();
         public IActionResult RegistrarEntrenador()
         {
