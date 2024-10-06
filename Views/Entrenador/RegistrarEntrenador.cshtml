@@ -7,13 +7,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/css/RegistroEntrenador.css">
 </head>
 
 <div class="container container-grande">
-
     <div class="text-registrar"
          style="text-align: center;
             color: #EE1C25;
@@ -32,119 +30,160 @@
         </div>
     }
 
+
     <div class="login-container">
-
         <div class="wrapper">
-
             <img class="cliente-img" src="/img/user.png" alt="Logo">
 
-            <form method="post" class="form p-3 mt-3">
+
+            <form asp-action="RegistrarEntrenador" asp-controller="Entrenador" method="post" class="form p-3 mt-3">
 
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <div class="form-field">
                     <h4>Nombre:</h4>
                     <input asp-for="Nombre" type="text" required>
-                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <span asp-validation-for="Nombre" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Id" type="text" required>
-                    <span asp-validation-for="Id" class="text-danger"></span>
+                    <span asp-validation-for="Id" class="text-danger error-message"></span>
                 </div>
-                <!--BUSCAR-->
-                <div class="data-field">
-                    <h4>Fecha de Contratación:</h4>
-                    <div class="relative max-w-sm datapicker-styles">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                            </svg>
-                        </div>
 
-                        <input datepicker id="default-datepicker" asp-for="fechaInicioContrato" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                <div class="data-field flex items-center space-x-4">
+                    <h4 class="w-1/4">Fecha de Contratación:</h4>
+                    <div class="relative max-w-sm w-full datapicker-styles">
+                        <input id="contrato-datepicker" asp-for="fechaInicioContrato" type="date"
+                               class="bg-white border border-gray-300 text-gray-900 text-sm
+                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                placeholder="Seleccionar fecha" required>
-                        <span asp-validation-for="fechaInicioContrato" class="text-danger"></span>
                     </div>
+                    <span asp-validation-for="fechaInicioContrato" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Teléfono:</h4>
                     <input asp-for="Telefono" type="text">
-                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                    <span asp-validation-for="Telefono" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
                     <h4>Genero:</h4>
-                    <select asp-for="Genero" class="form-control">
+                    <select asp-for="Genero" class="form-control custom-select">
                         <option value="NE">No especificado</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                     </select>
-                    <span asp-validation-for="Genero" class="text-danger"></span>
+                    <span asp-validation-for="Genero" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
                     <h4>Área de especialidad:</h4>
-                    <select asp-for="Especialidad" class="form-control">
+                    <select asp-for="Especialidad" class="form-control custom-select">
                         <option value="Crossfit">Crossfit</option>
                         <option value="Fuerza">Fuerza</option>
                         <option value="Reducción de peso">Reducción de peso</option>
                         <option value="Culturismo">Culturismo</option>
                     </select>
-                    <span asp-validation-for="Especialidad" class="text-danger"></span>
+                    <span asp-validation-for="Especialidad" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Salario:</h4>
                     <input asp-for="Salario" type="text" required>
-                    <span asp-validation-for="Salario" class="text-danger"></span>
+                    <span asp-validation-for="Salario" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Contraseña:</h4>
                     <input asp-for="Contraseña" type="text" required>
-                    <span asp-validation-for="Contraseña" class="text-danger"></span>
+                    <span asp-validation-for="Contraseña" class="text-danger error-message"></span>
                 </div>
 
                 <button type="submit" class="btn mt-3">Guardar</button>
             </form>
-
         </div>
     </div>
 </div>
 
+<script>
+    $(function () {
+        $("#contrato-datepicker").datepicker({
+            dateFormat: "dd/mm/yy", // Formato día/mes/año
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1900:+0"
+        });
+    });
+</script>
 
 <style>
+    .error-message {
+        margin-top: 0;
+        color: #d9534f;
+        font-size: 0.9rem;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        white-space: nowrap;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Mostrar "..." si el texto es demasiado largo */
+    }
+
+    .alert.alert-danger {
+        position: absolute;
+        top: 120px; 
+        right: 20px; 
+        background-color: #f8d7da; 
+        color: #721c24; 
+        border: 1px solid #f5c6cb; 
+        padding: 15px; 
+        border-radius: 5px; 
+        font-size: 16px; 
+        z-index: 1000; 
+    }
+
+    .form-field {
+        position: relative;
+        padding-right: 160px; 
+    }
+
+    input[type="text"],
+    select {
+        width: 100%; /* Llenar todo el contenedor */
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
 
     .custom-select {
-        width: 100%;
-        padding: 10px;
+        text-align: center;
+        text-align-last: center;
+        border-radius: 20px;
+        padding: 0;
         font-size: 1.2rem;
         border: 2px solid #dcdcdc;
-        border-radius: 20px;
         background-color: #f9f9f9;
         appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
         background-image: url('/img/flechaAbajo.png');
         background-position: right 10px center;
         background-repeat: no-repeat;
         background-size: 15px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-
-        .custom-select:focus {
-            border-color: #EE1C25;
-            outline: none;
-        }
-
-        .custom-select::-ms-expand {
-            display: none;
-        }
-
         .custom-select option {
+            text-align: center;
+            padding: 10px;
             font-size: 1.2rem;
         }
 </style>

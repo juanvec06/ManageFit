@@ -1,5 +1,4 @@
-﻿
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 /*
     ESTILOS PARA EL REGISTRO DE LOS CLIENTES
@@ -23,7 +22,7 @@
     width: 100px;
     height: 100px;
     position: absolute;
-    bottom: 55%;
+    bottom: 50%;
     right: 80%;
 }
 
@@ -33,21 +32,13 @@
     margin-left: 50px;
 }
 
-
-    .data-field h4 {
+    .form-field h4, .data-field h4 {
         margin-right: 15px;
         padding: 8px;
         background-color: #969393;
         border-radius: 10px;
         color: black;
-    }
-
-    .form-field h4 {
-        margin-right: 15px;
-        padding: 8px;
-        background-color: #969393;
-        border-radius: 10px;
-        color: black; 
+        white-space: nowrap;
     }
 
 .wrapper .form-field input {
@@ -64,7 +55,7 @@
 }
 
 .wrapper .datapicker-styles {
-    margin-bottom:3%;
+    margin-bottom: 3%;
     margin-left: 8%;
 }
 
@@ -92,9 +83,9 @@
     font-size: 20px;
     font-style: italic;
     margin-left: 130px;
-    position: absolute; 
-    bottom: 20px; 
-    left: 56%; 
+    position: absolute;
+    bottom: 20px;
+    left: 64%;
 }
 
     .wrapper .btn:hover {
@@ -126,8 +117,8 @@
         }
 
     .checkbox-container label {
-        font-size: 15px; 
-        font-weight: 500; 
+        font-size: 15px;
+        font-weight: 500;
     }
 
 @media(max-width: 380px) {

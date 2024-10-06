@@ -14,6 +14,12 @@ namespace NET_MVC.Controllers
             return View("RegistrarCliente");
         }
 
+        public IActionResult AsignarEntrenadorCliente()
+        {
+            return View("AsignarEntrenadorCliente");
+        }
+
+
         [HttpPost]
         public IActionResult RegistrarCliente(ClienteModel Cliente)
         {
@@ -29,7 +35,7 @@ namespace NET_MVC.Controllers
                     if (respuesta)
                     {
                         TempData["MensajeValidacion"] = "Cliente registrado";
-                        return RedirectToAction("DashboardAdministrador", "Admin");
+                        return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
                     }
                     else
                         return View(Cliente);
