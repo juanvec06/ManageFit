@@ -7,13 +7,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/css/RegistroEntrenador.css">
 </head>
 
 <div class="container container-grande">
-
     <div class="text-registrar"
          style="text-align: center;
             color: #EE1C25;
@@ -32,11 +30,11 @@
         </div>
     }
 
+
     <div class="login-container">
-
         <div class="wrapper">
-
             <img class="cliente-img" src="/img/user.png" alt="Logo">
+
 
             <form asp-action="RegistrarEntrenador" asp-controller="Entrenador" method="post" class="form p-3 mt-3">
 
@@ -45,31 +43,30 @@
                 <div class="form-field">
                     <h4>Nombre:</h4>
                     <input asp-for="Nombre" type="text" required>
-                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <span asp-validation-for="Nombre" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Id" type="text" required>
-                    <span asp-validation-for="Id" class="text-danger"></span>
+                    <span asp-validation-for="Id" class="text-danger error-message"></span>
                 </div>
 
                 <div class="data-field flex items-center space-x-4">
                     <h4 class="w-1/4">Fecha de Contratación:</h4>
                     <div class="relative max-w-sm w-full datapicker-styles">
                         <input id="contrato-datepicker" asp-for="fechaInicioContrato" type="date"
-                               class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-                      dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               class="bg-white border border-gray-300 text-gray-900 text-sm
+                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                placeholder="Seleccionar fecha" required>
                     </div>
-                    <span asp-validation-for="fechaInicioContrato" class="text-danger"></span>
+                    <span asp-validation-for="fechaInicioContrato" class="text-danger error-message"></span>
                 </div>
-
 
                 <div class="form-field">
                     <h4>Teléfono:</h4>
                     <input asp-for="Telefono" type="text">
-                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                    <span asp-validation-for="Telefono" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
@@ -79,7 +76,7 @@
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                     </select>
-                    <span asp-validation-for="Genero" class="text-danger"></span>
+                    <span asp-validation-for="Genero" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
@@ -90,24 +87,23 @@
                         <option value="Reducción de peso">Reducción de peso</option>
                         <option value="Culturismo">Culturismo</option>
                     </select>
-                    <span asp-validation-for="Especialidad" class="text-danger"></span>
+                    <span asp-validation-for="Especialidad" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Salario:</h4>
                     <input asp-for="Salario" type="text" required>
-                    <span asp-validation-for="Salario" class="text-danger"></span>
+                    <span asp-validation-for="Salario" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Contraseña:</h4>
                     <input asp-for="Contraseña" type="text" required>
-                    <span asp-validation-for="Contraseña" class="text-danger"></span>
+                    <span asp-validation-for="Contraseña" class="text-danger error-message"></span>
                 </div>
 
                 <button type="submit" class="btn mt-3">Guardar</button>
             </form>
-
         </div>
     </div>
 </div>
@@ -124,20 +120,49 @@
 </script>
 
 <style>
-    .warning-icon {
-        width: 25px;
-        margin-left: 10px;
-    }
-
     .error-message {
-        margin-top: 5px;
+        margin-top: 0;
         color: #d9534f;
         font-size: 0.9rem;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        white-space: nowrap;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Mostrar "..." si el texto es demasiado largo */
+    }
+
+    .alert.alert-danger {
+        position: absolute;
+        top: 120px; 
+        right: 20px; 
+        background-color: #f8d7da; 
+        color: #721c24; 
+        border: 1px solid #f5c6cb; 
+        padding: 15px; 
+        border-radius: 5px; 
+        font-size: 16px; 
+        z-index: 1000; 
+    }
+
+    .form-field {
+        position: relative;
+        padding-right: 160px; 
+    }
+
+    input[type="text"],
+    select {
+        width: 100%; /* Llenar todo el contenedor */
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
     }
 
     .custom-select {
-        margin-top: 10px;
-        margin-bottom: 10px;
         text-align: center;
         text-align-last: center;
         border-radius: 20px;

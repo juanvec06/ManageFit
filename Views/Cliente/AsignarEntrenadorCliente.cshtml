@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<NET_MVC.Models.EntrenadorModel>
+
+@{
     ViewData["Title"] = "Asignar Entrenador";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 
@@ -6,13 +8,6 @@
     ViewBag.Cliente = "1234";  // Info desde el controlador
     ViewBag.Entrenador = "1111";  // Info desde el controlador
 
-}
-
-@model List<NET_MVC.Models.EntrenadorModel>
-
-@{
-    ViewData["Title"] = "Asignar Entrenador";
-    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
 
 <div class="container-grande">
@@ -37,15 +32,48 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var entrenador in Model)
-                {
+
                     <tr>
-                        <td>@entrenador.Id</td>
-                        <td>@entrenador.Nombre</td>
-                        <td>@entrenador.Especialidad</td>
-                        <td>@entrenador.ClientesAsignados</td>
+                        <td>3</td>
+                        <td>sofi</td>
+                        <td>Crossfit</td>
+                        <td>10</td>
                     </tr>
-                }
+                
+                    <tr>
+                        <td>3</td>
+                        <td>sofi</td>
+                        <td>Crossfit</td>
+                        <td>10</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>sofi</td>
+                        <td>Crossfit</td>
+                        <td>10</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>sofi</td>
+                        <td>Crossfit</td>
+                        <td>10</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>sofi</td>
+                        <td>Crossfit</td>
+                        <td>10</td>
+                    </tr>
+
+                <tr>
+                    <td>3</td>
+                    <td>sofi</td>
+                    <td>Crossfit</td>
+                    <td>10</td>
+                </tr>
             </tbody>
         </table>
     </div>
