@@ -3,6 +3,7 @@ using NET_MVC.Datos;
 using NET_MVC.Models;
 using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
+using System.Security.Claims;
 
 namespace NET_MVC.Controllers
 {
@@ -23,8 +24,8 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult RegistrarCliente(ClienteModel Cliente)
         {
-            string auxStringSession = HttpContext.Session.GetString("idUsuario"); 
-            Cliente.IdSede = int.Parse(auxStringSession);
+            string usuario = User.FindFirst(ClaimTypes.Name)?.Value;
+            Cliente.IdSede = int.Parse(usuario);
 
 
             if (ModelState.IsValid)

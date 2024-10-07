@@ -29,7 +29,7 @@ namespace NET_MVC.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, model.Usuario), // Nombre del usuario
-                    new Claim(ClaimTypes.Role, rol)            // Rol del usuario (Administrador, Entrenador, etc.)
+                    new Claim(ClaimTypes.Role, rol),            // Rol del usuario (Administrador, Entrenador, etc.)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
