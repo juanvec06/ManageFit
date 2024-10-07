@@ -20,7 +20,10 @@ namespace NET_MVC.Datos
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
+                        // Castear
+                        int id = int.Parse(cliente.Identificacion);
                         // Agregar parámetros para el procedimiento almacenado
+
                         cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion; 
                         cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = cliente.IdSede;
                         cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = null; 

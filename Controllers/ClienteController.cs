@@ -43,7 +43,7 @@ namespace NET_MVC.Controllers
                         }
                         else if (Cliente.refMembresia == "General")
                         {
-                            
+                            TempData["MensajeValidacion"] = "Cliente general registrado";
                             return RedirectToAction("DashboardAdministrador", "Admin");
                         }
                     }
