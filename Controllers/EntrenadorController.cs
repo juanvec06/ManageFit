@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Datos;
 using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
+using System.Security.Claims;
 
 namespace NET_MVC.Controllers
 {
@@ -19,21 +20,22 @@ namespace NET_MVC.Controllers
             return View("RegistrarEntrenador");
         }
         [HttpPost]
-        public IActionResult RegistrarEntrenador(EntrenadorModel model)
+        public IActionResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {
-            model.IdSede = HttpContext.Session.GetString("idUsuario");
+            Entrenador.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var respuesta = consulta.RegistrarEntrenador(model);
+                    var respuesta = consulta.RegistrarEntrenador(Entrenador);
                     if (respuesta)
                     {
                         TempData["MensajeValidacion"] = "Entrenador registrado";
                         return RedirectToAction("DashboardAdministrador", "Admin");
                     }
                     else
-                        return View(model);
+                        return View(Entrenador);
                 }
                 catch(OracleException oex)
                 {
@@ -41,21 +43,21 @@ namespace NET_MVC.Controllers
                     if (oex.Number == -20002)
                     {
                         ViewBag.MensajeError = "Entrenador existente";
-                        return View(model);
+                        return View(Entrenador);
                     }
                     else
                     {
                         ViewBag.MensajeError = "Error inesperado: " + oex.Message;
-                        return View(model);
+                        return View(Entrenador);
                     }
                 }
-                catch (Exception ex)
+                /*catch (Exception ex)
                 {
                     ViewBag.ErrorMessage = ex.Message;
-                    return View(model);
-                }
+                    return View(Entrenador);
+                }*/
             }
-            return View(model);
+            return View(Entrenador);
         }
     }
 }

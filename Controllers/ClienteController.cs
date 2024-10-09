@@ -37,8 +37,17 @@ namespace NET_MVC.Controllers
                     var respuesta = consulta.RegistrarCliente(Cliente);
                     if (respuesta)
                     {
-                        TempData["MensajeValidacion"] = "Cliente registrado";
-                        return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+                        
+                        if (Cliente.refMembresia == "Premium")
+                        {
+                           
+                            return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+                        }
+                        else if (Cliente.refMembresia == "General")
+                        {
+                            TempData["MensajeValidacion"] = "Cliente general registrado";
+                            return RedirectToAction("DashboardAdministrador", "Admin");
+                        }
                     }
                     else
                         return View(Cliente);

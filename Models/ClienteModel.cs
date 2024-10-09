@@ -8,8 +8,9 @@
         [StringLength(100, ErrorMessage = "El nombre no puede exceder los 100 caracteres.")]
         public string Nombre { get; set; }
 
+        [RegularExpression("^[0-9]\\d*$|^0$", ErrorMessage = "Identificación invalida")]
         [Required(ErrorMessage = "La identificación es obligatoria.")]
-        public int Identificacion { get; set; }
+        public string Identificacion { get; set; }
 
         [Required(ErrorMessage = "El género es obligatorio.")]
         public string Genero { get; set; }
@@ -18,6 +19,7 @@
         [DataType(DataType.Date, ErrorMessage = "Formato de fecha inválido.")]
         public DateTime FechaNacimiento { get; set; }
 
+        [RegularExpression("^3\\d{9}$", ErrorMessage = "El telefono no es válido")]
         [Required(ErrorMessage = "El teléfono es obligatorio.")]
         [Phone(ErrorMessage = "Formato de teléfono inválido.")]
         public string Telefono { get; set; }
