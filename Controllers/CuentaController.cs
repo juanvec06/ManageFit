@@ -6,6 +6,7 @@ using Oracle.ManagedDataAccess.Types;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 namespace NET_MVC.Controllers
 {
     public class CuentaController : Controller

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Datos;
 using NET_MVC.Models;
 using NuGet.Protocol.Plugins;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace NET_MVC.Controllers
 {
+    [Authorize]
     public class ClienteController : Controller
     {
         AdmCliente consulta = new AdmCliente();
