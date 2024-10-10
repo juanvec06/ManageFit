@@ -59,9 +59,46 @@ namespace NET_MVC.Datos
             }
             finally
             {
-                Conexion.cerrarConexion(); // Asegúrate de cerrar la conexión siempre
+                Conexion.cerrarConexion(); //Cerrar la conexión
             }
             return rpta;
         }
+
+        public bool ClienteExiste(string identificacion)
+        {
+            bool existe = false;
+
+            // Intenta convertir la identificación a un número
+            if (!int.TryParse(identificacion, out int idCliente))
+            {
+                throw new Exception("La identificación debe ser un número entero válido.");
+            }
+
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM CLIENTE WHERE id_cliente = :id", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter("id", idCliente)); // Usa el id convertido
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        existe = count > 0;
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return existe;
+        }
+
+
+
+
     }
 }

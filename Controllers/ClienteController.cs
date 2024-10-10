@@ -22,13 +22,11 @@ namespace NET_MVC.Controllers
             return View("AsignarEntrenadorCliente");
         }
 
-
         [HttpPost]
-        public IActionResult RegistrarCliente(ClienteModel Cliente)
+        public JsonResult RegistrarCliente(ClienteModel Cliente)
         {
             string usuario = User.FindFirst(ClaimTypes.Name)?.Value;
             Cliente.IdSede = int.Parse(usuario);
-
 
             if (ModelState.IsValid)
             {
@@ -37,43 +35,55 @@ namespace NET_MVC.Controllers
                     var respuesta = consulta.RegistrarCliente(Cliente);
                     if (respuesta)
                     {
-                        
+                        TempData["SuccessMessage"] = "Cliente registrado correctamente";
                         if (Cliente.refMembresia == "Premium")
                         {
-                           
-                            return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+                            return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
                         }
                         else if (Cliente.refMembresia == "General")
                         {
-                            TempData["MensajeValidacion"] = "Cliente general registrado";
-                            return RedirectToAction("DashboardAdministrador", "Admin");
+                            return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                         }
                     }
                     else
-                        return View(Cliente);
+                    {
+                        return Json(new { success = false, errors = new { MensajeError = "Error al registrar cliente" } });
+                    }
+
                 }
                 catch (OracleException oex)
                 {
-
                     if (oex.Number == -20002)
                     {
-                        ViewBag.MensajeError = "Cliente existente";
-                        return View(Cliente);
+                        return Json(new { success = false, errors = new { MensajeError = "Cliente existente" } });
                     }
                     else
                     {
-                        ViewBag.MensajeError = "Error inesperado: " + oex.Message;
-                        return View(Cliente);
+                        return Json(new { success = false, errors = new { MensajeError = "Error inesperado: " + oex.Message } });
                     }
                 }
                 catch (Exception ex)
                 {
-                    ViewBag.ErrorMessage = ex.Message;
-                    return View(Cliente);
-                } 
+                    return Json(new { success = false, errors = new { MensajeError = ex.Message } });
+                }
             }
-            return View(Cliente);
+            return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
+
+
+        [HttpPost]
+        public JsonResult VerificarClienteExistente(string identificacion)
+        {
+            // Verifica que la identificación sea un número
+            if (!int.TryParse(identificacion, out _))
+            {
+                return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
+            }
+
+            bool clienteExiste = consulta.ClienteExiste(identificacion);
+            return Json(new { existe = clienteExiste });
+        }
+
     }
 }
 

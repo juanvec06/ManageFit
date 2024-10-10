@@ -3,11 +3,12 @@
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
 
-@if (TempData["MensajeValidacion"] != null)
+@if (Context.Request.Query.ContainsKey("mensaje"))
 {
     <div class="alert alert-success">
-        @TempData["MensajeValidacion"]
+        @Context.Request.Query["mensaje"]
     </div>
 }
 
-    <img class="user-img" src="/img/user.png" alt="boton de salida">
+
+<img class="user-img" src="/img/user.png" alt="boton de salida">
