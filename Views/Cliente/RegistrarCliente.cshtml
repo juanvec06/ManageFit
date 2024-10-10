@@ -199,9 +199,24 @@
             if (!identificacion) {
                 $('#identificacion-error').text('Campo obligatorio.');
                 camposValidos = false;
-            } else if (!$.isNumeric(identificacion) || identificacion.length > 10) {
-                $('#identificacion-error').text('Debe ser un número entero de hasta 10 dígitos.');
+            }
+            // Validar si la identificación es negativa
+            else if (identificacion < 0) {
+                $('#identificacion-error').text('La identificación no puede ser un número negativo.');
                 camposValidos = false;
+            }
+            // Validar si la identificación tiene más de 10 dígitos
+            else if (identificacion.length > 10) {
+                $('#identificacion-error').text('La identificación no puede tener más de 10 dígitos.');
+                camposValidos = false;
+            }
+            // Validar si la identificación es numérica
+            else if (!$.isNumeric(identificacion)) {
+                $('#identificacion-error').text('La identificación debe ser un número entero.');
+                camposValidos = false;
+            }
+            else {
+                $('#identificacion-error').text(''); // Limpia el mensaje de error si todo está bien
             }
 
             // Validar el campo de teléfono
