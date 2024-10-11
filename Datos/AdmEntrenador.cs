@@ -51,5 +51,38 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
+
+        public bool EntrenadorExiste(string identificacion)
+        {
+            bool existe = false;
+
+            if (!int.TryParse(identificacion, out int idEntrenador))
+            {
+                throw new Exception("La identificación debe ser un número entero válido.");
+            }
+
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM ENTRENADOR WHERE id_entrenador = :id", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter("id", idEntrenador));
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        existe = count > 0;
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return existe;
+        }
+
     }
 }

@@ -4,11 +4,13 @@
     ViewData["Title"] = "Registrar Entrenador";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/css/RegistroEntrenador.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <div class="container container-grande">
@@ -30,11 +32,9 @@
         </div>
     }
 
-
     <div class="login-container">
         <div class="wrapper">
             <img class="cliente-img" src="/img/user.png" alt="Logo">
-
 
             <form asp-action="RegistrarEntrenador" asp-controller="Entrenador" method="post" class="form p-3 mt-3">
 
@@ -42,35 +42,36 @@
 
                 <div class="form-field">
                     <h4>Nombre:</h4>
-                    <input asp-for="Nombre" type="text" required>
-                    <span asp-validation-for="Nombre" class="text-danger error-message"></span>
+                    <input asp-for="Nombre" type="text">
+                    <span id="nombre-error" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Identificación:</h4>
-                    <input asp-for="Id" type="text" required>
-                    <span asp-validation-for="Id" class="text-danger error-message"></span>
+                    <input asp-for="Id" type="text" id="Identificacion">
+                    <span id="entrenador-existe" class="text-danger small-error-message"></span> <!-- Mensaje de entrenador existente -->
+                    <span id="identificacion-error" class="text-danger error-message"></span>
                 </div>
 
-                <div class="data-field flex items-center space-x-4">
-                    <h4 class="w-1/4">Fecha de Contratación:</h4>
-                    <div class="relative max-w-sm w-full datapicker-styles">
+                <div class="data-field">
+                    <h4>Fecha de Contratación:</h4>
+                    <div class="relative">
                         <input id="contrato-datepicker" asp-for="fechaInicioContrato" type="date"
                                class="bg-white border border-gray-300 text-gray-900 text-sm
-                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                               placeholder="Seleccionar fecha" required>
+    rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                               placeholder="Seleccionar fecha">
+                        <span id="fechaInicioContrato-error" class="text-danger error-message error-fecha"></span>
                     </div>
-                    <span asp-validation-for="fechaInicioContrato" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Teléfono:</h4>
                     <input asp-for="Telefono" type="text">
-                    <span asp-validation-for="Telefono" class="text-danger error-message"></span>
+                    <span id="telefono-error" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
-                    <h4>Genero:</h4>
+                    <h4>Género:</h4>
                     <select asp-for="Genero" class="form-control custom-select">
                         <option value="NE">No especificado</option>
                         <option value="M">Masculino</option>
@@ -92,64 +93,253 @@
 
                 <div class="form-field">
                     <h4>Salario:</h4>
-                    <input asp-for="Salario" type="text" required>
-                    <span asp-validation-for="Salario" class="text-danger error-message"></span>
+                    <input asp-for="Salario" type="text">
+                    <span id="salario-error" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
                     <h4>Contraseña:</h4>
-                    <input asp-for="Contraseña" type="text" required>
-                    <span asp-validation-for="Contraseña" class="text-danger error-message"></span>
+                    <input asp-for="Contraseña" type="text" id="Contraseña">
+                    <span id="contraseña-error" class="text-danger error-message"></span>
                 </div>
 
-                <button type="submit" class="btn mt-3">Guardar</button>
+                <button type="button" id="guardarEntrenador" class="btn mt-3">Guardar</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-    $(function () {
-        $("#contrato-datepicker").datepicker({
-            dateFormat: "dd/mm/yy", // Formato día/mes/año
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "1900:+0"
+    $(document).ready(function () {
+        $('#Identificacion').on('keyup', function () {
+            var identificacion = $(this).val();
+            $('#entrenador-existe').text(''); // Limpia el mensaje de entrenador existente
+
+            // Validación en tiempo real
+            if (!identificacion) {
+                $('#identificacion-error').text('Campo obligatorio.');
+            } else {
+                $('#identificacion-error').text(''); // Limpia el mensaje si hay algún valor
+
+                // Solo hacer la llamada AJAX si el valor es un número
+                if ($.isNumeric(identificacion)) {
+                    $.ajax({
+                        url: '@Url.Action("VerificarEntrenadorExistente", "Entrenador")',
+                        type: 'POST',
+                        data: { identificacion: identificacion },
+                        success: function (data) {
+                            if (data.existe) {
+                                $('#entrenador-existe').text('Entrenador existente');
+                            } else {
+                                $('#entrenador-existe').text('');
+                            }
+                        },
+                        error: function () {
+                            $('#entrenador-existe').text('Error al verificar');
+                        }
+                    });
+                } else {
+                    $('#entrenador-existe').text('Debe ser un número entero.');
+                }
+            }
+        });
+
+        // Validar todos los campos al hacer clic en el botón Guardar
+        $('#guardarEntrenador').on('click', function (e) {
+            // Limpia los mensajes de error
+            $('.error-message').text('');
+
+            let camposValidos = true;
+
+            // Validar el campo de Nombre
+            if ($('#Nombre').val().trim() === '') {
+                $('#nombre-error').text('Campo obligatorio.');
+                camposValidos = false;
+            }
+
+            // Validar el campo de Identificación
+            var identificacion = $('#Identificacion').val().trim();
+            if (identificacion === '') {
+                $('#identificacion-error').text('Campo obligatorio.');
+                camposValidos = false;
+            } else if (!$.isNumeric(identificacion)) {
+                $('#identificacion-error').text('Debe ser un número.');
+                camposValidos = false;
+            } else if (identificacion < 0) {
+                $('#identificacion-error').text('No puede ser negativo.');
+                camposValidos = false;
+            } else if (identificacion.length > 10) {
+                $('#identificacion-error').text('No puede tener más de 10 dígitos.');
+                camposValidos = false;
+            }
+
+
+            // Validar la fecha de contratación
+            var fechaContrato = $('#contrato-datepicker').val(); // Obtén el valor del input
+            if (!fechaContrato) {
+                $('#fechaInicioContrato-error').text('Campo obligatorio.'); // Mensaje de campo vacío
+                camposValidos = false; // Campo no válido
+            } 
+
+            /* POR COMPLETAR porque hay problemas con el formato de la fecha
+            else {
+                // Obtener la fecha de la forma '10/10/2024'
+                var partesFecha = fechaContrato.split('/'); // Suponiendo que llega en formato DD/MM/YYYY
+                if (partesFecha.length === 3) {
+                    // Convertir la fecha a un formato válido para JavaScript
+                    var dia = parseInt(partesFecha[0], 10);
+                    var mes = parseInt(partesFecha[1], 10) - 1; // Los meses en JavaScript son 0-indexed
+                    var año = parseInt(partesFecha[2], 10);
+
+                    // Verificar que los valores sean válidos
+                    if (isNaN(dia) || isNaN(mes) || isNaN(año)) {
+                        $('#fechaInicioContrato-error').text('Formato de fecha inválido.'); // Mensaje de formato inválido
+                        camposValidos = false; // Campo no válido
+                    } else {
+                        var fechaContratoDate = new Date(año, mes, dia); // Crea el objeto de fecha
+                        var hoy = new Date(); // Obtiene la fecha actual
+                        hoy.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
+                        fechaContratoDate.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
+
+                        // Comparar las fechas
+                        if (fechaContratoDate.getTime() !== hoy.getTime()) {
+                            $('#fechaInicioContrato-error').text('La fecha de contratación debe ser el día actual.');
+                            camposValidos = false; // Campo no válido
+                        }
+                    }
+                } else {
+                    $('#fechaInicioContrato-error').text('Formato de fecha inválido.'); // Mensaje de formato inválido
+                    camposValidos = false; // Campo no válido
+                }
+            }
+            */
+
+
+
+            // Validar el campo de Teléfono
+            var telefono = $('#Telefono').val().trim();
+            if (telefono === '') {
+                $('#telefono-error').text('Campo obligatorio.');
+                camposValidos = false;
+            } else if (!$.isNumeric(telefono)) {
+                $('#telefono-error').text('Debe ser un número.');
+                camposValidos = false;
+            } else if (telefono.length !== 10) {
+                $('#telefono-error').text('Debe tener exactamente 10 dígitos.');
+                camposValidos = false;
+            } else if (telefono < 0) {
+                $('#telefono-error').text('El teléfono no puede ser un número negativo.');
+                camposValidos = false;
+            }
+
+            // Validar el campo de Salario
+            var salario = $('#Salario').val().trim();
+            if (salario === '') {
+                $('#salario-error').text('Campo obligatorio.');
+                camposValidos = false;
+            } else if (!$.isNumeric(salario)) {
+                $('#salario-error').text('Debe ser un número.');
+                camposValidos = false;
+            } else if (salario < 0) {
+                $('#salario-error').text('El salario no puede ser negativo.');
+                camposValidos = false;
+            } else if (salario > 10000000) {
+                $('#salario-error').text('El salario no puede superar los 10,000,000.');
+                camposValidos = false;
+            }
+
+            // Validar el campo de Contraseña
+            var contraseña = $('#Contraseña').val().trim();
+            if (contraseña === '') {
+                $('#contraseña-error').text('Campo obligatorio.');
+                camposValidos = false;
+            } else if (contraseña.length > 20) {
+                $('#contraseña-error').text('La contraseña no puede exceder los 20 caracteres.');
+                camposValidos = false;
+            }
+
+            // Si todos los campos son válidos, envía el formulario mediante AJAX
+            if (camposValidos) {
+                var formData = {
+                    Nombre: $('#Nombre').val(),
+                    Id: identificacion,
+                    fechaInicioContrato: fechaContrato,
+                    Telefono: telefono,
+                    Genero: $('#Genero').val(),
+                    Especialidad: $('#Especialidad').val(),
+                    Salario: salario,
+                    Contraseña: contraseña
+                };
+
+                $.ajax({
+                    url: '@Url.Action("RegistrarEntrenador", "Entrenador")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        // Maneja la respuesta según sea necesario
+                        window.location.href = '@Url.Action("DashboardAdministrador", "Admin")'; // Redirige a otra página
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error al guardar el entrenador:", error);
+                    }
+                });
+            }
         });
     });
 </script>
 
 <style>
+
+
+    .data-field {
+        display: flex; 
+        align-items: center; 
+        margin-bottom: 20px;
+    }
+
+        .data-field .relative {
+            flex: 1; /* Permite que el contenedor de entrada ocupe el espacio restante */
+            max-width: 400px; /* Opcional: un ancho máximo para el input */
+        }
+
     .error-message {
         margin-top: 0;
         color: #d9534f;
         font-size: 0.9rem;
         position: absolute;
-        right: 10px;
+        right: 3px;
         top: 50%;
         transform: translateY(-50%);
         white-space: nowrap;
         max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis; /* Mostrar "..." si el texto es demasiado largo */
+    }
+
+    .small-error-message { /* Estilo para mensajes pequeños */
+        font-size: 0.8rem;
+        position: relative;
+        margin-top: 5px; /* Espacio adicional si es necesario */
     }
 
     .alert.alert-danger {
         position: absolute;
-        top: 120px; 
-        right: 20px; 
-        background-color: #f8d7da; 
-        color: #721c24; 
-        border: 1px solid #f5c6cb; 
-        padding: 15px; 
-        border-radius: 5px; 
-        font-size: 16px; 
-        z-index: 1000; 
+        top: 120px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 1000;
     }
 
     .form-field {
         position: relative;
-        padding-right: 160px; 
+        padding-right: 150px;
+    }
+
+    #contrato-datepicker {
+        max-width: 200px; 
+        width: auto; 
     }
 
     input[type="text"],
@@ -160,6 +350,7 @@
         border-radius: 8px;
         border: 1px solid #ccc;
         box-sizing: border-box;
+        margin-bottom: 5px; /* Espacio adicional en la parte inferior del input */
     }
 
     .custom-select {

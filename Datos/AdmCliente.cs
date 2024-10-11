@@ -68,7 +68,6 @@ namespace NET_MVC.Datos
         {
             bool existe = false;
 
-            // Intenta convertir la identificación a un número
             if (!int.TryParse(identificacion, out int idCliente))
             {
                 throw new Exception("La identificación debe ser un número entero válido.");
@@ -80,7 +79,7 @@ namespace NET_MVC.Datos
                 {
                     using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM CLIENTE WHERE id_cliente = :id", conexionBD))
                     {
-                        cmd.Parameters.Add(new OracleParameter("id", idCliente)); // Usa el id convertido
+                        cmd.Parameters.Add(new OracleParameter("id", idCliente)); 
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
                         existe = count > 0;
                     }
