@@ -1,0 +1,237 @@
+﻿@{
+    ViewData["Title"] = "Listar Cliente";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-grande">
+    <div class="text-Asignar" style="text-align: center; 
+    color: #EE1C25; font-size: 50px; font-style: italic; 
+    font-weight: 900; line-height: 70px; word-wrap: break-word">CLIENTES</div>
+
+    <div class="filter-container">
+        <select id="filter" class="form-control custom-select">
+            <option value="all">Filtros</option>
+            <option value="option1">Opción 1</option>
+            <option value="option2">Opción 2</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
+                    <th>Membresia</th>
+                    <th>Días restantes de membresía</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Juan</td>
+                    <td>1234567890</td>
+                    <td>Premium</td>
+                    <td>15</td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Sofi</td>
+                    <td>0987654321</td>
+                    <td>General</td>
+                    <td>10</td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Sofi</td>
+                    <td>0987654321</td>
+                    <td>General</td>
+                    <td>10</td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Sofi</td>
+                    <td>0987654321</td>
+                    <td>General</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Sofi</td>
+                    <td>0987654321</td>
+                    <td>General</td>
+                    <td>10</td>
+               
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button type="button" class="btn mt-3">Filtrar</button>
+</div>
+
+<style>
+    .container-grande {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+    }
+
+    .text-Asignar {
+        margin-top: 40px;
+        text-align: center;
+        color: #EE1C25;
+        font-size: 50px;
+        font-style: italic;
+        font-weight: 900;
+        line-height: 70px;
+        word-wrap: break-word;
+    }
+
+    .filter-container {
+        display: flex;
+        align-items: center;
+        margin-right: 15px; 
+        border-radius: 20px;
+        padding: 10px;
+        min-width: 300px;
+        margin-left: auto; 
+    }
+
+    .custom-select {
+        margin-top: 10px;
+        text-align: center;
+        text-align-last: center;
+        border-radius: 20px;
+        padding: 0;
+        font-size: 1.2rem;
+        border: 2px solid #dcdcdc;
+        appearance: none;
+        background-image: url('/img/flechaAbajo.png');
+        background-position: right 10px center;
+        background-repeat: no-repeat;
+        background-size: 15px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .custom-select option {
+            text-align: center;
+            padding: 10px;
+            font-size: 1.2rem;
+        }
+
+    .table-container {
+        width: 95%;
+        margin: 0 auto;
+        max-height: 270px;
+        overflow-y: auto;
+        margin-top: 20px;
+    }
+
+    .table thead th {
+        background-color: #b3b3b3;
+        color: white;
+        text-align: center;
+    }
+
+    .table tbody tr td {
+        background-color: white;
+        text-align: center;
+    }
+
+    .table-bordered td, .table-bordered th {
+        border: 2px solid #dee2e6;
+    }
+
+    .btn {
+        background-color: red;
+        color: white;
+        padding: 10px 10px;
+        text-decoration: none;
+        justify-content: center;
+        align-items: center;
+        display: inline-flex;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        width: 200px;
+        height: 45px;
+        padding: 10px;
+        font-family: Inter, sans-serif;
+        font-weight: bold;
+        background: #EE1C25;
+        border-radius: 40px;
+        font-weight: bold;
+        line-height: 70px;
+        word-wrap: break-word;
+        font-size: 20px;
+        font-style: italic;
+        margin-left: 130px;
+        position: absolute;
+        bottom: 20px;
+        left: 64%;
+    }
+
+        .wrapper .btn:hover {
+            background-color: darkred;
+        }
+
+    .wrapper a:hover {
+        color: #039BE5;
+    }
+
+    .table-container::-webkit-scrollbar {
+        width: 18px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+        background: #ffffff;
+        border-radius: 10px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+        background-color: #4c4c4c;
+        border-radius: 10px;
+        border: 3px solid #ffffff;
+    }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background-color: #333333;
+        }
+
+    .table-container::-webkit-scrollbar-button:single-button {
+        background-color: white;
+        display: block;
+        height: 18px;
+        border-radius: 5px;
+        background-size: 8px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+        .table-container::-webkit-scrollbar-button:single-button:vertical:decrement {
+            background-image: url('/img/flechaArriba.png');
+        }
+
+        .table-container::-webkit-scrollbar-button:single-button:vertical:increment {
+            background-image: url('/img/flechaAbajo.png');
+        }
+
+    .table-container::-webkit-scrollbar-button {
+        width: 18px;
+        height: 18px;
+    }
+
+    .table-container::-webkit-scrollbar-corner {
+        background: #e0e0e0;
+    }
+
+</style>

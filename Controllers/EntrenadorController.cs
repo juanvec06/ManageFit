@@ -19,6 +19,12 @@ namespace NET_MVC.Controllers
         {
             return View("RegistrarEntrenador");
         }
+
+        public IActionResult Listar()
+        {
+            return View("ListarEntrenador");
+        }
+
         [HttpPost]
         public IActionResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {

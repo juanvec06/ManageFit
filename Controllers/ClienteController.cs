@@ -17,6 +17,11 @@ namespace NET_MVC.Controllers
             return View("RegistrarCliente");
         }
 
+        public IActionResult Listar()
+        {
+            return View("ListarCliente");
+        }
+
         public IActionResult AsignarEntrenadorCliente()
         {
             return View("AsignarEntrenadorCliente");
@@ -36,6 +41,8 @@ namespace NET_MVC.Controllers
                     if (respuesta)
                     {
                         TempData["SuccessMessage"] = "Cliente registrado correctamente";
+
+
                         if (Cliente.refMembresia == "Premium")
                         {
                             return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
