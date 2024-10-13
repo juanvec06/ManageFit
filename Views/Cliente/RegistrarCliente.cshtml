@@ -16,13 +16,6 @@
 
 <div class="container container-grande">
 
-    @if (ViewBag.MensajeError != null)
-    {
-        <div class="alert alert-danger">
-            @ViewBag.MensajeError
-        </div>
-    }
-
     <div class="login-container">
 
         <div class="wrapper">
@@ -39,16 +32,16 @@
 
                 <div class="data-field">
                     <h4>Fecha nacimiento:</h4>
-                    <div class="relative max-w-sm datapicker-styles" style="display: flex; align-items: center;">
+                    <div class="relative datapicker-styles">
                         <input id="default-datepicker" asp-for="FechaNacimiento" type="date"
                                class="bg-white border border-gray-300 text-gray-900 text-sm
-               rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5
-               dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-               dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-                        <span id="fecha-error" class="text-danger error-message" style="margin-left: 10px;"></span>
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                               placeholder="Seleccionar fecha">
+                        <span id="fecha-error" class="text-danger error-message"></span>
                     </div>
                     <span asp-validation-for="FechaNacimiento" class="text-danger error-message"></span>
                 </div>
+
 
                 <div class="form-field">
                     <h4>Nombre:</h4>
@@ -60,7 +53,7 @@
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Identificacion" type="text" id="Identificacion" required>
-                    <span id="cliente-existe" class="text-danger"></span>
+                    <span id="cliente-existe" class="text-danger error-message"></span>
                      <span id="identificacion-error" class="text-danger error-message"></span> 
                 </div>
 
@@ -163,7 +156,7 @@
 
                 // Comprobar si la fecha es futura
                 if (fecha > hoy) {
-                    $('#fecha-error').text('La fecha de nacimiento no puede ser en el futuro.');
+                    $('#fecha-error').text('No puede ser en el futuro.');
                     camposValidos = false;
                 } else {
                     // Calcular edad
@@ -174,7 +167,7 @@
                     }
 
                     if (edad < 14) {
-                        $('#fecha-error').text('Debes tener más de 14 años para registrarte.');
+                        $('#fecha-error').text('Debe tener más de 14 años.');
                         camposValidos = false;
                     } else if (edad >= 100) {
                         $('#fecha-error').text('La edad no puede ser superior a 100 años.');
@@ -201,17 +194,17 @@
             }
             // Validar si la identificación es negativa
             else if (identificacion < 0) {
-                $('#identificacion-error').text('La identificación no puede ser un número negativo.');
+                $('#identificacion-error').text('No puede ser un número negativo.');
                 camposValidos = false;
             }
             // Validar si la identificación tiene más de 10 dígitos
             else if (identificacion.length > 10) {
-                $('#identificacion-error').text('La identificación no puede tener más de 10 dígitos.');
+                $('#identificacion-error').text('No puede tener más de 10 dígitos.');
                 camposValidos = false;
             }
             // Validar si la identificación es numérica
             else if (!$.isNumeric(identificacion)) {
-                $('#identificacion-error').text('La identificación debe ser un número entero.');
+                $('#identificacion-error').text('Debe ser un número entero.');
                 camposValidos = false;
             }
             else {
@@ -220,10 +213,16 @@
 
             // Validar el campo de teléfono
             var telefono = $('#Telefono').val().trim();
-            if (!telefono) {
+            if (telefono === '') {
                 $('#telefono-error').text('Campo obligatorio.');
                 camposValidos = false;
-            } else if (!$.isNumeric(telefono) || telefono.length !== 10) {
+            } else if (!$.isNumeric(telefono)) {
+                $('#telefono-error').text('Debe ser un número.');
+                camposValidos = false;
+            }else if (telefono < 0) {
+                    $('#telefono-error').text('No puede ser un número negativo.');
+                    camposValidos = false;
+            } else if (telefono.length !== 10) {
                 $('#telefono-error').text('Debe tener exactamente 10 dígitos.');
                 camposValidos = false;
             }
@@ -265,7 +264,7 @@
                 success: function (data) {
                     if (data.success) {
                         // Redirige con el mensaje en el QueryString
-                        window.location.href = data.redirectUrl + "?mensaje=Cliente+registrado+correctamente";
+                        window.location.href = data.redirectUrl;
                     } else if (data.errors) {
                         $('#cliente-existe').text(data.errors.MensajeError || '');
                     }
@@ -282,34 +281,31 @@
 
 <style>
 
-    /* Espacio para los mensajes de error */
+     .data-field .relative {
+        flex: 1;
+        max-width: 200px;
+     }
+
     .error-message {
+        margin-top: 0;
         color: #d9534f;
         font-size: 0.7rem;
-        margin-left: 10px;
-        line-height: 1;
-        min-height: 1em; 
-        display: block;
+        position: absolute;
+        right: -5px;
+        top: 50%;
+        transform: translateY(-50%);
+        white-space: normal;
+        line-height: 1.2;
+        max-width: 95px;
     }
 
-    .text-danger {
-        color: #d9534f; 
-        font-size: 0.7rem;
-        margin-left: 10px; 
+    #fecha-error{
+        right:-50%;
     }
 
-    .datapicker-styles {
-        margin-right: 15px; 
-    }
-
-    input[type="text"], select {
-        width: 100%; 
-        max-width: 400px;
-        padding: 10px;
-        font-size: 1rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
+    .form-field {
+        position: relative;
+        padding-right: 95px;
     }
 
     .custom-select {
@@ -326,30 +322,12 @@
         background-position: right 10px center;
         background-repeat: no-repeat;
         background-size: 15px;
-        height: 50px;
+        height: 40px; /* Altura ajustada para hacer el input más pequeño */
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-        .custom-select option {
-            text-align: center;
-            padding: 10px;
-            font-size: 1.2rem;
-        }
-
-    .alert.alert-danger {
-        position: absolute;
-        top: 120px;
-        right: 20px;
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        padding: 15px;
-        border-radius: 5px;
-        font-size: 16px;
-        z-index: 1000;
-    }
 </style>
 
 

@@ -8,12 +8,18 @@
     color: #EE1C25; font-size: 50px; font-style: italic; 
     font-weight: 900; line-height: 70px; word-wrap: break-word">CLIENTES</div>
 
-    <div class="filter-container">
-        <select id="filter" class="form-control custom-select">
-            <option value="all">Filtros</option>
-            <option value="option1">Opción 1</option>
-            <option value="option2">Opción 2</option>
-        </select>
+    <div class="filter-total-container">
+        <h3 class="total-text">Total encontrados: <span>n</span></h3>
+        <div class="filter-container">
+            <select id="filter" class="form-control custom-select">
+                <option value="all">Todos</option>
+                <option value="option1">Clientes premium</option>
+                <option value="option2">Clientes generales</option>
+                <option value="option2">Género Masculino</option>
+                <option value="option2">Género Femenino</option>
+                <option value="option2">Género No especificado</option>
+            </select>
+        </div>
     </div>
 
     <div class="table-container">
@@ -75,6 +81,26 @@
 </div>
 
 <style>
+
+    .filter-total-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+    }
+
+    .total-text {
+        margin-left: 30px;
+        font-size: 18px;
+    }
+
+    .filter-container {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+        min-width: 300px;
+        padding: 10px;
+    }
+
     .container-grande {
         display: flex;
         flex-direction: column;

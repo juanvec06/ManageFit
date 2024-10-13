@@ -25,13 +25,6 @@
         REGISTRAR ENTRENADOR
     </div>
 
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="alert alert-danger">
-            @ViewBag.ErrorMessage
-        </div>
-    }
-
     <div class="login-container">
         <div class="wrapper">
             <img class="cliente-img" src="/img/user.png" alt="Logo">
@@ -49,7 +42,7 @@
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Id" type="text" id="Identificacion">
-                    <span id="entrenador-existe" class="text-danger small-error-message"></span> <!-- Mensaje de entrenador existente -->
+                    <span id="entrenador-existe" class="text-danger error-message"></span> 
                     <span id="identificacion-error" class="text-danger error-message"></span>
                 </div>
 
@@ -58,7 +51,7 @@
                     <div class="relative">
                         <input id="contrato-datepicker" asp-for="fechaInicioContrato" type="date"
                                class="bg-white border border-gray-300 text-gray-900 text-sm
-    rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                placeholder="Seleccionar fecha">
                         <span id="fechaInicioContrato-error" class="text-danger error-message error-fecha"></span>
                     </div>
@@ -72,7 +65,7 @@
 
                 <div class="form-field form-field-especialidad">
                     <h4>Género:</h4>
-                    <select asp-for="Genero" class="form-control custom-select">
+                    <select asp-for="Genero" class="custom-select">
                         <option value="NE">No especificado</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
@@ -82,7 +75,7 @@
 
                 <div class="form-field form-field-especialidad">
                     <h4>Área de especialidad:</h4>
-                    <select asp-for="Especialidad" class="form-control custom-select">
+                    <select asp-for="Especialidad" class="custom-select">
                         <option value="Crossfit">Crossfit</option>
                         <option value="Fuerza">Fuerza</option>
                         <option value="Reducción de peso">Reducción de peso</option>
@@ -151,9 +144,13 @@
 
             let camposValidos = true;
 
-            // Validar el campo de Nombre
-            if ($('#Nombre').val().trim() === '') {
+            // Validar el campo de nombre
+            var nombre = $('#Nombre').val().trim();
+            if (!nombre) {
                 $('#nombre-error').text('Campo obligatorio.');
+                camposValidos = false;
+            } else if (nombre.length > 50) {
+                $('#nombre-error').text('No puede exceder los 50 caracteres.');
                 camposValidos = false;
             }
 
@@ -173,33 +170,41 @@
                 camposValidos = false;
             }
 
-
             // Validar la fecha de contratación
             var fechaContrato = $('#contrato-datepicker').val(); // Obtén el valor del input
+            console.log("Fecha ingresada:", fechaContrato); // Mostrar la fecha ingresada
+
             if (!fechaContrato) {
                 $('#fechaInicioContrato-error').text('Campo obligatorio.'); // Mensaje de campo vacío
                 camposValidos = false; // Campo no válido
-            } 
+            } else {
+                // Obtener la fecha de la forma '2024-10-11'
+                var partesFecha = fechaContrato.split('-'); // La fecha llega en formato YYYY-MM-DD
+                console.log("Partes de la fecha:", partesFecha); // Mostrar las partes separadas de la fecha
 
-            /* POR COMPLETAR porque hay problemas con el formato de la fecha
-            else {
-                // Obtener la fecha de la forma '10/10/2024'
-                var partesFecha = fechaContrato.split('/'); // Suponiendo que llega en formato DD/MM/YYYY
                 if (partesFecha.length === 3) {
                     // Convertir la fecha a un formato válido para JavaScript
-                    var dia = parseInt(partesFecha[0], 10);
+                    var año = parseInt(partesFecha[0], 10);
                     var mes = parseInt(partesFecha[1], 10) - 1; // Los meses en JavaScript son 0-indexed
-                    var año = parseInt(partesFecha[2], 10);
+                    var dia = parseInt(partesFecha[2], 10);
+
+                    // Imprimir los valores de día, mes y año para ver si están correctos
+                    console.log("Día:", dia, "Mes:", mes + 1, "Año:", año);
 
                     // Verificar que los valores sean válidos
                     if (isNaN(dia) || isNaN(mes) || isNaN(año)) {
-                        $('#fechaInicioContrato-error').text('Formato de fecha inválido.'); // Mensaje de formato inválido
-                        camposValidos = false; // Campo no válido
+                        $('#fechaInicioContrato-error').text('Formato de fecha inválido.');
+                        camposValidos = false;
                     } else {
                         var fechaContratoDate = new Date(año, mes, dia); // Crea el objeto de fecha
+                        console.log("Objeto Date creado para fecha de contratación:", fechaContratoDate);
+
                         var hoy = new Date(); // Obtiene la fecha actual
                         hoy.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
                         fechaContratoDate.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
+
+                        console.log("Fecha de contratación comparada:", fechaContratoDate);
+                        console.log("Fecha actual comparada:", hoy);
 
                         // Comparar las fechas
                         if (fechaContratoDate.getTime() !== hoy.getTime()) {
@@ -209,14 +214,11 @@
                     }
                 } else {
                     $('#fechaInicioContrato-error').text('Formato de fecha inválido.'); // Mensaje de formato inválido
-                    camposValidos = false; // Campo no válido
+                    camposValidos = false;
                 }
             }
-            */
 
-
-
-            // Validar el campo de Teléfono
+            // Validar el campo de teléfono
             var telefono = $('#Telefono').val().trim();
             if (telefono === '') {
                 $('#telefono-error').text('Campo obligatorio.');
@@ -224,11 +226,11 @@
             } else if (!$.isNumeric(telefono)) {
                 $('#telefono-error').text('Debe ser un número.');
                 camposValidos = false;
+            } else if (telefono < 0) {
+                $('#telefono-error').text('No puede ser un número negativo.');
+                camposValidos = false;
             } else if (telefono.length !== 10) {
                 $('#telefono-error').text('Debe tener exactamente 10 dígitos.');
-                camposValidos = false;
-            } else if (telefono < 0) {
-                $('#telefono-error').text('El teléfono no puede ser un número negativo.');
                 camposValidos = false;
             }
 
@@ -254,7 +256,7 @@
                 $('#contraseña-error').text('Campo obligatorio.');
                 camposValidos = false;
             } else if (contraseña.length > 20) {
-                $('#contraseña-error').text('La contraseña no puede exceder los 20 caracteres.');
+                $('#contraseña-error').text('No puede exceder los 20 caracteres.');
                 camposValidos = false;
             }
 
@@ -267,17 +269,22 @@
                     Telefono: telefono,
                     Genero: $('#Genero').val(),
                     Especialidad: $('#Especialidad').val(),
-                    Salario: salario,
-                    Contraseña: contraseña
+                    Salario: $('#Salario').val(),
+                    Contraseña: $('#Contraseña').val()
                 };
 
+                // Envía los datos mediante AJAX
                 $.ajax({
                     url: '@Url.Action("RegistrarEntrenador", "Entrenador")',
                     type: 'POST',
                     data: formData,
-                    success: function (response) {
-                        // Maneja la respuesta según sea necesario
-                        window.location.href = '@Url.Action("DashboardAdministrador", "Admin")'; // Redirige a otra página
+                    success: function (data) {
+                        if (data.success) {
+                            // Redirige con el mensaje en el QueryString
+                            window.location.href = data.redirectUrl + "?mensaje=Entrenador+registrado+correctamente";
+                        } else if (data.errors) {
+                            $('#entrenador-existe').text(data.errors.MensajeError || '');
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error("Error al guardar el entrenador:", error);
@@ -290,72 +297,54 @@
 
 <style>
 
-
     .data-field {
-        display: flex; 
-        align-items: center; 
-        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
     }
 
         .data-field .relative {
-            flex: 1; /* Permite que el contenedor de entrada ocupe el espacio restante */
-            max-width: 400px; /* Opcional: un ancho máximo para el input */
+            flex: 1; 
+            max-width: 400px; 
         }
 
     .error-message {
         margin-top: 0;
         color: #d9534f;
-        font-size: 0.9rem;
-        position: absolute;
-        right: 3px;
-        top: 50%;
-        transform: translateY(-50%);
-        white-space: nowrap;
-        max-width: 150px;
-    }
-
-    .small-error-message { /* Estilo para mensajes pequeños */
-        font-size: 0.8rem;
-        position: relative;
-        margin-top: 5px; /* Espacio adicional si es necesario */
-    }
-
-    .alert.alert-danger {
-        position: absolute;
-        top: 120px;
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        padding: 15px;
-        border-radius: 5px;
-        font-size: 16px;
-        z-index: 1000;
+        font-size: 0.7rem;
+        position: absolute; 
+        right: -5px; 
+        top: 50%; 
+        transform: translateY(-50%); 
+        white-space: normal; 
+        line-height: 1.2; 
+        max-width: 95px; 
     }
 
     .form-field {
-        position: relative;
-        padding-right: 150px;
+        position: relative; 
+        padding-right: 95px; 
     }
 
     #contrato-datepicker {
-        max-width: 200px; 
-        width: auto; 
+        min-width: 190px;
+        width: auto;
     }
 
     input[type="text"],
     select {
-        width: 100%; /* Llenar todo el contenedor */
+        width: 100%; 
         padding: 10px;
         font-size: 1rem;
         border-radius: 8px;
         border: 1px solid #ccc;
         box-sizing: border-box;
-        margin-bottom: 5px; /* Espacio adicional en la parte inferior del input */
+        margin-bottom: 5px; 
     }
 
     .custom-select {
         text-align: center;
-        text-align-last: center;
+        text-align-last: center; /* Asegura que el texto seleccionado esté centrado */
         border-radius: 20px;
         padding: 0;
         font-size: 1.2rem;
@@ -368,13 +357,15 @@
         background-size: 15px;
         height: 50px;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        align-items: center; /* Centra el contenido verticalmente */
+        justify-content: center; /* Centra el contenido horizontalmente */
     }
 
         .custom-select option {
-            text-align: center;
-            padding: 10px;
+            color: black; /* Cambia el color del texto de las opciones */
             font-size: 1.2rem;
+            text-align: center; /* Centra el texto de las opciones */
         }
+
+
 </style>

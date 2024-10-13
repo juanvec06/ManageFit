@@ -26,9 +26,9 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegistrarEntrenador(EntrenadorModel Entrenador)
+        public JsonResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {
-            // Verifica que los datos del usuario estén disponibles.
+            // Obtener el usuario actual
             Entrenador.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
             if (ModelState.IsValid)
@@ -38,35 +38,34 @@ namespace NET_MVC.Controllers
                     var respuesta = consulta.RegistrarEntrenador(Entrenador);
                     if (respuesta)
                     {
-                        TempData["MensajeValidacion"] = "Entrenador registrado correctamente";
-                        return RedirectToAction("DashboardAdministrador", "Admin");
+                        TempData["SuccessMessage"] = "Entrenador registrado correctamente";
+
+                        // Si se necesita redirigir a otra vista, como en el caso de membresía
+                        return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                     }
                     else
                     {
-                        ViewBag.ErrorMessage = "Error al registrar el entrenador.";
-                        return View(Entrenador);
+                        return Json(new { success = false, errors = new { MensajeError = "Error al registrar entrenador" } });
                     }
                 }
                 catch (OracleException oex)
                 {
-                    if (oex.Number == -20002) // Ejemplo de error para entrenador existente
+                    if (oex.Number == -20002) // Error de entrenador existente
                     {
-                        ViewBag.ErrorMessage = "Entrenador existente";
-                        return View(Entrenador);
+                        return Json(new { success = false, errors = new { MensajeError = "Entrenador existente" } });
                     }
                     else
                     {
-                        ViewBag.ErrorMessage = "Error inesperado: " + oex.Message;
-                        return View(Entrenador);
+                        return Json(new { success = false, errors = new { MensajeError = "Error inesperado: " + oex.Message } });
                     }
                 }
                 catch (Exception ex)
                 {
-                    ViewBag.ErrorMessage = ex.Message;
-                    return View(Entrenador);
+                    return Json(new { success = false, errors = new { MensajeError = ex.Message } });
                 }
             }
-            return View(Entrenador); // En caso de que la validación falle
+
+            return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
 
         [HttpPost]

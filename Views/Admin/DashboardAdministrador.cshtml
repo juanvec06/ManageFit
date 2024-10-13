@@ -3,11 +3,42 @@
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
 
-@if (Context.Request.Query.ContainsKey("mensaje"))
-{
-    <div class="alert alert-success">
-        @Context.Request.Query["mensaje"]
-    </div>
-}
+<div class="container-flex">
 
-<img class="user-img" src="/img/user.png" alt="boton de salida">
+    <img class="user-img" src="/img/user.png" alt="boton de salida">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success tempdata-message">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+</div>
+
+
+<style>
+
+    .container-flex {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+   
+    .user-img {
+        width: 150px; 
+        height: auto; 
+        margin-right: 20px; 
+    }
+
+    .tempdata-message {
+        background-color: transparent;
+        border: none;
+        color: #EE1C25;
+        font-size: 24px;
+        font-weight: 900;
+        font-style: italic;
+        word-wrap: break-word;
+        text-transform: uppercase; 
+    }
+</style>

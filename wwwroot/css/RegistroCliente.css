@@ -25,39 +25,6 @@
     right: 80%;
 }
 
-.form-field, .data-field {
-    display: flex;
-    align-items: center;
-    margin-left: 50px;
-}
-
-    .form-field h4, .data-field h4 {
-        margin-right: 15px;
-        padding: 8px;
-        background-color: #969393;
-        border-radius: 10px;
-        color: black;
-        white-space: nowrap;
-    }
-
-.wrapper .form-field input {
-    margin-bottom: 10px;
-    width: 100%;
-    border: none;
-    outline: none;
-    background: none;
-    font-size: 1.2rem;
-    padding: 10px 10px;
-    background: white;
-    border-radius: 20px;
-    height: 40px;
-}
-
-.wrapper .datapicker-styles {
-    margin-bottom: 3%;
-    margin-left: 8%;
-}
-
 .wrapper .btn {
     background-color: red;
     color: white;
@@ -94,32 +61,6 @@
 .wrapper a:hover {
     color: #039BE5;
 }
-
-.checkbox-container {
-    display: flex;
-    align-items: center;
-}
-
-    .checkbox-container input[type="checkbox"] {
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        margin-right: 5px;
-        appearance: none;
-        background-color: #fff;
-        cursor: pointer;
-    }
-
-        .checkbox-container input[type="checkbox"]:checked {
-            background-color: #EE1C25;
-            border-color: #EE1C25;
-        }
-
-    .checkbox-container label {
-        font-size: 15px;
-        font-weight: 500;
-    }
-
 @media(max-width: 380px) {
     .wrapper {
         margin: 30px 20px;

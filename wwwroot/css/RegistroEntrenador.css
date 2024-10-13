@@ -30,7 +30,6 @@
 .form-field, .data-field {
     display: flex;
     align-items: center;
-    margin-left: 50px;
 }
 
 
@@ -98,70 +97,6 @@
 .wrapper a:hover {
     color: #039BE5;
 }
-
-.checkbox-container {
-    display: flex;
-    align-items: center;
-}
-
-.form-field-especialidad {
-    margin-bottom: 8px; 
-}
-
-.form-field select {
-    margin-bottom: 8px;
-    width: 100%;
-    border: none;
-    outline: none;
-    background: white;
-    font-size: 1.2rem;
-    padding: 10px 10px;
-    background: white;
-    border-radius: 20px;
-    height: 40px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpolygon fill='%23666' points='70,120 130,40 10,40'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 10px;
-    color: #666; 
-    text-indent: 0; 
-}
-
-    .form-field select:invalid {
-        color: transparent;
-    }
-
-    .form-field select option {
-        color: black; 
-    }
-
-        .form-field select option[value=""][disabled] {
-            display: none; 
-        }
-
-
-    .checkbox-container input[type="checkbox"] {
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        margin-right: 5px;
-        appearance: none;
-        background-color: #fff;
-        cursor: pointer;
-    }
-
-        .checkbox-container input[type="checkbox"]:checked {
-            background-color: #EE1C25;
-            border-color: #EE1C25;
-        }
-
-    .checkbox-container label {
-        font-size: 15px; 
-        font-weight: 500; 
-    }
 
 @media(max-width: 380px) {
     .wrapper {

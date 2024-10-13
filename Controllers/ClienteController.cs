@@ -42,7 +42,6 @@ namespace NET_MVC.Controllers
                     {
                         TempData["SuccessMessage"] = "Cliente registrado correctamente";
 
-
                         if (Cliente.refMembresia == "Premium")
                         {
                             return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
