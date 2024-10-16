@@ -1,8 +1,6 @@
 ﻿namespace NET_MVC.Models
 {
-    using System.ComponentModel.DataAnnotations;
-
-    public class ClienteModel : Persona
+    public class ClienteModel : PersonaModel
     {
         public DateTime FechaNacimiento { get; set; }
         public int IdEntrenador { get; set; }
