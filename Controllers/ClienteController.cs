@@ -85,7 +85,6 @@ namespace NET_MVC.Controllers
             {
                 return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
             }
-
             bool clienteExiste = consulta.ClienteExiste(identificacion);
             return Json(new { existe = clienteExiste });
         }

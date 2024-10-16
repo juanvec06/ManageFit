@@ -29,7 +29,9 @@ namespace NET_MVC.Controllers
         public JsonResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {
             // Obtener el usuario actual
-            Entrenador.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            string usuario = User.FindFirst(ClaimTypes.Name)?.Value;
+            Entrenador.IdSede = int.Parse(usuario);
 
             if (ModelState.IsValid)
             {
@@ -80,7 +82,6 @@ namespace NET_MVC.Controllers
             bool entrenadorExiste = consulta.EntrenadorExiste(identificacion);
             return Json(new { existe = entrenadorExiste });
         }
-
 
     }
 }

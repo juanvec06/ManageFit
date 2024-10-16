@@ -20,11 +20,10 @@ namespace NET_MVC.Datos
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        // Castear
-                        int id = int.Parse(cliente.Identificacion);
+
                         // Agregar parámetros para el procedimiento almacenado
 
-                        cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion; 
+                        cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Id; 
                         cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = cliente.IdSede;
                         cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = null; 
                         cmd.Parameters.Add("p_nombre_cliente", OracleDbType.Varchar2).Value = cliente.Nombre;
@@ -32,13 +31,15 @@ namespace NET_MVC.Datos
                         cmd.Parameters.Add("p_telefono_cliente", OracleDbType.Varchar2).Value = cliente.Telefono;
                         cmd.Parameters.Add("p_genero_cliente", OracleDbType.Char).Value = cliente.Genero;
 
+
+
                         // Ejecutar el procedimiento almacenado
                         cmd.ExecuteNonQuery();
                     }
                         using (OracleCommand cmdMembresia = new OracleCommand("insertar_membresia", conexionBD))
                         {
                             cmdMembresia.CommandType = System.Data.CommandType.StoredProcedure;
-                            cmdMembresia.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion;
+                            cmdMembresia.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Id;
                             cmdMembresia.Parameters.Add("p_tipo", OracleDbType.Varchar2).Value = cliente.refMembresia;
                             cmdMembresia.Parameters.Add("p_fecha_suscripcion", OracleDbType.Date).Value = DateTime.Now;
 
@@ -95,9 +96,5 @@ namespace NET_MVC.Datos
             }
             return existe;
         }
-
-
-
-
     }
 }

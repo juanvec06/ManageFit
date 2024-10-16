@@ -6,52 +6,52 @@ namespace NET_MVC.Datos
     public class AdmEntrenador
     {
         public OracleConnection conexionBD = Conexion.GetConnection();
-
         public bool RegistrarEntrenador(EntrenadorModel entrenador)
         {
             bool rpta = false;
             try
             {
-                if (Conexion.abrirConexion())
+                if (Conexion.abrirConexion())  // Asegúrate de que el método abrirConexion() funcione correctamente y devuelva una conexión válida
                 {
-                    //llamada a procedimiento almacenado en base de datos 
-                    using (OracleCommand cmd = new OracleCommand("insertar_Entrenador", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand("insertar_Entrenador", conexionBD)) // Asegúrate de que 'conexionBD' esté bien inicializada
                     {
-                        // Especifica que es un procedimiento
+                        // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        //Transformar
-                        int id = int.Parse(entrenador.Id);
+                        // Transformar los datos que vienen del modelo
                         int salario = int.Parse(entrenador.Salario);
-                        int idSede = int.Parse(entrenador.IdSede);
-                        // Agrega los parámetros de entrada
-                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = id;
-                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
+
+                        // Agregar los parámetros de entrada al procedimiento almacenado
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = entrenador.Id;
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = entrenador.IdSede;
                         cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2).Value = entrenador.Nombre;
                         cmd.Parameters.Add("p_genero", OracleDbType.Varchar2).Value = entrenador.Genero;
                         cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2).Value = entrenador.Telefono;
                         cmd.Parameters.Add("p_nombreAE", OracleDbType.Varchar2).Value = entrenador.Especialidad;
                         cmd.Parameters.Add("p_salario", OracleDbType.Int32).Value = salario;
-                        cmd.Parameters.Add("p_fechaContrato", OracleDbType.Date).Value = entrenador.fechaInicioContrato;
+                        cmd.Parameters.Add("p_fechaContrato", OracleDbType.Date).Value = entrenador.fechaInicioContrato ;
                         cmd.Parameters.Add("p_contraseña", OracleDbType.Varchar2).Value = entrenador.Contraseña;
 
+                        // Ejecutar el procedimiento almacenado
                         cmd.ExecuteNonQuery();
 
+                        // Si la ejecución llega aquí sin errores, marcamos como éxito
+                        rpta = true;
                     }
-                    rpta = true;
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                // Manejo de errores
+                throw new Exception("Error al registrar entrenador: " + ex.Message);
             }
             finally
             {
+                // Asegurarse de cerrar la conexión
                 Conexion.cerrarConexion();
             }
             return rpta;
         }
-
         public bool EntrenadorExiste(string identificacion)
         {
             bool existe = false;

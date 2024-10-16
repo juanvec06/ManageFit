@@ -2,13 +2,8 @@
 
 namespace NET_MVC.Models
 {
-    public class EntrenadorModel
+    public class EntrenadorModel : Persona
     {
-        public required string Id { get; set; }
-        public string? IdSede { get; set; }
-        public required string Nombre { get; set; }
-        public required string Genero { get; set; }
-        public required string Telefono { get; set; }
         public required string Especialidad { get; set; }
         public required string Salario { get; set; }
         public required DateTime fechaInicioContrato { get; set; }
