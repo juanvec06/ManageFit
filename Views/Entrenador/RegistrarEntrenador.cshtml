@@ -66,22 +66,24 @@
                 <div class="form-field form-field-especialidad">
                     <h4>Género:</h4>
                     <select asp-for="Genero" class="custom-select">
+                        <option value="">Seleccione Género</option>
                         <option value="NE">No especificado</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                     </select>
-                    <span asp-validation-for="Genero" class="text-danger error-message"></span>
+                    <span id="genero-error" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field form-field-especialidad">
                     <h4>Área de especialidad:</h4>
                     <select asp-for="Especialidad" class="custom-select">
+                        <option value="">Seleccione Especialidad</option>
                         <option value="Crossfit">Crossfit</option>
                         <option value="Fuerza">Fuerza</option>
                         <option value="Reducción de peso">Reducción de peso</option>
                         <option value="Culturismo">Culturismo</option>
                     </select>
-                    <span asp-validation-for="Especialidad" class="text-danger error-message"></span>
+                    <span id="especialidad-error" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
@@ -170,53 +172,40 @@
                 camposValidos = false;
             }
 
+
             // Validar la fecha de contratación
             var fechaContrato = $('#contrato-datepicker').val(); // Obtén el valor del input
-            console.log("Fecha ingresada:", fechaContrato); // Mostrar la fecha ingresada
-
             if (!fechaContrato) {
                 $('#fechaInicioContrato-error').text('Campo obligatorio.'); // Mensaje de campo vacío
                 camposValidos = false; // Campo no válido
             } else {
-                // Obtener la fecha de la forma '2024-10-11'
-                var partesFecha = fechaContrato.split('-'); // La fecha llega en formato YYYY-MM-DD
-                console.log("Partes de la fecha:", partesFecha); // Mostrar las partes separadas de la fecha
-
+                // Obtener la fecha seleccionada en formato YYYY-MM-DD
+                var partesFecha = fechaContrato.split('-');
                 if (partesFecha.length === 3) {
-                    // Convertir la fecha a un formato válido para JavaScript
                     var año = parseInt(partesFecha[0], 10);
-                    var mes = parseInt(partesFecha[1], 10) - 1; // Los meses en JavaScript son 0-indexed
+                    var mes = parseInt(partesFecha[1], 10) - 1; // Meses en JavaScript son 0-indexed
                     var dia = parseInt(partesFecha[2], 10);
 
-                    // Imprimir los valores de día, mes y año para ver si están correctos
-                    console.log("Día:", dia, "Mes:", mes + 1, "Año:", año);
+                    var fechaContratoDate = new Date(año, mes, dia); // Crear la fecha seleccionada
+                    var hoy = new Date(); // Fecha actual
+                    hoy.setHours(0, 0, 0, 0); // Para comparar solo la fecha sin horas
+                    var limite = new Date(hoy);
+                    limite.setDate(hoy.getDate() + 7); // Fecha límite (7 días desde hoy)
 
-                    // Verificar que los valores sean válidos
-                    if (isNaN(dia) || isNaN(mes) || isNaN(año)) {
-                        $('#fechaInicioContrato-error').text('Formato de fecha inválido.');
-                        camposValidos = false;
-                    } else {
-                        var fechaContratoDate = new Date(año, mes, dia); // Crea el objeto de fecha
-                        console.log("Objeto Date creado para fecha de contratación:", fechaContratoDate);
-
-                        var hoy = new Date(); // Obtiene la fecha actual
-                        hoy.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
-                        fechaContratoDate.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
-
-                        console.log("Fecha de contratación comparada:", fechaContratoDate);
-                        console.log("Fecha actual comparada:", hoy);
-
-                        // Comparar las fechas
-                        if (fechaContratoDate.getTime() !== hoy.getTime()) {
-                            $('#fechaInicioContrato-error').text('La fecha de contratación debe ser el día actual.');
-                            camposValidos = false; // Campo no válido
-                        }
+                    // Comparar la fecha seleccionada
+                    if (fechaContratoDate < hoy) {
+                        $('#fechaInicioContrato-error').text('Fecha inválida. No puede ser una fecha pasada.');
+                        camposValidos = false; // Campo no válido
+                    } else if (fechaContratoDate > limite) {
+                        $('#fechaInicioContrato-error').text('Fecha inválida. No puede ser más de una semana.');
+                        camposValidos = false; // Campo no válido
                     }
                 } else {
-                    $('#fechaInicioContrato-error').text('Formato de fecha inválido.'); // Mensaje de formato inválido
+                    $('#fechaInicioContrato-error').text('Formato de fecha inválido.');
                     camposValidos = false;
                 }
             }
+
 
             // Validar el campo de teléfono
             var telefono = $('#Telefono').val().trim();
@@ -257,6 +246,20 @@
                 camposValidos = false;
             } else if (contraseña.length > 20) {
                 $('#contraseña-error').text('No puede exceder los 20 caracteres.');
+                camposValidos = false;
+            }
+
+             // Validar el campo de género
+            var genero = $('#Genero').val();  // Define la variable 'genero'
+            if (!genero) {
+                $('#genero-error').text('Campo obligatorio.');
+                camposValidos = false;
+            }
+
+            // Validar el campo de Especialidad
+            var membresia = $('#Especialidad').val();  // Definir la variable 'membresia'
+            if (!membresia) {
+                $('#especialidad-error').text('Campo obligatorio.');
                 camposValidos = false;
             }
 
@@ -344,7 +347,7 @@
 
     .custom-select {
         text-align: center;
-        text-align-last: center; /* Asegura que el texto seleccionado esté centrado */
+        text-align-last: center; 
         border-radius: 20px;
         padding: 0;
         font-size: 1.2rem;
@@ -357,14 +360,14 @@
         background-size: 15px;
         height: 50px;
         display: flex;
-        align-items: center; /* Centra el contenido verticalmente */
-        justify-content: center; /* Centra el contenido horizontalmente */
+        align-items: center; 
+        justify-content: center; 
     }
 
         .custom-select option {
-            color: black; /* Cambia el color del texto de las opciones */
+            color: black; 
             font-size: 1.2rem;
-            text-align: center; /* Centra el texto de las opciones */
+            text-align: center; 
         }
 
 

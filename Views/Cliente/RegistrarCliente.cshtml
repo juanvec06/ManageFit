@@ -67,6 +67,7 @@
                 <div class="form-field">
                     <h4>Género:</h4>
                     <select asp-for="Genero" class="form-control custom-select">
+                        <option value="">Seleccione Género</option> 
                         <option value="NE">No especificado</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
@@ -78,6 +79,7 @@
                 <div class="form-field">
                     <h4>Membresía:</h4>
                     <select asp-for="refMembresia" class="form-control custom-select">
+                        <option value="">Seleccione Membresía</option>
                         <option value="General">Plan General</option>
                         <option value="Premium">Plan Premium</option>
                     </select>
@@ -327,6 +329,69 @@
         align-items: center;
         justify-content: center;
     }
+
+    .form-field, .data-field {
+        display: flex;
+        align-items: center;
+    }
+
+    .wrapper .datapicker-styles {
+        margin-bottom: 2%;
+    }
+
+        .form-field h4, .data-field h4 {
+            margin-right: 15px;
+            padding: 8px;
+            background-color: #969393;
+            border-radius: 10px;
+            color: black;
+            white-space: nowrap;
+        }
+
+
+    .wrapper .form-field input {
+        margin-bottom: 8px;
+        width: 100%;
+        border: none;
+        outline: none;
+        background: none;
+        font-size: 1.2rem;
+        padding: 10px 10px;
+        background: white;
+        border-radius: 20px;
+        height: 40px;
+    }
+
+
+    .wrapper .btn {
+        background-color: red;
+        color: white;
+        padding: 10px 10px;
+        text-decoration: none;
+        justify-content: center;
+        align-items: center;
+        display: inline-flex;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        width: 200px;
+        height: 45px;
+        padding: 10px;
+        font-family: Inter, sans-serif;
+        font-weight: bold;
+        background: #EE1C25;
+        border-radius: 40px;
+        font-weight: bold;
+        line-height: 70px;
+        word-wrap: break-word;
+        font-size: 20px;
+        font-style: italic;
+        margin-left: 130px;
+        position: absolute;
+        bottom: 20px;
+        left: 64%;
+    }
+
 
 </style>
 
