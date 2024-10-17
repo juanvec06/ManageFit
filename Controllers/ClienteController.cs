@@ -11,6 +11,7 @@ namespace NET_MVC.Controllers
     [Authorize]
     public class ClienteController : Controller
     {
+        OracleConnection conexionBD = Conexion.GetConnection();
         AdmPersona consulta = new AdmPersona();
         AdmCliente consultaCliente = new AdmCliente();
 
@@ -95,11 +96,17 @@ namespace NET_MVC.Controllers
         private List<EntrenadorModel> ObtenerEntrenadoresDisponibles()
         {
             var entrenadores = new List<EntrenadorModel>();
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
             if (Conexion.abrirConexion())
             {
-                string sql = "SELECT ID_ENTRENADOR, MAX(NOMBRE_ENTRENADOR) NOMBRE_ENTRENADOR ,MAX(nombre_especialidad) AREA_ESPECIALIDAD, COUNT(*) CLIENTES_ASIGNADOS FROM ENTRENADOR NATURAL JOIN areaespecialidad NATURAL JOIN CLIENTE GROUP BY id_entrenador HAVING COUNT(*) < 5";
 
+                string sql = "SELECT e.id_entrenador, MAX(p.nombre_persona) AS nombre_entrenador, MAX(nombre_ae) area_especialidad, COUNT(c.id_cliente) AS num_clientes " +
+                    "FROM ENTRENADOR e INNER JOIN PERSONA p ON e.id_entrenador = p.id_persona " +
+                    "INNER JOIN AREAESPECIALIDAD ae ON e.id_ae = ae.id_ae\r\nLEFT JOIN CLIENTE c ON c.id_entrenador = e.id_entrenador " +
+                    "WHERE p.id_sede = " +IdSede+
+                    "GROUP BY e.id_entrenador " +
+                    "HAVING COUNT(c.id_cliente) < 5";  //muestra entrenadores disponibles(que no tengan más de 5 clientes asignado) de la sede 
                 using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
                 {
                     OracleDataReader reader = cmd.ExecuteReader();
@@ -107,10 +114,10 @@ namespace NET_MVC.Controllers
                     {
                         EntrenadorModel entrenador = new EntrenadorModel
                         {
-                            Id = reader["ID_ENTRENADOR"].ToString(),
-                            Nombre = reader["NOMBRE"].ToString(),
+                            Identificacion = reader["ID_ENTRENADOR"].ToString(),
+                            Nombre = reader["NOMBRE_ENTRENADOR"].ToString(),
                             Especialidad = reader["AREA_ESPECIALIDAD"].ToString(),
-                            ClientesAsignados = Convert.ToInt32(reader["CLIENTES_ASIGNADOS"])
+                            ClientesAsignados = Convert.ToInt32(reader["NUM_CLIENTES"])
                         };
                         entrenadores.Add(entrenador);
                     }
