@@ -20,18 +20,12 @@ namespace NET_MVC.Datos
                         // Especifica que es un procedimiento
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        //Transformar
-                        int id = int.Parse(entrenador.Id);
-                        int salario = int.Parse(entrenador.Salario);
-                        int idSede = int.Parse(entrenador.IdSede);
+                        //Castear
+                        int id = int.Parse(entrenador.Identificacion);
                         // Agrega los parámetros de entrada
                         cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = id;
-                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
-                        cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2).Value = entrenador.Nombre;
-                        cmd.Parameters.Add("p_genero", OracleDbType.Varchar2).Value = entrenador.Genero;
-                        cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2).Value = entrenador.Telefono;
                         cmd.Parameters.Add("p_nombreAE", OracleDbType.Varchar2).Value = entrenador.Especialidad;
-                        cmd.Parameters.Add("p_salario", OracleDbType.Int32).Value = salario;
+                        cmd.Parameters.Add("p_salario", OracleDbType.Int32).Value = entrenador.Salario;
                         cmd.Parameters.Add("p_fechaContrato", OracleDbType.Date).Value = entrenador.fechaInicioContrato;
                         cmd.Parameters.Add("p_contraseña", OracleDbType.Varchar2).Value = entrenador.Contraseña;
 
@@ -51,38 +45,5 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-
-        public bool EntrenadorExiste(string identificacion)
-        {
-            bool existe = false;
-
-            if (!int.TryParse(identificacion, out int idEntrenador))
-            {
-                throw new Exception("La identificación debe ser un número entero válido.");
-            }
-
-            try
-            {
-                if (Conexion.abrirConexion())
-                {
-                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM ENTRENADOR WHERE id_entrenador = :id", conexionBD))
-                    {
-                        cmd.Parameters.Add(new OracleParameter("id", idEntrenador));
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
-                        existe = count > 0;
-                    }
-                }
-            }
-            catch (OracleException ex)
-            {
-                throw new Exception("Error en Oracle: " + ex.Message);
-            }
-            finally
-            {
-                Conexion.cerrarConexion();
-            }
-            return existe;
-        }
-
     }
 }

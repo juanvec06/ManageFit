@@ -11,8 +11,9 @@ namespace NET_MVC.Controllers
     [Authorize]
     public class ClienteController : Controller
     {
-        public OracleConnection conexionBD = Conexion.GetConnection();
-        AdmCliente consulta = new AdmCliente();
+        AdmPersona consulta = new AdmPersona();
+        AdmCliente consultaCliente = new AdmCliente();
+
         public IActionResult Registrar()
         {
             return View("RegistrarCliente");
@@ -32,15 +33,15 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public JsonResult RegistrarCliente(ClienteModel Cliente)
         {
-            string usuario = User.FindFirst(ClaimTypes.Name)?.Value;
-            Cliente.IdSede = int.Parse(usuario);
+            Cliente.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var respuesta = consulta.RegistrarCliente(Cliente);
-                    if (respuesta)
+                    var respuesta = consulta.RegistrarPersona(Cliente);
+                    var respuesta2 = consultaCliente.RegistrarCliente(Cliente);
+                    if (respuesta && respuesta2)
                     {
                         TempData["SuccessMessage"] = "Cliente registrado correctamente";
 
@@ -88,7 +89,7 @@ namespace NET_MVC.Controllers
                 return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
             }
 
-            bool clienteExiste = consulta.ClienteExiste(identificacion);
+            bool clienteExiste = consulta.PersonaExiste(identificacion);
             return Json(new { existe = clienteExiste });
         }
         private List<EntrenadorModel> ObtenerEntrenadoresDisponibles()
@@ -120,5 +121,5 @@ namespace NET_MVC.Controllers
     }
 }
 
-    
+
 

@@ -10,11 +10,14 @@ namespace NET_MVC.Controllers
     [Authorize]
     public class EntrenadorController : Controller
     {
+        AdmPersona consulta = new AdmPersona();
+        AdmEntrenador consultaEntrenador = new AdmEntrenador();
+
         public IActionResult DashboardEntrenador()
         {
             return View(); // Devuelve la vista Login.cshtml
         }
-        AdmEntrenador consulta = new AdmEntrenador();
+
         public IActionResult RegistrarEntrenador()
         {
             return View("RegistrarEntrenador");
@@ -29,14 +32,16 @@ namespace NET_MVC.Controllers
         public JsonResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {
             // Obtener el usuario actual
-            Entrenador.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+            string idsede = User.FindFirst(ClaimTypes.Name)?.Value;
+            Entrenador.IdSede = idsede;
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var respuesta = consulta.RegistrarEntrenador(Entrenador);
-                    if (respuesta)
+                    var respuesta = consulta.RegistrarPersona(Entrenador);
+                    var respuesta2 = consultaEntrenador.RegistrarEntrenador(Entrenador);
+                    if (respuesta && respuesta2)
                     {
                         TempData["SuccessMessage"] = "Entrenador registrado correctamente";
 
@@ -50,7 +55,7 @@ namespace NET_MVC.Controllers
                 }
                 catch (OracleException oex)
                 {
-                    if (oex.Number == -20002) // Error de entrenador existente
+                    if (oex.Number == -20002)
                     {
                         return Json(new { success = false, errors = new { MensajeError = "Entrenador existente" } });
                     }
@@ -77,7 +82,7 @@ namespace NET_MVC.Controllers
                 return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
             }
 
-            bool entrenadorExiste = consulta.EntrenadorExiste(identificacion);
+            bool entrenadorExiste = consulta.PersonaExiste(identificacion);
             return Json(new { existe = entrenadorExiste });
         }
 
