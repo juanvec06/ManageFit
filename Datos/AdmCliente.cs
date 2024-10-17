@@ -1,4 +1,5 @@
-﻿using NET_MVC.Models;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
 
 namespace NET_MVC.Datos
@@ -60,6 +61,47 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
             return rpta;
+        }
+
+        
+        public List<ClienteModel> ListarClientes(string sql)
+        {
+            var clientes = new List<ClienteModel>();
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    {
+                        OracleDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            ClienteModel objcliente = new ClienteModel
+                            {
+                                Identificacion = reader["id_cliente"].ToString(),
+                                Nombre = reader["nombre"].ToString(),
+                                Telefono = reader["telefono"].ToString(),
+                                refMembresia = reader["membresia"].ToString(),
+                                fechaMembresia = reader["fecha"].ToString(),
+                            };
+                            clientes.Add(objcliente);
+                        }
+                    }
+                }
+                return clientes;
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); //Cerrar la conexión
+            }
         }
     }
 }

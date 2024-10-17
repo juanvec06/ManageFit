@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<NET_MVC.Models.ClienteModel>
+
+@{
     ViewData["Title"] = "Listar Cliente";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
@@ -7,20 +9,23 @@
     <div class="text-Asignar" style="text-align: center; 
     color: #EE1C25; font-size: 50px; font-style: italic; 
     font-weight: 900; line-height: 70px; word-wrap: break-word">CLIENTES</div>
-
-    <div class="filter-total-container">
-        <h3 class="total-text">Total encontrados: <span>n</span></h3>
-        <div class="filter-container">
-            <select id="filter" class="form-control custom-select">
-                <option value="all">Todos</option>
-                <option value="option1">Clientes premium</option>
-                <option value="option2">Clientes generales</option>
-                <option value="option2">Género Masculino</option>
-                <option value="option2">Género Femenino</option>
-                <option value="option2">Género No especificado</option>
-            </select>
+    
+    <form asp-action="Filtrar" asp-controller="Cliente" method="post" class="form p-3 mt-3">
+        <div class="filter-total-container">
+            <h3 class="total-text">Total encontrados: <span>@ViewBag.TotalClientes</span></h3>
+            <div class="filter-container">
+                <select id="filter" name="filter" class="form-control custom-select">
+                    <option value="all">Todos</option>
+                    <option value="option1">Clientes Premium</option>
+                    <option value="option2">Clientes Generales</option>
+                    <option value="option3">Género Masculino</option>
+                    <option value="option4">Género Femenino</option>
+                    <option value="option5">Género No especificado</option>
+                </select>
+            </div>
         </div>
-    </div>
+        <button type="submit" class="btn mt-3">Filtrar</button>
+    </form>
 
     <div class="table-container">
         <table class="table table-bordered">
@@ -30,54 +35,23 @@
                     <th>Nombre</th>
                     <th>Telefono</th>
                     <th>Membresia</th>
-                    <th>Días restantes de membresía</th>
+                    <th>Fecha de unión</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Juan</td>
-                    <td>1234567890</td>
-                    <td>Premium</td>
-                    <td>15</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-               
-                </tr>
+                @foreach (var entrenador in Model)
+                {
+                    <tr>
+                        <td>@entrenador.Identificacion</td>
+                        <td>@entrenador.Nombre</td>
+                        <td>@entrenador.Telefono</td>
+                        <td>@entrenador.refMembresia</td>
+                        <td>@entrenador.fechaMembresia</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
-
-    <button type="button" class="btn mt-3">Filtrar</button>
 </div>
 
 <style>
