@@ -1,4 +1,5 @@
-﻿using NET_MVC.Models;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
 
 namespace NET_MVC.Datos
@@ -62,81 +63,45 @@ namespace NET_MVC.Datos
             return rpta;
         }
 
-        public ClienteModel ObtenerClientePorIdentificacion(string identificacion)
+        
+        public List<ClienteModel> ListarClientes(string sql)
         {
-            ClienteModel clienteEncontrado = null;
-
+            var clientes = new List<ClienteModel>();
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(
-                        "SELECT c.id_cliente, p.nombre_persona AS nombre, p.telefono_persona AS telefono, p.genero_persona AS genero, m.tipo, " +
-                        "calcular_dias_restantes(c.id_cliente) AS dias_restantes " +
-                        "FROM Cliente c " +
-                        "JOIN Persona p ON c.id_cliente = p.id_persona " +
-                        "JOIN Membresia m ON c.id_cliente = m.id_cliente " +
-                        "WHERE c.id_cliente = :p_id_cliente", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
                     {
-                        cmd.CommandType = System.Data.CommandType.Text;
-                        cmd.Parameters.Add(":p_id_cliente", OracleDbType.Int32).Value = int.Parse(identificacion);
-
-                        using (OracleDataReader reader = cmd.ExecuteReader())
+                        OracleDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
                         {
-                            if (reader.Read())
+                            ClienteModel objcliente = new ClienteModel
                             {
-                                clienteEncontrado = new ClienteModel
-                                {
-                                    Identificacion = reader["id_cliente"].ToString(),
-                                    Nombre = reader["nombre"].ToString(),
-                                    Telefono = reader["telefono"].ToString(),
-                                    Genero = reader["genero"].ToString(),
-                                    refMembresia = reader["tipo"].ToString(),
-                                    DiasRestantes = Convert.ToInt32(reader["dias_restantes"]) 
-                                };
-                            }
+                                Identificacion = reader["id_cliente"].ToString(),
+                                Nombre = reader["nombre"].ToString(),
+                                Telefono = reader["telefono"].ToString(),
+                                refMembresia = reader["membresia"].ToString(),
+                                fechaMembresia = reader["fecha"].ToString(),
+                            };
+                            clientes.Add(objcliente);
                         }
                     }
                 }
+                return clientes;
             }
             catch (OracleException oex)
             {
                 throw new Exception("Error en Oracle: " + oex.Message);
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
             finally
             {
-                Conexion.cerrarConexion();
+                Conexion.cerrarConexion(); //Cerrar la conexión
             }
-
-            return clienteEncontrado;
         }
-
-        public int ObtenerDiasRestantes(int idCliente)
-        {
-            int diasRestantes = -1;
-            try
-            {
-                if (Conexion.abrirConexion())
-                {
-                    using (OracleCommand cmd = new OracleCommand("SELECT calcular_dias_restantes(:p_id_cliente) FROM dual", conexionBD))
-                    {
-                        cmd.Parameters.Add(":p_id_cliente", OracleDbType.Int32).Value = idCliente;
-
-                        diasRestantes = Convert.ToInt32(cmd.ExecuteScalar());
-                    }
-                }
-            }
-            catch (OracleException oex)
-            {
-                throw new Exception("Error en Oracle: " + oex.Message);
-            }
-            finally
-            {
-                Conexion.cerrarConexion();
-            }
-
-            return diasRestantes;
-        } 
-
     }
 }

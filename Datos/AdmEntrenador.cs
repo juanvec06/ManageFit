@@ -1,5 +1,6 @@
 ﻿using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
+using System.Security.Claims;
 
 namespace NET_MVC.Datos
 {
@@ -45,5 +46,52 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
+
+        public List<EntrenadorModel> ListarEntrenadoresDisponibles(string IdSede)
+        {
+            var entrenadores = new List<EntrenadorModel>();
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    string sql = "SELECT e.id_entrenador, MAX(p.nombre_persona) AS nombre_entrenador, MAX(nombre_ae) area_especialidad, COUNT(c.id_cliente) AS num_clientes " +
+                        "FROM ENTRENADOR e INNER JOIN PERSONA p ON e.id_entrenador = p.id_persona " +
+                        "INNER JOIN AREAESPECIALIDAD ae ON e.id_ae = ae.id_ae\r\nLEFT JOIN CLIENTE c ON c.id_entrenador = e.id_entrenador " +
+                        "WHERE p.id_sede = " + IdSede +
+                        "GROUP BY e.id_entrenador " +
+                        "HAVING COUNT(c.id_cliente) < 5";  
+                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    {
+                        OracleDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            EntrenadorModel entrenador = new EntrenadorModel
+                            {
+                                Identificacion = reader["ID_ENTRENADOR"].ToString(),
+                                Nombre = reader["NOMBRE_ENTRENADOR"].ToString(),
+                                Especialidad = reader["AREA_ESPECIALIDAD"].ToString(),
+                                ClientesAsignados = Convert.ToInt32(reader["NUM_CLIENTES"])
+                            };
+                            entrenadores.Add(entrenador);
+                        }
+                    }
+                }
+                return entrenadores;
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); //Cerrar la conexión
+            }
+
+        }
+        
     }
 }

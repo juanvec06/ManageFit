@@ -11,8 +11,10 @@ namespace NET_MVC.Controllers
     [Authorize]
     public class ClienteController : Controller
     {
+        OracleConnection conexionBD = Conexion.GetConnection();
         AdmPersona consulta = new AdmPersona();
         AdmCliente consultaCliente = new AdmCliente();
+        AdmEntrenador consultaEntrenador = new AdmEntrenador();
 
         public IActionResult Registrar()
         {
@@ -21,7 +23,7 @@ namespace NET_MVC.Controllers
 
         public IActionResult Listar()
         {
-            return View("ListarCliente");
+            return View("ListarCliente", new List<ClienteModel> { });
         }
 
         public IActionResult InformacionCliente()
@@ -36,7 +38,8 @@ namespace NET_MVC.Controllers
 
         public IActionResult AsignarEntrenadorCliente()
         {
-            return View("AsignarEntrenadorCliente");
+            List<EntrenadorModel> entrenadores = ObtenerEntrenadoresDisponibles();
+            return View("AsignarEntrenadorCliente", entrenadores);
         }
 
         [HttpPost]
@@ -88,7 +91,6 @@ namespace NET_MVC.Controllers
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
 
-
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
         {
@@ -103,45 +105,120 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult BuscarCliente(string identificacion)
+        public ActionResult Filtrar(string filter)
         {
-            // Verificar que la identificación no esté vacía
-            if (string.IsNullOrWhiteSpace(identificacion))
+            // Lógica para filtrar clientes según el valor seleccionado
+            var clientesFiltrados = new List<ClienteModel>();
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            //Todos
+            string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
+                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                                "WHERE p.id_sede = " + IdSede +
+                                "GROUP BY c.id_cliente";
+
+            switch (filter)
             {
-                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
-                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+                case "all":
+                    break;
+                case "option1": // Clientes premium
+                    sql = cadenasql2(1, IdSede);
+                    break;
+                case "option2": // Clientes generales
+                    sql = cadenasql2(2, IdSede);
+                    break;
+                case "option3": // Género Masculino
+                    sql = cadenasql3(1, IdSede);
+                    break;
+                case "option4": // Género Femenino
+                    sql = cadenasql3(2, IdSede);
+                    break;
+                case "option5": // Género No especificado
+                    sql = cadenasql3(3, IdSede);
+                    break;
+                default:
+                    break;
             }
+            // Listar clientes con filtros
+            clientesFiltrados = ListarClientesFiltros(consultaCliente.ListarClientes(sql));
+            // Guardar el total de clientes filtrados en ViewBag
+            ViewBag.TotalClientes = clientesFiltrados.Count;
+            return View("ListarCliente", clientesFiltrados);
+        }
 
-            // Verificar si la identificación es numérica
-            if (!int.TryParse(identificacion, out _))
+        private List<ClienteModel> ListarClientesFiltros(List<ClienteModel> clientesFiltrados)
+        {
+            try
             {
-                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
-                return RedirectToAction("InformacionCliente");
-            }
-
-            // Verificar si la persona existe en la base de datos
-            bool clienteExiste = consulta.PersonaExiste(identificacion);
-
-            if (clienteExiste)
-            {
-                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion);
-
-                // Verificar si se pudo obtener la información del cliente
-                if (cliente != null)
+                if (clientesFiltrados.Count() > 0)
                 {
-                    return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
+                    return clientesFiltrados;
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
-                    return RedirectToAction("InformacionCliente");
+                    // Mensaje no hay clientes
+                    return new List<ClienteModel> { };
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Cliente no encontrado.";
-                return RedirectToAction("InformacionCliente");
+                // Mensaje error
+                return new List<ClienteModel> { };
             }
+        }
+
+        private List<EntrenadorModel> ObtenerEntrenadoresDisponibles()
+        {
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+            var entrenadores = consultaEntrenador.ListarEntrenadoresDisponibles(IdSede);
+
+            try
+            {
+                if (entrenadores.Count() > 0)
+                {
+                    return entrenadores;
+                }
+                else
+                {
+                    // Mensaje no hay entrenadores disponibles
+                    return new List<EntrenadorModel> { };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Mensaje error
+                return new List<EntrenadorModel> { };
+            }
+        }
+
+        private string cadenasql2(int opcion, String IdSede)
+        {
+            string nomMembresia;
+            if (opcion == 1) nomMembresia = "Premium";
+            else nomMembresia = "General";
+
+            string sql2 = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
+                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                                "WHERE p.id_sede = " + IdSede + " AND m.tipo = '" + nomMembresia + "' " +
+                                "GROUP BY c.id_cliente";
+
+            return sql2;
+        }
+        private string cadenasql3(int opcion, String IdSede)
+        {
+            string genero;
+            if (opcion == 1) genero = "M";
+            else if (opcion == 2) genero = "F";
+            else genero = "NE";
+
+            string sql3 = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
+                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                                "WHERE p.id_sede = " + IdSede + " AND p.genero_persona = '" + genero + "' " +
+                                "GROUP BY c.id_cliente";
+            return sql3;
         }
 
     }

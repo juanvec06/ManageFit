@@ -33,47 +33,16 @@
             </thead>
             <tbody>
 
+                @foreach (var entrenador in Model)
+                {
                     <tr>
-                        <td>3</td>
-                        <td>sofi</td>
-                        <td>Crossfit</td>
-                        <td>10</td>
+                        <td>@entrenador.Identificacion</td>
+                        <td>@entrenador.Nombre</td>
+                        <td>@entrenador.Especialidad</td>
+                        <td>@entrenador.ClientesAsignados</td>
                     </tr>
-                
-                    <tr>
-                        <td>3</td>
-                        <td>sofi</td>
-                        <td>Crossfit</td>
-                        <td>10</td>
-                    </tr>
+                }
 
-                    <tr>
-                        <td>3</td>
-                        <td>sofi</td>
-                        <td>Crossfit</td>
-                        <td>10</td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>sofi</td>
-                        <td>Crossfit</td>
-                        <td>10</td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>sofi</td>
-                        <td>Crossfit</td>
-                        <td>10</td>
-                    </tr>
-
-                <tr>
-                    <td>3</td>
-                    <td>sofi</td>
-                    <td>Crossfit</td>
-                    <td>10</td>
-                </tr>
             </tbody>
         </table>
     </div>
