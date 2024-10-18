@@ -5,5 +5,6 @@
         public DateTime FechaNacimiento { get; set; }
         public int IdEntrenador { get; set; }
         public string refMembresia { get; set; }
+        public int DiasRestantes { get; set; }
     }
 }

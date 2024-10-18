@@ -180,11 +180,16 @@
 
             // Validar el campo de nombre
             var nombre = $('#Nombre').val().trim();
+            var nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
             if (!nombre) {
                 $('#nombre-error').text('Campo obligatorio.');
                 camposValidos = false;
             } else if (nombre.length > 50) {
                 $('#nombre-error').text('No puede exceder los 50 caracteres.');
+                camposValidos = false;
+            } else if (!nombreRegex.test(nombre)) {
+                $('#nombre-error').text('El nombre no puede contener caracteres especiales ni números.');
                 camposValidos = false;
             }
 

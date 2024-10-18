@@ -1,0 +1,99 @@
+﻿
+@model NET_MVC.Models.ClienteModel
+
+@{
+    ViewData["Title"] = "Informacion Cliente Especifico";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+<div class="container cliente-info-container">
+    <div class="cliente-info-left">
+        <div class="cliente-titulo">
+            <h1>CLIENTE <br><span style="color: #EE1C25;">@(Model?.refMembresia?.ToUpper() ?? "Desconocido")</span></h1>
+        </div>
+        <div class="cliente-imagen">
+            <img class="cliente-img" src="/img/user.png" alt="Logo">
+        </div>
+    </div>
+
+    <div class="cliente-info-right">
+        <div class="form-group">
+            <input type="text" class="form-control" value="Nombre: @(Model?.Nombre ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Identificación: @(Model?.Identificacion ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Telefono: @(Model?.Telefono ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Género: @(Model?.Genero ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Mebresia: @(Model?.refMembresia ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Días restantes de membresia: @(Model?.DiasRestantes ?? 0)" readonly />
+        </div>
+    </div>
+</div>
+
+
+<style>
+
+    .cliente-img{
+        margin: 0 auto;
+    }
+    .cliente-info-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .cliente-info-left {
+        flex: 1;
+        text-align: center;
+    }
+
+    .cliente-titulo h1 {
+        font-size: 50px;
+        font-weight: 900;
+        line-height: 70px;
+        color: #EE1C25;
+    }
+
+    .cliente-imagen img {
+        max-width: 150px;
+        border-radius: 50%;
+        margin-top: 20px;
+    }
+
+    .cliente-info-right {
+        flex: 1;
+        padding-left: 40px;
+    }
+
+        .cliente-info-right .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .cliente-info-right .input-label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 16px;
+            color: black; /* Texto en negro */
+        }
+
+        .cliente-info-right .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            color: black; /* Texto del input en negro */
+        }
+</style>
