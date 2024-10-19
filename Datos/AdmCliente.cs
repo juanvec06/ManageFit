@@ -180,5 +180,37 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
         }
+
+        // Función para verificar la existencia de un cliente
+        public bool ClienteExiste(string identificacion)
+        {
+            bool existe = false;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand(
+                        "SELECT COUNT(*) FROM Cliente WHERE id_cliente = :p_id_cliente", conexionBD))
+                    {
+                        cmd.Parameters.Add(":p_id_cliente", OracleDbType.Varchar2).Value = identificacion;
+
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        // Si el contador es mayor a 0, significa que el cliente existe
+                        existe = count > 0;
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
+            return existe;
+        }
     }
 }

@@ -26,48 +26,16 @@
             @TempData["ErrorMessage"]
         </div>
     }
+    else if (!string.IsNullOrEmpty(ViewData["ValidationError"] as string))
+    {
+        <div class="error-message">
+            @ViewData["ValidationError"]
+        </div>
+    }
 
-    <span id="identificacion-error" class="text-danger error-message" style="color:red;"></span>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#buscarClienteForm').on('submit', function (e) {
-            e.preventDefault(); // Evita el envío del formulario hasta que las validaciones sean correctas
-
-            let identificacion = $('#identificacion').val().trim();
-            $('#identificacion-error').text(''); // Limpia el mensaje de error
-
-            // Validar que el campo no esté vacío
-            if (!identificacion) {
-                $('#identificacion-error').text('El campo identificación no puede estar vacío.');
-                return; // Detiene la ejecución
-            }
-
-            // Validar que la identificación sea un número
-            if (!$.isNumeric(identificacion)) {
-                $('#identificacion-error').text('La identificación debe ser un número entero.');
-                return; // Detiene la ejecución
-            }
-
-            // Validar que la identificación no sea demasiado grande (máximo 10 dígitos)
-            if (identificacion.length > 10) {
-                $('#identificacion-error').text('La identificación no puede tener más de 10 dígitos.');
-                return; // Detiene la ejecución
-            }
-
-            // Validar que la identificación no sea negativa
-            if (parseInt(identificacion) < 0) {
-                $('#identificacion-error').text('La identificación no puede ser un número negativo.');
-                return; // Detiene la ejecución
-            }
-
-            // Si todas las validaciones son correctas, envía el formulario
-            this.submit();
-        });
-    });
-</script>
 
 
 <style>

@@ -101,6 +101,13 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
             }
 
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacion.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+            }
+
             // Verificar si la identificación es numérica
             if (!int.TryParse(identificacion, out _))
             {
@@ -109,7 +116,7 @@ namespace NET_MVC.Controllers
             }
 
             // Verificar si la persona existe en la base de datos
-            bool clienteExiste = consulta.PersonaExiste(identificacion);
+            bool clienteExiste = consultaCliente.ClienteExiste(identificacion);
 
             if (clienteExiste)
             {
@@ -132,6 +139,7 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionCliente");
             }
         }
+
 
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)

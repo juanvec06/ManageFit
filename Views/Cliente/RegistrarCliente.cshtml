@@ -233,6 +233,10 @@
                 $('#telefono-error').text('Debe tener exactamente 10 dígitos.');
                 camposValidos = false;
             }
+            else if (!telefono.startsWith('3')) {
+                $('#telefono-error').text('El número de teléfono debe comenzar con 3.');
+                camposValidos = false;
+            }
 
             // Validar el campo de género
             var genero = $('#Genero').val();  // Define la variable 'genero'
