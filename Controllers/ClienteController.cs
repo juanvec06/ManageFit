@@ -107,6 +107,55 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
+        public IActionResult BuscarCliente(string identificacion)
+        {
+            // Verificar que la identificación no esté vacía
+            if (string.IsNullOrWhiteSpace(identificacion))
+            {
+                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
+                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+            }
+
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacion.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+            }
+
+            // Verificar si la identificación es numérica
+            if (!int.TryParse(identificacion, out _))
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                return RedirectToAction("InformacionCliente");
+            }
+
+            // Verificar si la persona existe en la base de datos
+            bool clienteExiste = consultaCliente.ClienteExiste(identificacion);
+
+            if (clienteExiste)
+            {
+                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion);
+
+                // Verificar si se pudo obtener la información del cliente
+                if (cliente != null)
+                {
+                    return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
+                    return RedirectToAction("InformacionCliente");
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Cliente no encontrado.";
+                return RedirectToAction("InformacionCliente");
+            }
+        }
+
+        [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
         {
             // Verifica que la identificación sea un número
