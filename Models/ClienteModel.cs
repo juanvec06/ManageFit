@@ -6,6 +6,5 @@
         public int IdEntrenador { get; set; }
         public string refMembresia { get; set; }
         public string? fechaMembresia { get; set; }
-        public int DiasRestantes { get; set; }
     }
 }

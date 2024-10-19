@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Datos;
 using NET_MVC.Models;
+using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
 using System.Security.Claims;
@@ -18,6 +19,18 @@ namespace NET_MVC.Controllers
 
         public IActionResult Registrar()
         {
+            ClienteModel cliente = new ClienteModel();
+            AdmCliente actualCliente = new AdmCliente();
+            AdmPersona actualPersona = new AdmPersona();
+            if (TempData["ClienteDatos"] != null)
+            {
+                cliente = JsonConvert.DeserializeObject<ClienteModel>((string)TempData["ClienteDatos"]);
+                actualCliente.eliminarCliente(cliente.Identificacion);
+                actualPersona.eliminarPersona(cliente.Identificacion);
+                //Se lleva los datos del cliente para cargarlos por si los quiere modificar
+                return View("RegistrarCliente", cliente);
+
+            }
             return View("RegistrarCliente");
         }
 
@@ -46,7 +59,7 @@ namespace NET_MVC.Controllers
         public JsonResult RegistrarCliente(ClienteModel Cliente)
         {
             Cliente.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-
+            HttpContext.Session.SetString("ClienteId", Cliente.Identificacion.ToString());
             if (ModelState.IsValid)
             {
                 try
@@ -55,14 +68,16 @@ namespace NET_MVC.Controllers
                     var respuesta2 = consultaCliente.RegistrarCliente(Cliente);
                     if (respuesta && respuesta2)
                     {
-                        TempData["SuccessMessage"] = "Cliente registrado correctamente";
-
                         if (Cliente.refMembresia == "Premium")
                         {
+                            //se almacena en TempData los datos del cliente por si se redirecciona a la pagina anterior mediante el boton de la pagina
+                            TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
                             return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
                         }
                         else if (Cliente.refMembresia == "General")
                         {
+                            //mensaje de exito, este por ahora solo se muestra cuando es general
+                            TempData["SuccessMessage"] = "Cliente registrado correctamente";
                             return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                         }
                     }
@@ -90,56 +105,6 @@ namespace NET_MVC.Controllers
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
-
-        [HttpPost]
-        public IActionResult BuscarCliente(string identificacion)
-        {
-            // Verificar que la identificación no esté vacía
-            if (string.IsNullOrWhiteSpace(identificacion))
-            {
-                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
-                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
-            }
-
-            // Verificar que la identificación no tenga más de 10 dígitos
-            if (identificacion.Length > 10)
-            {
-                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
-                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
-            }
-
-            // Verificar si la identificación es numérica
-            if (!int.TryParse(identificacion, out _))
-            {
-                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
-                return RedirectToAction("InformacionCliente");
-            }
-
-            // Verificar si la persona existe en la base de datos
-            bool clienteExiste = consultaCliente.ClienteExiste(identificacion);
-
-            if (clienteExiste)
-            {
-                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion);
-
-                // Verificar si se pudo obtener la información del cliente
-                if (cliente != null)
-                {
-                    return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
-                    return RedirectToAction("InformacionCliente");
-                }
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Cliente no encontrado.";
-                return RedirectToAction("InformacionCliente");
-            }
-        }
-
 
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
