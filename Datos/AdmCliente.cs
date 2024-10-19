@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NET_MVC.Models;
+using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
 
 namespace NET_MVC.Datos
@@ -102,6 +103,41 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
+        }
+        public bool eliminarCliente(string identificacion)
+        {
+            bool existe = false;
+            if (!int.TryParse(identificacion, out int idPersona))
+            {
+                throw new Exception("La identificación debe ser un número entero válido.");
+            }
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("DELETE FROM MEMBRESIA WHERE id_cliente = :id", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter("id", idPersona)); //eliminacion de membresia
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        existe = count > 0;
+                    }
+                    using (OracleCommand cmd = new OracleCommand("DELETE FROM CLIENTE WHERE id_cliente = :id", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter("id", idPersona)); //eliminacion de registro de cliente
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        existe = count > 0;
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return existe;
         }
     }
 }

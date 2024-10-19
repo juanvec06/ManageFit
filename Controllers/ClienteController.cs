@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Datos;
 using NET_MVC.Models;
+using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
 using System.Security.Claims;
@@ -18,6 +19,18 @@ namespace NET_MVC.Controllers
 
         public IActionResult Registrar()
         {
+            ClienteModel cliente = new ClienteModel();
+            AdmCliente actualCliente = new AdmCliente();
+            AdmPersona actualPersona = new AdmPersona();
+            if (TempData["ClienteDatos"] != null)
+            {
+                cliente = JsonConvert.DeserializeObject<ClienteModel>((string)TempData["ClienteDatos"]);
+                actualCliente.eliminarCliente(cliente.Identificacion);
+                actualPersona.eliminarPersona(cliente.Identificacion);
+                //Se lleva los datos del cliente para cargarlos por si los quiere modificar
+                return View("RegistrarCliente", cliente);
+
+            }
             return View("RegistrarCliente");
         }
 
@@ -36,7 +49,7 @@ namespace NET_MVC.Controllers
         public JsonResult RegistrarCliente(ClienteModel Cliente)
         {
             Cliente.IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-
+            HttpContext.Session.SetString("ClienteId", Cliente.Identificacion.ToString());
             if (ModelState.IsValid)
             {
                 try
@@ -45,14 +58,16 @@ namespace NET_MVC.Controllers
                     var respuesta2 = consultaCliente.RegistrarCliente(Cliente);
                     if (respuesta && respuesta2)
                     {
-                        TempData["SuccessMessage"] = "Cliente registrado correctamente";
-
                         if (Cliente.refMembresia == "Premium")
                         {
+                            //se almacena en TempData los datos del cliente por si se redirecciona a la pagina anterior mediante el boton de la pagina
+                            TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
                             return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
                         }
                         else if (Cliente.refMembresia == "General")
                         {
+                            //mensaje de exito, este por ahora solo se muestra cuando es general
+                            TempData["SuccessMessage"] = "Cliente registrado correctamente";
                             return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                         }
                     }

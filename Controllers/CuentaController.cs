@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 //using AspNetCore;
 namespace NET_MVC.Controllers
 {
@@ -142,19 +143,37 @@ namespace NET_MVC.Controllers
             return false; // Credenciales no válidas
         }
 
-        // Acción para cerrar sesión
-        //public IActionResult Logout()
-        //{
-        //    return RedirectToAction("Login", "Cuenta"); 
-        //}
-
         public IActionResult Home()
         {
             return RedirectToAction("DashboardAdministrador", "Admin");
         }
-
+        /**
+        *<summary>
+        *   el metodo se encarga de redirigir a la pagina anterior verificando dependiendo de donde venga
+        *   la llamada a la funcion para que no se guarden los datos en la base de datos
+        *</summary>>
+        */
+        
         public IActionResult PaginaAnterior()
         {
+            // Obtenemos la URL de la que viene la solicitud
+            var referer = Request.Headers["Referer"].ToString();
+            AdmCliente actualCliente = new AdmCliente();
+            AdmPersona actualPersona = new AdmPersona();
+
+            // Validamos si la URL contiene el nombre de la vista AsignarEntrenadorCliente
+            if (referer.Contains("AsignarEntrenadorCliente"))
+            {
+                return RedirectToAction("Registrar", "Cliente");
+            }
+
+            // Si no proviene de la vista AsignarEntrenadorCliente, redirige a la página actual
+            if (!string.IsNullOrEmpty(referer))
+            {
+                return Redirect(referer);
+            }
+
+            // Si no se puede obtener la URL anterior, redirige a una página por defecto
             return RedirectToAction("DashboardAdministrador", "Admin");
         }
 
