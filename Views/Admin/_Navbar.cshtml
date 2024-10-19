@@ -3,10 +3,13 @@
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
 
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || currentAction == "Listar" || currentAction == "Informacion")) ||
+        (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || 
+         currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente"))) ||
         (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar"));
 
-    bool isInAsignarEntrenador = currentController == "Cliente" && currentAction.StartsWith("AsignarEntrenador");
+    bool isInAsignarEntrenador = currentController == "Cliente" && (currentAction.StartsWith("AsignarEntrenador") || 
+    currentAction.StartsWith("BuscarCliente"));
+
 }
 
 <head>
@@ -33,7 +36,7 @@
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Informacion", "Cliente")" class="nav-btn">
+            <a href="@Url.Action("InformacionCliente", "Cliente")" class="nav-btn @(currentAction == "InformacionCliente" && currentController == "Cliente" ? "active" : "")" ">
                 <i class="now-ui-icons shopping_cart-simple"></i> Información cliente
             </a>
         </li>
