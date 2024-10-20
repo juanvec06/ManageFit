@@ -93,6 +93,40 @@ namespace NET_MVC.Datos
             }
 
         }
-        
+
+        public bool EntrenadorExistente(string idEntrenador)
+        {
+            bool existe = false;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand(
+                        "SELECT COUNT(*) FROM Entrenador WHERE id_entrenador = :p_id_entrenador", conexionBD))
+                    {
+                        // Agrega el parámetro id_entrenador para evitar inyecciones SQL
+                        cmd.Parameters.Add(":p_id_entrenador", OracleDbType.Varchar2).Value = idEntrenador;
+
+                        // Ejecuta la consulta y obtiene el número de coincidencias
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        // Si el contador es mayor que 0, el entrenador existe
+                        existe = count > 0;
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            finally
+            {
+                // Cierra la conexión a la base de datos
+                Conexion.cerrarConexion();
+            }
+
+            return existe;
+        }
+
     }
 }

@@ -82,7 +82,7 @@ namespace NET_MVC.Controllers
                 return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
             }
 
-            bool entrenadorExiste = consulta.PersonaExiste(identificacion);
+            bool entrenadorExiste = consultaEntrenador.EntrenadorExistente(identificacion);
             return Json(new { existe = entrenadorExiste });
         }
 
