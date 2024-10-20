@@ -24,6 +24,7 @@ namespace NET_MVC.Datos
                         //Castear
                         int id = int.Parse(entrenador.Identificacion);
                         // Agrega los parámetros de entrada
+                        if (entrenador.Especialidad == "Reducción de peso") entrenador.Especialidad = "Reduccion de peso";
                         cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = id;
                         cmd.Parameters.Add("p_nombreAE", OracleDbType.Varchar2).Value = entrenador.Especialidad;
                         cmd.Parameters.Add("p_salario", OracleDbType.Int32).Value = entrenador.Salario;
