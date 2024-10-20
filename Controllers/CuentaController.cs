@@ -167,6 +167,7 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("Registrar", "Cliente");
             }
 
+
             // Si no proviene de la vista AsignarEntrenadorCliente, redirige a la página actual
             if (!string.IsNullOrEmpty(referer))
             {
@@ -175,6 +176,11 @@ namespace NET_MVC.Controllers
 
             // Si no se puede obtener la URL anterior, redirige a una página por defecto
             return RedirectToAction("DashboardAdministrador", "Admin");
+        }
+
+        public IActionResult PaginaAnteriorInfoCliente()
+        {
+            return RedirectToAction("InformacionCliente", "Cliente");
         }
 
     }

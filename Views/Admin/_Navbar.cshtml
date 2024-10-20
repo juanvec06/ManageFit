@@ -7,9 +7,9 @@
          currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente"))) ||
         (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar"));
 
-    bool isInAsignarEntrenador = currentController == "Cliente" && (currentAction.StartsWith("AsignarEntrenador") || 
-    currentAction.StartsWith("BuscarCliente"));
+    bool isInAsignarEntrenador = currentController == "Cliente" && (currentAction.StartsWith("AsignarEntrenador"));
 
+    bool isInInfoClienteEspecifico = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
 }
 
 <head>
@@ -76,12 +76,19 @@
            
         }
 
-          @if (isInAsignarEntrenador)
-          {
+        @if (isInAsignarEntrenador)
+        {
             <a href=" @Url.Action("PaginaAnterior", "Cuenta")">
-                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
-              </a>
-          }
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+
+        @if (isInInfoClienteEspecifico)
+        {
+            <a href=" @Url.Action("PaginaAnteriorInfoCliente", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
 
     </div>
         
