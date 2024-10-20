@@ -25,8 +25,6 @@ namespace NET_MVC.Controllers
             if (TempData["ClienteDatos"] != null)
             {
                 cliente = JsonConvert.DeserializeObject<ClienteModel>((string)TempData["ClienteDatos"]);
-                actualCliente.eliminarCliente(cliente.Identificacion);
-                actualPersona.eliminarPersona(cliente.Identificacion);
                 //Se lleva los datos del cliente para cargarlos por si los quiere modificar
                 return View("RegistrarCliente", cliente);
 
@@ -64,28 +62,27 @@ namespace NET_MVC.Controllers
             {
                 try
                 {
-                    var respuesta = consulta.RegistrarPersona(Cliente);
-                    var respuesta2 = consultaCliente.RegistrarCliente(Cliente);
-                    if (respuesta && respuesta2)
+                    if (Cliente.refMembresia == "Premium")
                     {
-                        if (Cliente.refMembresia == "Premium")
-                        {
-                            //se almacena en TempData los datos del cliente por si se redirecciona a la pagina anterior mediante el boton de la pagina
-                            TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
-                            return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
-                        }
-                        else if (Cliente.refMembresia == "General")
+                        //se almacena en TempData los datos del cliente por si se redirecciona a la pagina anterior mediante el boton de la pagina
+                        TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
+                        return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
+                    }
+                    else if (Cliente.refMembresia == "General")
+                    {
+                        var respuesta = consulta.RegistrarPersona(Cliente);
+                        var respuesta2 = consultaCliente.RegistrarCliente(Cliente);
+                        if (respuesta && respuesta2)
                         {
                             //mensaje de exito, este por ahora solo se muestra cuando es general
                             TempData["SuccessMessage"] = "Cliente registrado correctamente";
                             return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                         }
+                        else
+                        {
+                            return Json(new { success = false, errors = new { MensajeError = "Error al registrar cliente" } });
+                        }
                     }
-                    else
-                    {
-                        return Json(new { success = false, errors = new { MensajeError = "Error al registrar cliente" } });
-                    }
-
                 }
                 catch (OracleException oex)
                 {
