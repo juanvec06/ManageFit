@@ -166,47 +166,51 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Filtrar(string filter)
+        public JsonResult Filtrar(string filter)
         {
-            // Lógica para filtrar clientes según el valor seleccionado
-            var clientesFiltrados = new List<ClienteModel>();
+            List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            //Todos
+            // La consulta SQL se basa en el filtro seleccionado
             string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede +
-                                "GROUP BY c.id_cliente";
+                     "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                     "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                     "WHERE p.id_sede = " + IdSede +
+                     "GROUP BY c.id_cliente";
 
             switch (filter)
             {
                 case "all":
                     break;
-                case "option1": // Clientes premium
-                    sql = cadenasql2(1, IdSede);
+                case "premium":
+                    sql = cadenasql2(1, IdSede); // Clientes premium
                     break;
-                case "option2": // Clientes generales
-                    sql = cadenasql2(2, IdSede);
+                case "general":
+                    sql = cadenasql2(2, IdSede); // Clientes generales
                     break;
-                case "option3": // Género Masculino
-                    sql = cadenasql3(1, IdSede);
+                case "masculino":
+                    sql = cadenasql3(1, IdSede); // Género Masculino
                     break;
-                case "option4": // Género Femenino
-                    sql = cadenasql3(2, IdSede);
+                case "femenino":
+                    sql = cadenasql3(2, IdSede); // Género Femenino
                     break;
-                case "option5": // Género No especificado
-                    sql = cadenasql3(3, IdSede);
+                case "no-especificado":
+                    sql = cadenasql3(3, IdSede); // Género No especificado
                     break;
                 default:
                     break;
             }
-            // Listar clientes con filtros
-            clientesFiltrados = ListarClientesFiltros(consultaCliente.ListarClientes(sql));
-            // Guardar el total de clientes filtrados en ViewBag
-            ViewBag.TotalClientes = clientesFiltrados.Count;
-            return View("ListarCliente", clientesFiltrados);
+
+            // Ejecuta la consulta y obtiene la lista filtrada de clientes
+            clientesFiltrados = consultaCliente.ListarClientes(sql);
+
+            return Json(new
+            {
+                clientes = clientesFiltrados,
+                totalClientes = clientesFiltrados.Count
+            });
         }
+
 
         private List<ClienteModel> ListarClientesFiltros(List<ClienteModel> clientesFiltrados)
         {

@@ -6,26 +6,25 @@
 }
 
 <div class="container-grande">
-    <div class="text-Asignar" style="text-align: center; 
-    color: #EE1C25; font-size: 50px; font-style: italic; 
-    font-weight: 900; line-height: 70px; word-wrap: break-word">CLIENTES</div>
-    
-    <form asp-action="Filtrar" asp-controller="Cliente" method="post" class="form p-3 mt-3">
-        <div class="filter-total-container">
-            <h3 class="total-text">Total encontrados: <span>@ViewBag.TotalClientes</span></h3>
-            <div class="filter-container">
-                <select id="filter" name="filter" class="form-control custom-select">
-                    <option value="all">Todos</option>
-                    <option value="option1">Clientes Premium</option>
-                    <option value="option2">Clientes Generales</option>
-                    <option value="option3">Género Masculino</option>
-                    <option value="option4">Género Femenino</option>
-                    <option value="option5">Género No especificado</option>
-                </select>
-            </div>
+    <div class="text-Asignar" style="text-align: center;
+    color: #EE1C25; font-size: 50px; font-style: italic;
+    font-weight: 900; line-height: 70px; word-wrap: break-word">
+        CLIENTES
+    </div>
+
+    <div class="filter-total-container">
+        <h3 class="total-text">Total encontrados: <span id="total-clientes">@Model.Count</span></h3>
+        <div class="filter-container">
+            <select id="filter" name="filter" class="form-control custom-select">
+                <option value="all">Todos</option>
+                <option value="premium">Clientes Premium</option>
+                <option value="general">Clientes Generales</option>
+                <option value="masculino">Género Masculino</option>
+                <option value="femenino">Género Femenino</option>
+                <option value="no-especificado">Género No especificado</option>
+            </select>
         </div>
-        <button type="submit" class="btn mt-3">Filtrar</button>
-    </form>
+    </div>
 
     <div class="table-container">
         <table class="table table-bordered">
@@ -38,21 +37,68 @@
                     <th>Fecha de unión</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach (var entrenador in Model)
+            <tbody id="tabla-clientes">
+                @foreach (var cliente in Model)
                 {
                     <tr>
-                        <td>@entrenador.Identificacion</td>
-                        <td>@entrenador.Nombre</td>
-                        <td>@entrenador.Telefono</td>
-                        <td>@entrenador.refMembresia</td>
-                        <td>@entrenador.fechaMembresia</td>
+                        <td>@cliente.Identificacion</td>
+                        <td>@cliente.Nombre</td>
+                        <td>@cliente.Telefono</td>
+                        <td>@cliente.refMembresia</td>
+                        <td>@cliente.fechaMembresia</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+
+    <button type="button" id="filtrar" class="btn mt-3">Filtrar</button>
 </div>
+
+<!-- Asegúrate de que jQuery esté cargado -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Cuando se presiona el botón de filtrar
+        $('#filtrar').on('click', function () {
+            var selectedFilter = $('#filter').val(); // Obtiene el valor del filtro seleccionado
+
+            // Realiza la solicitud Ajax
+            $.ajax({
+                url: '@Url.Action("Filtrar", "Cliente")', // Acción en el controlador
+                type: 'POST',
+                data: { filter: selectedFilter }, // Enviamos el filtro seleccionado al servidor
+                success: function (response) {
+
+                    // Limpiar el cuerpo de la tabla
+                    $('#tabla-clientes').empty();
+
+                    // Recorre los clientes devueltos y los agrega a la tabla
+                    $.each(response.clientes, function (index, cliente) {
+                        $('#tabla-clientes').append(
+                            `<tr>
+                                    <td>${cliente.identificacion}</td>
+                                    <td>${cliente.nombre}</td>
+                                    <td>${cliente.telefono}</td>
+                                    <td>${cliente.refMembresia}</td>
+                                    <td>${cliente.fechaMembresia}</td>
+                                </tr>`
+                        );
+                    });
+
+                    // Actualiza el total de clientes mostrados
+                    $('#total-clientes').text(response.totalClientes);
+                },
+                error: function () {
+                    alert("Error al aplicar el filtro.");
+                }
+            });
+        });
+    });
+</script>
+
+
 
 <style>
 
@@ -133,7 +179,7 @@
         margin: 0 auto;
         max-height: 270px;
         overflow-y: auto;
-        margin-top: 20px;
+        margin-top: 10px;
     }
 
     .table thead th {
