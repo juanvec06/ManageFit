@@ -13,7 +13,8 @@ namespace NET_MVC.Controllers
 {
     public class CuentaController : Controller
     {
-        public OracleConnection conexionBD = Conexion.GetConnection();
+        public Conexion Conexion = new Conexion();
+
         public IActionResult Login()
         {
             return View(); // Devuelve la vista Login.cshtml
@@ -76,7 +77,7 @@ namespace NET_MVC.Controllers
                 if (Conexion.abrirConexion())
                 {
                     //llamada a procedimiento almacenado en base de datos para validar Administrador
-                    using (OracleCommand cmd = new OracleCommand("validar_logina", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand("validar_logina", Conexion.GetConnection())) //VERIFICAR TENER CREADO EL METODO EN PLSQL
                     {
                         // Especifica que es una función
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -103,7 +104,7 @@ namespace NET_MVC.Controllers
                         }
                     }
                     //llamada a procedimiento almacenado en base de datos para validar entrenador
-                    using (OracleCommand cmd = new OracleCommand("validar_logine", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand("validar_logine", Conexion.GetConnection())) //VERIFICAR TENER CREADO EL METODO EN PLSQL
                     {
                         // Especifica que es una función
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -158,8 +159,6 @@ namespace NET_MVC.Controllers
         {
             // Obtenemos la URL de la que viene la solicitud
             var referer = Request.Headers["Referer"].ToString();
-            AdmCliente actualCliente = new AdmCliente();
-            AdmPersona actualPersona = new AdmPersona();
 
             // Validamos si la URL contiene el nombre de la vista AsignarEntrenadorCliente
             if (referer.Contains("AsignarEntrenadorCliente"))

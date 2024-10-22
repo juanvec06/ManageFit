@@ -7,11 +7,8 @@ namespace NET_MVC.Controllers
     public class AdminController : Controller
     {
 
-        public IActionResult DashboardAdministrador()
-        {
-            return View(); 
-        }
-
+        public IActionResult DashboardAdministrador() => View(); 
+        
 
     }
 }

@@ -5,11 +5,9 @@ namespace NET_MVC.Datos
 {
     public class Conexion
     {
-            // Cadena de conexión adaptada con tus datos
-            private static string ruta = "User Id=animalesbd;Password=oracle;Data Source=localhost:1521/xe";
-            private static OracleConnection conexion = new OracleConnection(ruta);
+            public OracleConnection conexion = new OracleConnection("User Id=C##BdManageFit;Password=oracle123;Data Source=localhost:1521/orcl");
 
-            public static bool abrirConexion()
+            public bool abrirConexion()
             {
                 try
                 {
@@ -24,7 +22,7 @@ namespace NET_MVC.Datos
                 }
             }
 
-            public static bool cerrarConexion()
+            public bool cerrarConexion()
             {
                 try
                 {
@@ -33,15 +31,11 @@ namespace NET_MVC.Datos
                 }
                 catch (Exception ex)
                 {
-                    // Puedes registrar el error aquí si lo deseas
-                    Console.WriteLine($"Error al cerrar la conexión: {ex.Message}");
                     return false;
                 }
             }
 
-            public static OracleConnection GetConnection()
-            {
-                return conexion;
-            }
+            public OracleConnection GetConnection() => conexion;
+            
         }
     }
