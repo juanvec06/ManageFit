@@ -41,11 +41,11 @@ namespace NET_MVC.Controllers
         public JsonResult VerificarEntrenadorExistente(string identificacion)
         {
             #region Validadores
-            var validarIdentificacionResult = _ServicioEntrenador.validarIdentificacion(identificacion);
+            var validarIdentificacionResult = _ServicioEntrenador.ValidarIdentificacion(identificacion);
             if (!validarIdentificacionResult.success) return Json(new { existe = false, mensaje = validarIdentificacionResult.mensaje });
             #endregion
 
-            var existeTuplaResult = _ServicioEntrenador.existeTupla(identificacion);
+            var existeTuplaResult = _ServicioEntrenador.ExisteTupla(identificacion);
 
             return Json(new { existe = existeTuplaResult.success });
         } 

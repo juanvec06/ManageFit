@@ -17,9 +17,9 @@ namespace NET_MVC.Services
         {
 
             #region Validadores
-            var IdentificacionValidaResult = validarIdentificacion(prmIdentificacion);
+            var IdentificacionValidaResult = ValidarIdentificacion(prmIdentificacion);
             if (!IdentificacionValidaResult.success) return (null, false, IdentificacionValidaResult.mensaje);
-            var ClienteExistenteResult = existeTupla(prmIdentificacion);
+            var ClienteExistenteResult = ExisteTupla(prmIdentificacion);
             if (!ClienteExistenteResult.success) return (null, false, ClienteExistenteResult.mensaje);
             #endregion
 
@@ -87,9 +87,9 @@ namespace NET_MVC.Services
         public (bool success, string mensaje) RegistrarCliente(ClienteModel prmCliente)
         {
             #region Validadores
-            var IdentificacionValidaResult = validarIdentificacion(prmCliente.Identificacion.ToString());
+            var IdentificacionValidaResult = ValidarIdentificacion(prmCliente.Identificacion.ToString());
             if (!IdentificacionValidaResult.success) return IdentificacionValidaResult;
-            var ClienteExistenteResult = existeTupla(prmCliente.Identificacion.ToString());
+            var ClienteExistenteResult = ExisteTupla(prmCliente.Identificacion.ToString());
             if (ClienteExistenteResult.success) return ClienteExistenteResult;
             #endregion
 
@@ -104,7 +104,7 @@ namespace NET_MVC.Services
         #endregion
 
         #region Utilidades
-        public override (bool success, string mensaje) existeTupla(string prmIdentificacion)
+        public override (bool success, string mensaje) ExisteTupla(string prmIdentificacion)
         {
             bool result = _DataBaseController.ExisteTupla("Cliente", "id_cliente", prmIdentificacion);
             if (result) return (true, "Cliente ya existe.");

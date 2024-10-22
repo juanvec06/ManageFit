@@ -25,9 +25,9 @@ namespace NET_MVC.Services
         public (bool success, string mensaje) registrarEntrenador(EntrenadorModel prmEntrenador)
         {
             #region Validadores
-            var IdentificacionValidaResult = validarIdentificacion(prmEntrenador.Identificacion.ToString());
+            var IdentificacionValidaResult = ValidarIdentificacion(prmEntrenador.Identificacion.ToString());
             if (!IdentificacionValidaResult.success) return IdentificacionValidaResult;
-            var EntrenadorExistenteResult = existeTupla(prmEntrenador.Identificacion.ToString());
+            var EntrenadorExistenteResult = ExisteTupla(prmEntrenador.Identificacion.ToString());
             if (EntrenadorExistenteResult.success) return IdentificacionValidaResult;
             #endregion
 
@@ -42,7 +42,7 @@ namespace NET_MVC.Services
         #endregion
 
         #region Utilidades
-        public override (bool success, string mensaje) existeTupla(string prmIdentificacion)
+        public override (bool success, string mensaje) ExisteTupla(string prmIdentificacion)
         {
             bool result = _DataBaseController.ExisteTupla("Entrenador", "id_Entrenador", prmIdentificacion);
             if (result) return (true, "Entrenador ya existe.");

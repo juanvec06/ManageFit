@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NET_MVC.Datos;
 using NET_MVC.Models;
 using NET_MVC.Services;
 using Newtonsoft.Json;
-using NuGet.Protocol.Plugins;
-using Oracle.ManagedDataAccess.Client;
-using System.Data;
 using System.Security.Claims;
 
 namespace NET_MVC.Controllers
@@ -64,7 +60,7 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
         {
-            var existeClienteResult = _ServicioCliente.existeTupla(identificacion);
+            var existeClienteResult = _ServicioCliente.ExisteTupla(identificacion);
             return Json(new { existe = existeClienteResult.success });
         }
 

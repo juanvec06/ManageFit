@@ -1,5 +1,4 @@
 ﻿using NET_MVC.Controllers;
-using NET_MVC.Models;
 
 namespace NET_MVC.Services
 {
@@ -11,7 +10,7 @@ namespace NET_MVC.Services
         #endregion
         
         #region Validaciones
-        public (bool success, string mensaje) validarIdentificacion(string prmIdentificacion)
+        public (bool success, string mensaje) ValidarIdentificacion(string prmIdentificacion)
         {
             if (string.IsNullOrWhiteSpace(prmIdentificacion)) return (false, "La identificación no puede estar vacía.");
             if (prmIdentificacion.Length > 10) return (false, "La identificación no puede tener más de 10 dígitos.");
@@ -19,7 +18,7 @@ namespace NET_MVC.Services
 
             return (true, null);
         }
-        public virtual (bool success, string mensaje) existeTupla(string prmIdentificacion) => (false, null);
+        public virtual (bool success, string mensaje) ExisteTupla(string prmIdentificacion) => (false, null);
         #endregion
 
         #region Utilidades
