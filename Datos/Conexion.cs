@@ -13,6 +13,11 @@ namespace NET_MVC.Datos
             {
                 try
                 {
+                    if (conexion.State == System.Data.ConnectionState.Open)
+                    {
+                        conexion.Close();
+                    }
+
                     conexion.Open();
                     return true;
                 }
@@ -28,7 +33,10 @@ namespace NET_MVC.Datos
             {
                 try
                 {
-                    conexion.Close();
+                    if (conexion.State == System.Data.ConnectionState.Open)
+                    {
+                        conexion.Close();
+                    }
                     return true;
                 }
                 catch (Exception ex)
