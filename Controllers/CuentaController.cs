@@ -16,6 +16,12 @@ namespace NET_MVC.Controllers
         public OracleConnection conexionBD = Conexion.GetConnection();
         public IActionResult Login()
         {
+            var rolClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (User.Identity.IsAuthenticated && rolClaim == "Administrador")
+            {
+                return RedirectToAction("DashboardAdministrador", "Admin"); // O redirige según el rol
+            }
+            //falta la logica para entrenador
             return View(); // Devuelve la vista Login.cshtml
         }
 
@@ -43,14 +49,14 @@ namespace NET_MVC.Controllers
                     new ClaimsPrincipal(claimsIdentity)
                     
                 );
-                // Redirigir según el rol
+                // Redirigir según el rol (usando replace para no agregar la página de login al historial)
                 if (rol == "Administrador")
                 {
-                    return RedirectToAction("DashboardAdministrador", "Admin");
+                    return RedirectToAction("DashboardAdministrador", "Admin", new { replace = true });
                 }
                 else if (rol == "Entrenador")
                 {
-                    return RedirectToAction("DashboardEntrenador", "Entrenador");
+                    return RedirectToAction("DashboardEntrenador", "Entrenador", new { replace = true });
                 }
             }
 
