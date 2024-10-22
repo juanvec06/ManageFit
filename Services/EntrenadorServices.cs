@@ -32,6 +32,7 @@ namespace NET_MVC.Services
             #endregion
 
             #region Proceso
+            prmEntrenador.Nombre = AjustarNombre(prmEntrenador.Nombre);
             var InsertarEntrenadorResult = _DataBaseController.InsertarObjeto("sp_InsertarEntrenador", prmEntrenador.obtenerParametros());
             if (InsertarEntrenadorResult.success) return (true, "Entrenador registrado correctamente.");
             #endregion

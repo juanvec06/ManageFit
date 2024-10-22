@@ -13,19 +13,19 @@ namespace NET_MVC.Services
         #endregion
 
         #region Cruds
-        public (ClienteModel objetoCliente, bool access, string mensaje) ObtenerClientePorIdentificacion(string identificacion)
+        public (ClienteModel objetoCliente, bool access, string mensaje) ObtenerClientePorIdentificacion(string prmIdentificacion)
         {
 
             #region Validadores
-            var IdentificacionValidaResult = validarIdentificacion(identificacion);
+            var IdentificacionValidaResult = validarIdentificacion(prmIdentificacion);
             if (!IdentificacionValidaResult.success) return (null, false, IdentificacionValidaResult.mensaje);
-            var ClienteExistenteResult = existeTupla(identificacion);
+            var ClienteExistenteResult = existeTupla(prmIdentificacion);
             if (!ClienteExistenteResult.success) return (null, false, ClienteExistenteResult.mensaje);
             #endregion
 
             #region Proceso
             ClienteModel clienteEncontrado = null;
-            string consulta = _ClienteConsultas.consultarClientePorId(identificacion);
+            string consulta = _ClienteConsultas.consultarClientePorId(prmIdentificacion);
             DataTable dataTable = _DataBaseController.EjecutarConsulta(consulta);
 
             if (dataTable.Rows.Count > 0)
@@ -43,30 +43,30 @@ namespace NET_MVC.Services
             }
             #endregion
 
-            return (clienteEncontrado, true, "");
+            return (clienteEncontrado, true, null);
         }
-        public List<ClienteModel> listarClienteFiltro(string filtre, string IdSede)
+        public List<ClienteModel> ListarClienteFiltro(string prmFiltro, string prmIdSede)
         {
             #region Proceso
-            string consultaSql = _ClienteConsultas.consultaTodosFiltro(IdSede);
-            switch (filtre)
+            string consultaSql = _ClienteConsultas.consultaTodosFiltro(prmIdSede);
+            switch (prmFiltro)
             {
                 case "all":
                     break;
                 case "option1": // Clientes premium
-                    consultaSql = _ClienteConsultas.consultaMembresiaFiltro(1, IdSede);
+                    consultaSql = _ClienteConsultas.consultaMembresiaFiltro(1, prmIdSede);
                     break;
                 case "option2": // Clientes generales
-                    consultaSql = _ClienteConsultas.consultaMembresiaFiltro(2, IdSede);
+                    consultaSql = _ClienteConsultas.consultaMembresiaFiltro(2, prmIdSede);
                     break;
                 case "option3": // Género Masculino
-                    consultaSql = _ClienteConsultas.consultaGeneroFiltro(1, IdSede);
+                    consultaSql = _ClienteConsultas.consultaGeneroFiltro(1, prmIdSede);
                     break;
                 case "option4": // Género Femenino
-                    consultaSql = _ClienteConsultas.consultaGeneroFiltro(2, IdSede);
+                    consultaSql = _ClienteConsultas.consultaGeneroFiltro(2, prmIdSede);
                     break;
                 case "option5": // Género No especificado
-                    consultaSql = _ClienteConsultas.consultaGeneroFiltro(3, IdSede);
+                    consultaSql = _ClienteConsultas.consultaGeneroFiltro(3, prmIdSede);
                     break;
                 default:
                     break;
@@ -84,7 +84,7 @@ namespace NET_MVC.Services
 
             return listaClientes;
         }
-        public (bool success, string mensaje) registrarCliente(ClienteModel prmCliente)
+        public (bool success, string mensaje) RegistrarCliente(ClienteModel prmCliente)
         {
             #region Validadores
             var IdentificacionValidaResult = validarIdentificacion(prmCliente.Identificacion.ToString());
@@ -94,6 +94,7 @@ namespace NET_MVC.Services
             #endregion
 
             #region Proceso
+            prmCliente.Nombre = AjustarNombre(prmCliente.Nombre);
             var InsertarClienteResult = _DataBaseController.InsertarObjeto("sp_InsertarCliente", prmCliente.obtenerParametros());
             if (InsertarClienteResult.success) return (true, "Cliente registrado correctamente."); 
             #endregion

@@ -19,8 +19,23 @@ namespace NET_MVC.Services
 
             return (true, null);
         }
-        public virtual (bool success, string mensaje) existeTupla(string prmIdentificacion) => (false, null); 
+        public virtual (bool success, string mensaje) existeTupla(string prmIdentificacion) => (false, null);
         #endregion
+
+        #region Utilidades
+        public string AjustarNombre(string prmNombre)
+        {
+            prmNombre = prmNombre.ToLower();
+            string[] palabras = prmNombre.Split(' ');
+
+            for (int i = 0; i < palabras.Length; i++)
+            {
+                if (palabras[i].Length > 0) palabras[i] = char.ToUpper(palabras[i][0]) + palabras[i].Substring(1);
+            }
+            return string.Join(" ", palabras);
+        } 
+        #endregion
+
 
     }
 }

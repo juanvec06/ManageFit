@@ -26,8 +26,8 @@ namespace NET_MVC.Controllers
         public IActionResult InformacionClienteEspecifico() => View("InformacionClienteEspecifico");
         public IActionResult AsignarEntrenadorCliente()
         {
-            List<EntrenadorModel> entrenadores = ObtenerEntrenadoresDisponibles();
-            return View("AsignarEntrenadorCliente", entrenadores);
+            List<EntrenadorModel> ListaEntrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+            return View("AsignarEntrenadorCliente", ListaEntrenadoresDisponibles);
         }
         #endregion
 
@@ -35,23 +35,16 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public JsonResult RegistrarCliente(ClienteModel Cliente)
         {
-            if (!ModelState.IsValid)
-                return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
-
             Cliente.IdSede = int.Parse(User.FindFirst(ClaimTypes.Name)?.Value);
-
-            // Si es General, lo registramos directamente
             if (Cliente.refMembresia == "General")
             {
-                var registrarCliente = _ServicioCliente.registrarCliente(Cliente);
-                if (registrarCliente.success)
+                var registrarClienteResult = _ServicioCliente.RegistrarCliente(Cliente);
+                if (registrarClienteResult.success)
                 {
-                    TempData["SuccessMessage"] = registrarCliente.mensaje;
+                    TempData["SuccessMessage"] = registrarClienteResult.mensaje;
                     return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                 }
             }
-
-            // Si es Premium, guardamos en TempData para luego completar el proceso
             TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
             return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
         }
@@ -59,37 +52,35 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult BuscarCliente(string identificacion)
         {
-            var ObtenerClienteResult = _ServicioCliente.ObtenerClientePorIdentificacion(identificacion);
-            if (!ObtenerClienteResult.access)
+            var obtenerClienteResult = _ServicioCliente.ObtenerClientePorIdentificacion(identificacion);
+            if (!obtenerClienteResult.access)
             {
-                TempData["ErrorMessage"] = ObtenerClienteResult.mensaje;
+                TempData["ErrorMessage"] = obtenerClienteResult.mensaje;
                 return RedirectToAction("InformacionCliente");
             }
-            return View("InformacionClienteEspecifico", ObtenerClienteResult.objetoCliente);
+            return View("InformacionClienteEspecifico", obtenerClienteResult.objetoCliente);
         }
 
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
         {
-            var resultadoConsulta = _ServicioCliente.existeTupla(identificacion);
-            return Json(new { existe = resultadoConsulta.success });
+            var existeClienteResult = _ServicioCliente.existeTupla(identificacion);
+            return Json(new { existe = existeClienteResult.success });
         }
 
         [HttpPost]
         public ActionResult Filtrar(string filter)
         {
-            string IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-            var ListClientesFiltrados = _ServicioCliente.listarClienteFiltro(filter, IdSede);
-            ViewBag.TotalClientes = ListClientesFiltrados.Count;
-            return View("ListarCliente", ListClientesFiltrados);
+            var listarClientesFiltradosResult = _ServicioCliente.ListarClienteFiltro(filter, User.FindFirst(ClaimTypes.Name)?.Value);
+            ViewBag.TotalClientes = listarClientesFiltradosResult.Count;
+            return View("ListarCliente", listarClientesFiltradosResult);
         }
         #endregion
 
         #region Utilidades
         protected List<EntrenadorModel> ObtenerEntrenadoresDisponibles()
         {
-            string IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-            return _ServicioEntrenador.obternerEntrenadoresDisponibles(IdSede);
+            return _ServicioEntrenador.obternerEntrenadoresDisponibles(User.FindFirst(ClaimTypes.Name)?.Value);
         }
         #endregion
     }
