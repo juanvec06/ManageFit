@@ -42,7 +42,8 @@
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Identificacion" type="text" id="Identificacion">
-                    <span id="entrenador-existe" class="text-danger error-message"></span> 
+                    <span id="entrenador-existe" class="text-danger error-message"></span>
+                    <span id="persona-existe" class="text-danger error-message"></span>
                     <span id="identificacion-error" class="text-danger error-message"></span>
                 </div>
 
@@ -109,6 +110,7 @@
         $('#Identificacion').on('keyup', function () {
             var identificacion = $(this).val();
             $('#entrenador-existe').text(''); // Limpia el mensaje de entrenador existente
+            $('#persona-existe').text(''); // Limpia el mensaje de persona existente
 
             // Validación en tiempo real
             if (!identificacion) {
@@ -118,6 +120,7 @@
 
                 // Solo hacer la llamada AJAX si el valor es un número
                 if ($.isNumeric(identificacion)) {
+                    // Verificar si el entrenador ya existe
                     $.ajax({
                         url: '@Url.Action("VerificarEntrenadorExistente", "Entrenador")',
                         type: 'POST',
@@ -127,14 +130,30 @@
                                 $('#entrenador-existe').text('Entrenador existente');
                             } else {
                                 $('#entrenador-existe').text('');
+                                // Si no es entrenador, verificar si la persona ya existe
+                                $.ajax({
+                                    url: '@Url.Action("VerificarPersonaExistente", "Entrenador")',
+                                    type: 'POST',
+                                    data: { identificacion: identificacion },
+                                    success: function (data) {
+                                        if (data.existe) {
+                                            $('#persona-existe').text('Persona existente');
+                                        } else {
+                                            $('#persona-existe').text('');
+                                        }
+                                    },
+                                    error: function () {
+                                        $('#persona-existe').text('Error al verificar persona');
+                                    }
+                                });
                             }
                         },
                         error: function () {
-                            $('#entrenador-existe').text('Error al verificar');
+                            $('#entrenador-existe').text('Error al verificar entrenador');
                         }
                     });
                 } else {
-                    $('#entrenador-existe').text('Debe ser un número entero.');
+                    $('#identificacion-error').text('Debe ser un número entero.');
                 }
             }
         });

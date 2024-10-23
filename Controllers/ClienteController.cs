@@ -161,8 +161,21 @@ namespace NET_MVC.Controllers
                 return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
             }
 
-            bool clienteExiste = consulta.PersonaExiste(identificacion);
+            bool clienteExiste = consultaCliente.ClienteExiste(identificacion);
             return Json(new { existe = clienteExiste });
+        }
+
+        [HttpPost]
+        public JsonResult VerificarPersonaExistente(string identificacion)
+        {
+            // Verifica que la identificación sea un número
+            if (!int.TryParse(identificacion, out _))
+            {
+                return Json(new { existe = false, mensaje = "La identificación debe ser un número entero." });
+            }
+
+            bool entrenadorExiste = consulta.PersonaExiste(identificacion);
+            return Json(new { existe = entrenadorExiste });
         }
 
         [HttpPost]
