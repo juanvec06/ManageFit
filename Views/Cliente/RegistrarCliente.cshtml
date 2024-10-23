@@ -117,11 +117,7 @@
                         type: 'POST',
                         data: { identificacion: identificacion },
                         success: function (data) {
-                            if (data.existe) {
-                                $('#cliente-existe').text('Cliente existente');
-                            } else {
-                                $('#cliente-existe').text('');
-                            }
+                            $('#cliente-existe').text(data.mensaje);
                         },
                         error: function () {
                             $('#cliente-existe').text('Error al verificar');

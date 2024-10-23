@@ -60,8 +60,11 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
         {
-            var existeClienteResult = _ServicioCliente.ExisteTupla(identificacion);
-            return Json(new { existe = existeClienteResult.success });
+            var ExisteClienteResult = _ServicioCliente.ExisteTupla(identificacion);
+
+            if(ExisteClienteResult.success) return Json(new { existe = ExisteClienteResult.success, mensaje = ExisteClienteResult.mensaje });
+
+            return Json(new { existe = ExisteClienteResult.success, mensaje = "" });
         }
 
         [HttpPost]

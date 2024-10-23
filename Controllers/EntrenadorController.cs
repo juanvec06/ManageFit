@@ -31,7 +31,7 @@ namespace NET_MVC.Controllers
             var RegistrarEntrenadorResult = _ServicioEntrenador.registrarEntrenador(Entrenador);
             if (RegistrarEntrenadorResult.success)
             {
-                TempData["SuccessMessage"] = "Entrenador registrado correctamente";
+                TempData["SuccessMessage"] = "Entrenador registrado correctamente!!!!!";
                 return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
             }
             return Json(new { success = false, errors = new { MensajeError = RegistrarEntrenadorResult.mensaje } });
@@ -42,13 +42,17 @@ namespace NET_MVC.Controllers
         {
             #region Validadores
             var validarIdentificacionResult = _ServicioEntrenador.ValidarIdentificacion(identificacion);
-            if (!validarIdentificacionResult.success) return Json(new { existe = false, mensaje = validarIdentificacionResult.mensaje });
+            if (!validarIdentificacionResult.success)
+                return Json(new { existe = false, mensaje = validarIdentificacionResult.mensaje });
             #endregion
 
             var existeTuplaResult = _ServicioEntrenador.ExisteTupla(identificacion);
+            if(existeTuplaResult.success) return Json(new { existe = existeTuplaResult.success, mensaje = existeTuplaResult.mensaje });
 
-            return Json(new { existe = existeTuplaResult.success });
-        } 
+            return Json(new { existe = existeTuplaResult.success, mensaje = "" });
+        }
+
+
         #endregion
 
     }

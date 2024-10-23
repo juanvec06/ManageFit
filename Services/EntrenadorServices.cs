@@ -41,13 +41,5 @@ namespace NET_MVC.Services
         } 
         #endregion
 
-        #region Utilidades
-        public override (bool success, string mensaje) ExisteTupla(string prmIdentificacion)
-        {
-            bool result = _DataBaseController.ExisteTupla("Entrenador", "id_Entrenador", prmIdentificacion);
-            if (result) return (true, "Entrenador ya existe.");
-            return (false, "Entrenador no encontrado.");
-        }
-        #endregion
     }
 }

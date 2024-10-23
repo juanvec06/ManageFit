@@ -18,7 +18,16 @@ namespace NET_MVC.Services
 
             return (true, null);
         }
-        public virtual (bool success, string mensaje) ExisteTupla(string prmIdentificacion) => (false, null);
+        public (bool success, string mensaje) ExisteTupla(string prmIdentificacion)
+        {
+            bool ExisteClienteResult = _DataBaseController.ExisteTupla("Cliente", "id_cliente", prmIdentificacion);
+            bool ExisteEntrenadorResult = _DataBaseController.ExisteTupla("Entrenador", "id_entrenador", prmIdentificacion);
+
+            if (ExisteClienteResult) return (true, "La identificación ya está registrada como cliente.");
+            if (ExisteEntrenadorResult) return (true, "La identificación ya está registrada como entrenador.");
+
+            return (false, "La identificación no está registrada");
+        }
         #endregion
 
         #region Utilidades

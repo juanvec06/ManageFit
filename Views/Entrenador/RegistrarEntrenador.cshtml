@@ -123,11 +123,8 @@
                         type: 'POST',
                         data: { identificacion: identificacion },
                         success: function (data) {
-                            if (data.existe) {
-                                $('#entrenador-existe').text('Entrenador existente');
-                            } else {
-                                $('#entrenador-existe').text('');
-                            }
+                            // Mostrar el mensaje retornado por el servidor
+                            $('#entrenador-existe').text(data.mensaje);
                         },
                         error: function () {
                             $('#entrenador-existe').text('Error al verificar');
@@ -136,6 +133,7 @@
                 } else {
                     $('#entrenador-existe').text('Debe ser un número entero.');
                 }
+
             }
         });
 
@@ -238,8 +236,8 @@
             } else if (!$.isNumeric(salario)) {
                 $('#salario-error').text('Debe ser un número.');
                 camposValidos = false;
-            } else if (salario < 0) {
-                $('#salario-error').text('El salario no puede ser negativo.');
+            } else if (salario <= 0) {
+                $('#salario-error').text('El salario no puede ser negativo  o ser cero');
                 camposValidos = false;
             } else if (salario > 10000000) {
                 $('#salario-error').text('El salario no puede superar los 10,000,000.');
