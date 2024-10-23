@@ -19,9 +19,12 @@ namespace NET_MVC.Controllers
             var rolClaim = User.FindFirst(ClaimTypes.Role)?.Value;
             if (User.Identity.IsAuthenticated && rolClaim == "Administrador")
             {
-                return RedirectToAction("DashboardAdministrador", "Admin"); // O redirige según el rol
+                return RedirectToAction("DashboardAdministrador", "Admin"); // redirige según el rol
             }
-            //falta la logica para entrenador
+            if (User.Identity.IsAuthenticated && rolClaim == "Entrenador")
+            {
+                return RedirectToAction("DashboardEntrenador", "Entrenador"); // redirige según el rol
+            }
             return View(); // Devuelve la vista Login.cshtml
         }
 

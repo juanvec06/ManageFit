@@ -13,22 +13,34 @@ namespace NET_MVC.Controllers
         AdmPersona consulta = new AdmPersona();
         AdmEntrenador consultaEntrenador = new AdmEntrenador();
 
+        [Authorize(Roles = "Entrenador")]
         public IActionResult DashboardEntrenador()
         {
+            //<summary>
+            //  para el control del almacenamiento en cache de las vistas,
+            //  con esto tiene que consultar al servidor antes de cargar una vista
+            //</summary>
+            Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+            //esto para conpatibilidad con versiones viejas
+            Response.Headers.Add("Pragma", "no-cache");
+            //El valor 0 significa que la página expira inmediatamente y no puede ser almacenada o reutilizada
+            Response.Headers.Add("Expires", "0");
             return View(); // Devuelve la vista Login.cshtml
         }
 
+        [Authorize(Roles = "Administrador")]
         public IActionResult RegistrarEntrenador()
         {
             return View("RegistrarEntrenador");
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Listar()
         {
             return View("ListarEntrenador");
         }
 
         [HttpPost]
+        [Authorize(Roles ="Administrador")]
         public JsonResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {
             // Obtener el usuario actual
@@ -74,6 +86,7 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public JsonResult VerificarEntrenadorExistente(string identificacion)
         {
             // Verifica que la identificación sea un número

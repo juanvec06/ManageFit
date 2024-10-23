@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace NET_MVC.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador")]
     public class ClienteController : Controller
     {
         OracleConnection conexionBD = Conexion.GetConnection();
