@@ -53,8 +53,9 @@
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Identificacion" type="text" id="Identificacion" required>
+                    <span id="persona-existe" class="text-danger error-message"></span>
                     <span id="cliente-existe" class="text-danger error-message"></span>
-                     <span id="identificacion-error" class="text-danger error-message"></span> 
+                    <span id="identificacion-error" class="text-danger error-message"></span>
                 </div>
 
                 <div class="form-field">
@@ -102,7 +103,10 @@
     $(document).ready(function () {
         $('#Identificacion').on('keyup', function () {
             var identificacion = $(this).val();
-            $('#cliente-existe').text(''); // Limpia el mensaje de cliente existente
+            // Limpiar mensajes anteriores
+            $('#cliente-existe').text('');
+            $('#persona-existe').text('');
+            $('#error-verificacion').text('');
 
             // Validación en tiempo real
             if (!identificacion) {
@@ -112,6 +116,7 @@
 
                 // Solo hacer la llamada AJAX si el valor es un número
                 if ($.isNumeric(identificacion)) {
+                    // Primero, verificar si el cliente existe
                     $.ajax({
                         url: '@Url.Action("VerificarClienteExistente", "Cliente")',
                         type: 'POST',
@@ -119,12 +124,30 @@
                         success: function (data) {
                             if (data.existe) {
                                 $('#cliente-existe').text('Cliente existente');
+                                $('#persona-existe').text(''); // Limpiar cualquier mensaje de persona
                             } else {
-                                $('#cliente-existe').text('');
+                                $('#cliente-existe').text(''); // Limpiar cualquier mensaje de cliente
+
+                                // Si el cliente no existe, verificar si la persona existe
+                                $.ajax({
+                                    url: '@Url.Action("VerificarPersonaExistente", "Cliente")',
+                                    type: 'POST',
+                                    data: { identificacion: identificacion },
+                                    success: function (data) {
+                                        if (data.existe) {
+                                            $('#persona-existe').text('Persona existente');
+                                        } else {
+                                            $('#persona-existe').text(''); // Limpiar mensaje si no existe
+                                        }
+                                    },
+                                    error: function () {
+                                        $('#error-verificacion').text('Error al verificar persona.');
+                                    }
+                                });
                             }
                         },
                         error: function () {
-                            $('#cliente-existe').text('Error al verificar');
+                            $('#error-verificacion').text('Error al verificar cliente.');
                         }
                     });
                 } else {
@@ -132,7 +155,6 @@
                 }
             }
         });
-
         // Enviar el formulario
         $('#guardarCliente').on('click', function () {
             // Limpia mensajes de error anteriores
