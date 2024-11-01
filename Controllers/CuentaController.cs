@@ -14,6 +14,7 @@ namespace NET_MVC.Controllers
     public class CuentaController : Controller
     {
         public OracleConnection conexionBD = Conexion.GetConnection();
+        [HttpGet]
         public IActionResult Login()
         {
             var rolClaim = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -31,6 +32,7 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+
             if (ModelState.IsValid)
             {
                 if (!EsUsuarioValido(model.Usuario, model.Contraseña, out string rol))
@@ -55,14 +57,14 @@ namespace NET_MVC.Controllers
                 // Redirigir según el rol (usando replace para no agregar la página de login al historial)
                 if (rol == "Administrador")
                 {
-                    return RedirectToAction("DashboardAdministrador", "Admin", new { replace = true });
+                    Response.Redirect(Url.Action("DashboardAdministrador", "Admin"), true);
+                    return new EmptyResult();
                 }
                 else if (rol == "Entrenador")
                 {
                     return RedirectToAction("DashboardEntrenador", "Entrenador", new { replace = true });
                 }
             }
-
             ViewBag.MensajeError = "Identificación y contraseña requeridos";
             return View(model);
         }

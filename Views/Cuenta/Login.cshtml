@@ -57,7 +57,19 @@
 
         </div>
     </div>
-
+        @* Si el usuario ya está autenticado, redirige con JavaScript *@
+    @if (User.Identity.IsAuthenticated)
+    {
+        <script>
+            // Redirige según el rol del usuario
+            const userRole = "@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value";
+            if (userRole === "Administrador") {
+                window.location.href = '/Admin/DashboardAdministrador';
+            } else if (userRole === "Entrenador") {
+                window.location.href = '/Entrenador/DashboardEntrenador';
+            }
+        </script>
+    }
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.7/jquery.validate.unobtrusive.min.js"></script>

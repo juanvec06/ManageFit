@@ -2,7 +2,14 @@
     ViewData["Title"] = "Dashboard Administrador";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
-
+<script>
+    window.history.replaceState(null, null, window.location.href);
+    // Reemplaza la última entrada en el historial y previene el uso del botón "Atrás"
+       history.replaceState(null, document.title, location.href);
+    window.addEventListener("popstate", function (event) {
+        history.pushState(null, document.title, location.href);
+    });
+</script>
 <div class="container-flex">
 
     <img class="user-img" src="/img/user.png" alt="boton de salida">
@@ -42,6 +49,3 @@
         text-transform: uppercase; 
     }
 </style>
-<script>
-    window.history.replaceState(null, null, window.location.href);
-</script>
