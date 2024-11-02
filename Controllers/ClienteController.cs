@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NET_MVC.Datos;
 using NET_MVC.Models;
@@ -9,7 +10,6 @@ using System.Security.Claims;
 
 namespace NET_MVC.Controllers
 {
-    [Authorize(Roles = "Administrador")]
     public class ClienteController : Controller
     {
         OracleConnection conexionBD = Conexion.GetConnection();
@@ -17,6 +17,7 @@ namespace NET_MVC.Controllers
         AdmCliente consultaCliente = new AdmCliente();
         AdmEntrenador consultaEntrenador = new AdmEntrenador();
 
+        [Authorize(Roles = "Administrador")]
         public IActionResult Registrar()
         {
             ClienteModel cliente = new ClienteModel();
@@ -31,28 +32,38 @@ namespace NET_MVC.Controllers
             }
             return View("RegistrarCliente");
         }
-
+        [Authorize(Roles = "Entrenador, Administrador")]
         public IActionResult Listar()
         {
-            return View("ListarCliente", new List<ClienteModel> { });
-        }
+            if (User.IsInRole("Administrador"))
+            {
+                return View("ListarCliente", new List<ClienteModel> { });
+            }
+            else if (User.IsInRole("Entrenador"))
+            {
+                return View("ListarClientesAsignados", new List<ClienteModel> { });
+            }
 
+            // Si el usuario no tiene ninguno de los roles, podrías redirigir a una vista de error o acceso denegado
+            return RedirectToAction("Index", "Home");
+        }
+        [Authorize(Roles = "Administrador")]
         public IActionResult InformacionCliente()
         {
             return View("InformacionCliente");
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult InformacionClienteEspecifico()
         {
             return View("InformacionClienteEspecifico");
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult AsignarEntrenadorCliente()
         {
             List<EntrenadorModel> entrenadores = ObtenerEntrenadoresDisponibles();
             return View("AsignarEntrenadorCliente", entrenadores);
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult RegistrarCliente(ClienteModel Cliente)
         {
@@ -102,7 +113,7 @@ namespace NET_MVC.Controllers
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult BuscarCliente(string identificacion)
         {
@@ -151,7 +162,7 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionCliente");
             }
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
         {
@@ -164,7 +175,7 @@ namespace NET_MVC.Controllers
             bool clienteExiste = consultaCliente.ClienteExiste(identificacion);
             return Json(new { existe = clienteExiste });
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult VerificarPersonaExistente(string identificacion)
         {
@@ -177,7 +188,7 @@ namespace NET_MVC.Controllers
             bool entrenadorExiste = consulta.PersonaExiste(identificacion);
             return Json(new { existe = entrenadorExiste });
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult Filtrar(string filter)
         {
@@ -224,7 +235,7 @@ namespace NET_MVC.Controllers
             });
         }
 
-
+        [Authorize(Roles = "Administrador")]
         private List<ClienteModel> ListarClientesFiltros(List<ClienteModel> clientesFiltrados)
         {
             try
@@ -245,7 +256,7 @@ namespace NET_MVC.Controllers
                 return new List<ClienteModel> { };
             }
         }
-
+        [Authorize(Roles = "Administrador")]
         private List<EntrenadorModel> ObtenerEntrenadoresDisponibles()
         {
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
@@ -269,7 +280,7 @@ namespace NET_MVC.Controllers
                 return new List<EntrenadorModel> { };
             }
         }
-
+        [Authorize(Roles = "Administrador")]
         private string cadenasql2(int opcion, String IdSede)
         {
             string nomMembresia;
@@ -284,6 +295,7 @@ namespace NET_MVC.Controllers
 
             return sql2;
         }
+        [Authorize(Roles = "Administrador")]
         private string cadenasql3(int opcion, String IdSede)
         {
             string genero;
