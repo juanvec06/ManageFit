@@ -116,5 +116,122 @@ namespace NET_MVC.Controllers
             return Json(new { existe = personaExiste });
         }
 
+        [HttpPost]
+        public JsonResult Filtrar(string filter)
+        {
+            List<EntrenadorModel> clientesFiltrados = new List<EntrenadorModel>();
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            // La consulta SQL se basa en el filtro seleccionado
+            string sql = "SELECT E.id_Entrenador, " +
+             "MAX(P.nombre_Persona) AS nombre_entrenador, " +
+             "MAX(P.telefono_Persona) AS telefono_entrenador, " +
+             "MAX(AE.nombre_AE) AS area_especialidad, " +
+             "COUNT(C.id_Cliente) AS numero_clientes, " +
+             "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " + // Usar fecha_inicio_contrato de la tabla Contrato
+             "MAX(CT.salario) AS salario " + // Agregar el salario del entrenador
+             "FROM Entrenador E " +
+             "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+             "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+             "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
+             "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " + // Unir con la tabla Contrato
+             "WHERE P.id_Sede = " + IdSede + " " + // Asegúrate de que IdSede sea un valor seguro para concatenar
+             "GROUP BY E.id_Entrenador;";
+
+
+
+
+            switch (filter)
+            {
+                case "all":
+                    break;
+                case "option1":
+                    sql = cadenaSqlAreaEspecialidad(1, IdSede); // Crossfit 
+                    break;
+                case "option2":
+                    sql = cadenaSqlAreaEspecialidad(2, IdSede); // Fuerza
+                    break;
+                case "option3":
+                    sql = cadenaSqlAreaEspecialidad(3, IdSede); // Reducción de peso
+                    break;
+                case "option4":
+                    sql = cadenaSqlGenero(1, IdSede); // Género Masculino
+                    break;
+                case "option5":
+                    sql = cadenaSqlGenero(2, IdSede); // Género Femenino
+                    break;
+                case "option6":
+                    sql = cadenaSqlGenero(3, IdSede); // Género No especificado
+                    break;
+                default:
+                    break;
+            }
+
+            // Ejecuta la consulta y obtiene la lista filtrada de clientes
+            clientesFiltrados = consultaEntrenador.ListarEntrenadores(sql);
+
+            return Json(new
+            {
+                clientes = clientesFiltrados,
+                totalClientes = clientesFiltrados.Count
+            });
+        }
+        private string cadenaSqlAreaEspecialidad(int opcion, String IdSede)
+        {
+            string areaEspecialidad = "Crossfit";
+            if (opcion == 2) areaEspecialidad = "Fuerza";
+            if (opcion == 3) areaEspecialidad = "Reducción de peso";
+
+            string sql2 = "SELECT E.id_Entrenador, " +
+                          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
+                          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
+                          "MAX(AE.nombre_AE) AS area_especialidad, " +
+                          "COUNT(C.id_Cliente) AS numero_clientes, " +
+                          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " + // Usar fecha_inicio_contrato de la tabla Contrato
+                          "MAX(CT.salario) AS salario " + // Agregar el salario del entrenador
+                          "FROM Entrenador E " +
+                          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+                          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+                          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
+                          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " + // Unir con la tabla Contrato
+                          "WHERE P.id_Sede = " + IdSede + " " +
+                          "AND AE.nombre_AE = '" + areaEspecialidad + "' " + // Filtrar por área de especialidad
+                          "GROUP BY E.id_Entrenador;";
+
+
+
+
+            return sql2;
+        }
+        [Authorize(Roles = "Administrador")]
+        private string cadenaSqlGenero(int opcion, string IdSede)
+        {
+            string genero;
+            if (opcion == 1) genero = "M";
+            else if (opcion == 2) genero = "F";
+            else genero = "NE";
+
+            string sql = "SELECT E.id_Entrenador, " +
+                         "MAX(P.nombre_Persona) AS nombre_entrenador, " +
+                         "MAX(P.telefono_Persona) AS telefono_entrenador, " +
+                         "MAX(AE.nombre_AE) AS area_especialidad, " +
+                         "COUNT(C.id_Cliente) AS numero_clientes, " +
+                         "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " + // Agregado para obtener la fecha de inicio del contrato
+                         "MAX(CT.salario) AS salario " + // Agregar el salario del entrenador
+                         "FROM Entrenador E " +
+                         "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+                         "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+                         "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
+                         "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " + // Unir con la tabla Contrato
+                         "WHERE P.id_Sede = " + IdSede + " AND P.genero_Persona = '" + genero + "' " + // Filtrar por sede y género
+                         "GROUP BY E.id_Entrenador;";
+
+
+            return sql;
+        }
+
+
+
+
     }
 }

@@ -128,5 +128,52 @@ namespace NET_MVC.Datos
             return existe;
         }
 
+
+        public List<EntrenadorModel> ListarEntrenadores(string sql)
+        {
+            var entrenadores = new List<EntrenadorModel>(); // Cambia ClienteModel por EntrenadorModel
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    {
+                        OracleDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            EntrenadorModel objEntrenador = new EntrenadorModel // Usa EntrenadorModel
+                            {
+                                Identificacion = reader["id_Entrenador"].ToString(), // Cambia el mapeo de campos
+                                Nombre = reader["nombre_entrenador"].ToString(),
+                                Telefono = reader["telefono_entrenador"].ToString(),
+                                Genero = reader["genero_Persona"]?.ToString(), // Asumiendo que hay una columna 'genero_Persona'
+                                Especialidad = reader["area_especialidad"].ToString(),
+                                ClientesAsignados = Convert.ToInt32(reader["numero_clientes"]), // Asegúrate de que el tipo coincida
+                                Salario = reader["salario"]?.ToString(), // Asumiendo que 'salario' está en el resultado
+                                fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value
+                                                     ? Convert.ToDateTime(reader["fecha_contratacion"])
+                                                     : DateTime.MinValue // Maneja valores nulos
+                            };
+                            entrenadores.Add(objEntrenador);
+                        }
+                    }
+                }
+                return entrenadores;
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); //Cerrar la conexión
+            }
+        }
+
+
     }
 }
