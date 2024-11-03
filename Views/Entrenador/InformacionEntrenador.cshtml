@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "Información Entrenador";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-grande">
+    <div class="text-ENTRENADOR" style="text-align:
+        center; color: #EE1C25; font-size: 50px;
+        font-style: italic; font-weight: 900; line-height: 70px;
+        word-wrap: break-word">
+        ENTRENADOR
+    </div>
+
+    <form id="buscarClienteForm" method="post" asp-action="BuscarCliente">
+        <div class="search-bar">
+            <label for="identificacion">Identificación:</label>
+            <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
+
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ViewData["ValidationError"] as string))
+    {
+        <div class="error-message">
+            @ViewData["ValidationError"]
+        </div>
+    }
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<style>
+    .text-CLIENTE {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .container-grande {
+        position: relative;
+        min-height: 520px;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-left: 40px;
+    }
+
+        .search-bar label {
+            padding: 10px 15px;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            background-color: #969393;
+            border-radius: 10px;
+            color: black;
+            margin-right: 15px;
+        }
+
+        .search-bar input[type="text"] {
+            width: 60%;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 1.2rem;
+            padding: 10px 10px;
+            background: white;
+            border-radius: 20px;
+            height: 40px;
+        }
+
+        .search-bar button {
+            background-color: #EE1C25;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 40px;
+            margin-left: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 190px;
+            height: 45px;
+            font-family: Inter, sans-serif;
+            font-weight: bold;
+            font-size: 20px;
+            font-style: italic;
+            line-height: 70px;
+            word-wrap: break-word;
+        }
+
+    .error-message {
+        position: absolute;
+        bottom: 10px;
+        left: 30px;
+        font-size: 20px;
+        color: red;
+    }
+</style>

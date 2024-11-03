@@ -32,6 +32,7 @@ namespace NET_MVC.Controllers
             }
             return View("RegistrarCliente");
         }
+
         [Authorize(Roles = "Entrenador, Administrador")]
         public IActionResult Listar()
         {
@@ -47,21 +48,25 @@ namespace NET_MVC.Controllers
             // Si el usuario no tiene ninguno de los roles, podrías redirigir a una vista de error o acceso denegado
             return RedirectToAction("Index", "Home");
         }
+
         [Authorize(Roles = "Administrador")]
         public IActionResult InformacionCliente()
         {
             return View("InformacionCliente");
         }
+
         [Authorize(Roles = "Administrador")]
         public IActionResult InformacionClienteEspecifico()
         {
             return View("InformacionClienteEspecifico");
         }
+
         [Authorize(Roles = "Administrador")]
         public IActionResult AsignarEntrenadorCliente()
         {
             List<EntrenadorModel> entrenadores = ObtenerEntrenadoresDisponibles();
             return View("AsignarEntrenadorCliente", entrenadores);
+        
         }
         [Authorize(Roles = "Administrador")]
         [HttpPost]

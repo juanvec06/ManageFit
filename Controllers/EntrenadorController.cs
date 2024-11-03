@@ -24,10 +24,23 @@ namespace NET_MVC.Controllers
         {
             return View("RegistrarEntrenador");
         }
+
         [Authorize(Roles = "Administrador")]
         public IActionResult Listar()
         {
             return View("ListarEntrenador");
+        }
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult InformacionEntrenador()
+        {
+            return View("InformacionEntrenador");
+        }
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult InformacionEntrenadorEspecifico()
+        {
+            return View("InformacionEntrenadorEspecifico");
         }
 
         [HttpPost]

@@ -5,11 +5,15 @@
     bool isInNavbarPage =
         (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || 
          currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente"))) ||
-        (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar"));
+        (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar" || 
+        currentAction == "InformacionEntrenador" || currentAction == "InformacionEntrenadorEspecifico")
+        );
 
     bool isInAsignarEntrenador = currentController == "Cliente" && (currentAction.StartsWith("AsignarEntrenador"));
 
     bool isInInfoClienteEspecifico = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
+
+    bool isInInfoEntrenadorEspecifico = currentController == "Entrenador" && currentAction.StartsWith("InformacionEntrenadorEspecifico");
 }
 
 <head>
@@ -26,35 +30,36 @@
         <li>
             <a href="@Url.Action("Registrar", "Cliente")"
                class="nav-btn @(currentAction == "Registrar" && currentController == "Cliente" ? "active" : "")">
-                <i class="now-ui-icons design_bullet-list-67"></i> Registrar cliente
+                Registrar cliente
             </a>
         </li>
         <li>
             <a href="@Url.Action("Listar", "Cliente")"
                class="nav-btn @(currentAction == "Listar" && currentController == "Cliente" ? "active" : "")" ">
-                <i class="now-ui-icons design_bullet-list-67"></i> Listar clientes
+                Listar clientes
             </a>
         </li>
         <li>
             <a href="@Url.Action("InformacionCliente", "Cliente")" class="nav-btn @(currentAction == "InformacionCliente" && currentController == "Cliente" ? "active" : "")" ">
-                <i class="now-ui-icons shopping_cart-simple"></i> Información cliente
+                Información cliente
             </a>
         </li>
         <li>
             <a href="@Url.Action("RegistrarEntrenador", "Entrenador")" 
             class="nav-btn @(currentAction == "RegistrarEntrenador" && currentController == "Entrenador" ? "active" : "")">
-                <i class="now-ui-icons education_atom"></i> Registrar entrenador
+                Registrar entrenador
             </a>
         </li>
         <li>
             <a href="@Url.Action("Listar", "Entrenador")"
                class="nav-btn @(currentAction == "Listar" && currentController == "Entrenador" ? "active" : "")">
-                <i class="now-ui-icons education_atom"></i> Listar Entrenador
+                Listar Entrenadores
             </a>
         </li>
         <li>
-            <a href="@Url.Action("Registrar", "Entrenador")" class="nav-btn">
-                <i class="now-ui-icons education_atom"></i> Listar cliente
+            <a href="@Url.Action("InformacionEntrenador", "Entrenador")"
+               class="nav-btn @(currentAction == "InformacionEntrenador" && currentController == "Entrenador" ? "active" : "")">
+                Información entrenador
             </a>
         </li>
     </ul>
@@ -84,6 +89,13 @@
         }
 
         @if (isInInfoClienteEspecifico)
+        {
+            <a href=" @Url.Action("PaginaAnteriorInfoCliente", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+
+        @if (isInInfoEntrenadorEspecifico)
         {
             <a href=" @Url.Action("PaginaAnteriorInfoCliente", "Cuenta")">
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">

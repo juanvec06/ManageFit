@@ -4,7 +4,9 @@
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
 
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "Consultar"));
+        (currentController == "Cliente" && (currentAction == "Consultar") || 
+        currentController == "PlanMejoramientoFisico" && (currentAction == "PMF") ||
+        currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF"));
 }
 
 <head>
@@ -22,6 +24,20 @@
             <a href="@Url.Action("Listar", "Cliente")"
                class="nav-btn @(currentAction == "Listar" && currentController == "Cliente" ? "active" : "")">
                 <i class="now-ui-icons design_bullet-list-67"></i> Clientes asignados
+            </a>
+        </li>
+
+        <li>
+            <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico")"
+               class="nav-btn @(currentAction == "modificarPMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
+                <i class="now-ui-icons design_bullet-list-67"></i> Modificar PMF
+            </a>
+        </li>
+
+        <li>
+            <a href="@Url.Action("PMF", "PlanMejoramientoFisico")"
+               class="nav-btn @(currentAction == "PMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
+                <i class="now-ui-icons design_bullet-list-67"></i> PMF
             </a>
         </li>
     </ul>
