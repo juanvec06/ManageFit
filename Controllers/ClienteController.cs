@@ -193,6 +193,7 @@ namespace NET_MVC.Controllers
             bool entrenadorExiste = consulta.PersonaExiste(identificacion);
             return Json(new { existe = entrenadorExiste });
         }
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult Filtrar(string filter)

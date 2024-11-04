@@ -1,102 +1,109 @@
-﻿@{
+﻿@model List<NET_MVC.Models.EntrenadorModel>
+
+@{
     ViewData["Title"] = "Listar Entrenador";
     Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
 }
 
 <div class="container-grande">
-    <div class="text-Asignar" style="text-align: center;
-    color: #EE1C25; 
-    font-size: 50px; 
-    font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">ENTRENADORES</div>
+    <div class="text-Asignar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">
+        ENTRENADORES
+    </div>
 
     <div class="filter-total-container">
-        <h3 class="total-text">Total encontrados: <span>n</span></h3>
+        <h3 class="total-text">Total encontrados: <span id="total-entrenadores">@Model?.Count</span></h3>
         <div class="filter-container">
             <select id="filter" class="form-control custom-select">
                 <option value="all">Todos</option>
-                <option value="option1">Crossfit</option>
-                <option value="option2">Fuerza</option>
-                <option value="option2">Reducción de peso</option>
-                <option value="option2">Género Masculino</option>
-                <option value="option2">Género Femenino</option>
-                <option value="option2">Género No especificado</option>
+                <option value="crossfit">Crossfit</option>
+                <option value="fuerza">Fuerza</option>
+                <option value="reduccion">Reducción de peso</option>
+                <option value="masculino">Género Masculino</option>
+                <option value="femenino">Género Femenino</option>
+                <option value="no-especificado">Género No especificado</option>
             </select>
         </div>
     </div>
 
     <div class="table-container">
         <table class="table table-bordered">
-
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>Telefono</th>
-                    <th>Genero</th>
+                    <th>Teléfono</th>
+                    <th>Género</th>
                     <th>Área de especialidad</th>
                     <th>Fecha de contratación</th>
                     <th>Clientes asignados</th>
                 </tr>
             </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>1</td>
-                    <td>Juan</td>
-                    <td>1234567890</td>
-                    <td>Premium</td>
-                    <td>15</td>
-                    <td>Fitness</td>
-                    <td>5</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                    <td>Yoga</td>
-                    <td>3</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                    <td>Yoga</td>
-                    <td>3</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                    <td>Yoga</td>
-                    <td>3</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                    <td>Yoga</td>
-                    <td>3</td>
-                </tr>
-
+            <tbody id="tabla-entrenadores">
+                @if (Model != null)
+                {
+                    foreach (var entrenador in Model)
+                    {
+                        <tr>
+                            <td>@entrenador.Identificacion</td>
+                            <td>@entrenador.Nombre</td>
+                            <td>@entrenador.Telefono</td>
+                            <td>@entrenador.Genero</td>
+                            <td>@entrenador.Especialidad</td>
+                            <td>@entrenador.fechaInicioContrato</td>
+                            <td>@entrenador.ClientesAsignados</td>
+                        </tr>
+                    }
+                }
             </tbody>
         </table>
     </div>
 
-    <button type="button" class="btn mt-3">Filtrar</button>
+    <button type="button" id="filtrar" class="btn mt-3">Filtrar</button>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#filtrar').on('click', function () {
+            var selectedFilter = $('#filter').val();
+
+            
+            $('#loading-spinner').show();
+
+            $.ajax({
+                url: '@Url.Action("Filtrar", "Entrenador")',
+                type: 'POST',
+                data: { filter: selectedFilter },
+                success: function (response) {
+                    
+                    $('#tabla-entrenadores').empty();
+                    $.each(response.entrenadores, function (index, entrenador) {
+                        $('#tabla-entrenadores').append(
+                            `<tr>
+                    <td>${entrenador.identificacion}</td>
+                    <td>${entrenador.nombre}</td>
+                    <td>${entrenador.telefono}</td>
+                    <td>${entrenador.genero}</td>
+                    <td>${entrenador.especialidad}</td>
+                    <td>${new Date(entrenador.fechaInicioContrato).toLocaleDateString()}</td>
+                    <td>${entrenador.clientesAsignados}</td>
+                </tr>`
+                        );
+                    });
+                    $('#total-entrenadores').text(response.totalEntrenadores);
+                },
+                error: function () {
+                    
+                    $('#loading-spinner').hide();
+                    alert("Error al aplicar el filtro.");
+                }
+            });
+        });
+    });
+
+</script>
 
 <style>
 

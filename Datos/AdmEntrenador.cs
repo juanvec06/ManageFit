@@ -131,7 +131,7 @@ namespace NET_MVC.Datos
 
         public List<EntrenadorModel> ListarEntrenadores(string sql)
         {
-            var entrenadores = new List<EntrenadorModel>(); // Cambia ClienteModel por EntrenadorModel
+            var entrenadores = new List<EntrenadorModel>();
             try
             {
                 if (Conexion.abrirConexion())
@@ -139,22 +139,27 @@ namespace NET_MVC.Datos
                     using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
                     {
                         OracleDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
+                        if (reader.HasRows)
                         {
-                            EntrenadorModel objEntrenador = new EntrenadorModel // Usa EntrenadorModel
+                            while (reader.Read())
                             {
-                                Identificacion = reader["id_Entrenador"].ToString(), // Cambia el mapeo de campos
-                                Nombre = reader["nombre_entrenador"].ToString(),
-                                Telefono = reader["telefono_entrenador"].ToString(),
-                                Genero = reader["genero_Persona"]?.ToString(), // Asumiendo que hay una columna 'genero_Persona'
-                                Especialidad = reader["area_especialidad"].ToString(),
-                                ClientesAsignados = Convert.ToInt32(reader["numero_clientes"]), // Asegúrate de que el tipo coincida
-                                Salario = reader["salario"]?.ToString(), // Asumiendo que 'salario' está en el resultado
-                                fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value
-                                                     ? Convert.ToDateTime(reader["fecha_contratacion"])
-                                                     : DateTime.MinValue // Maneja valores nulos
-                            };
-                            entrenadores.Add(objEntrenador);
+                                EntrenadorModel objEntrenador = new EntrenadorModel
+                                {
+                                    Identificacion = reader["id_Entrenador"]?.ToString() ?? "N/A",
+                                    Genero = reader["genero_entrenador"]?.ToString() ?? "Desconocido",
+                                    Nombre = reader["nombre_entrenador"]?.ToString() ?? "Desconocido",
+                                    Telefono = reader["telefono_entrenador"]?.ToString() ?? "No disponible",
+                                    Especialidad = reader["area_especialidad"]?.ToString() ?? "No especificada",
+                                    fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_contratacion"]) : DateTime.MinValue,
+                                    ClientesAsignados = reader["numero_clientes"] != DBNull.Value ? Convert.ToInt32(reader["numero_clientes"]) : 0,
+                                   
+                                };
+                                entrenadores.Add(objEntrenador);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No se encontraron resultados.");
                         }
                     }
                 }
@@ -173,7 +178,5 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
         }
-
-
     }
 }
