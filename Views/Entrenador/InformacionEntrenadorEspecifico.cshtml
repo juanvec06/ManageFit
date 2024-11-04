@@ -26,14 +26,16 @@
             <input type="text" class="form-control" value="Género: @(Model?.Genero ?? "Desconocido")" readonly />
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" value="Area de especialidad: @(Model?.Nombre ?? "Desconocido")" readonly />
+            <input type="text" class="form-control" value="Area de especialidad: @(Model?.Especialidad ?? "Desconocido")" readonly />
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" value="Salario: " readonly />
+            <input type="text" class="form-control" value="Salario: @(Model?.Salario ?? "Desconocido")" readonly />
         </div>
+
         <div class="form-group">
-            <input type="text" class="form-control" value="Fecha de contratación: " readonly />
+            <input type="text" class="form-control" value="Fecha de contratación: @(Model?.fechaInicioContrato.ToString("dd/MM/yyyy"))" readonly />
         </div>
+
     </div>
 </div>
 

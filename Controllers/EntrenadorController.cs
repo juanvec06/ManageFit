@@ -117,6 +117,63 @@ namespace NET_MVC.Controllers
             return Json(new { existe = personaExiste });
         }
 
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult BuscarEntrenador(string identificacion)
+        {
+            // Verificar que la identificación no esté vacía
+            if (string.IsNullOrWhiteSpace(identificacion))
+            {
+                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
+                return RedirectToAction("InformacionEntrenador"); // Redirigir a la página donde se muestra el formulario
+            }
+
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacion.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return RedirectToAction("InformacionEntrenador"); // Redirigir a la página donde se muestra el formulario
+            }
+
+            // Verificar que la identificación no sea menor a 0
+            if(int.Parse(identificacion) < 0)
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
+                return RedirectToAction("InformacionEntrenador");
+            }
+
+            // Verificar si la identificación es numérica
+            if (!int.TryParse(identificacion, out _))
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                return RedirectToAction("InformacionEntrenador");
+            }
+
+            // Verificar si la persona existe en la base de datos
+            bool EntrenadorExistente = consultaEntrenador.EntrenadorExistente(identificacion);
+
+            if (EntrenadorExistente)
+            {
+                var entrenador = consultaEntrenador.ObtenerEntrenadorPorIdentificacion(identificacion);
+
+                // Verificar si se pudo obtener la información del cliente
+                if (entrenador != null)
+                {
+                    return View("InformacionEntrenadorEspecifico", entrenador); // Mostrar la información del cliente
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
+                    return RedirectToAction("InformacionEntrenador");
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Entrenador no encontrado.";
+                return RedirectToAction("InformacionEntrenador");
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "Administrador")]
         public JsonResult Filtrar(string filter)

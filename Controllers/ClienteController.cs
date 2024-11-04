@@ -118,6 +118,7 @@ namespace NET_MVC.Controllers
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
+        
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult BuscarCliente(string identificacion)
@@ -134,6 +135,14 @@ namespace NET_MVC.Controllers
             {
                 TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
                 return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+            }
+
+
+            // Verificar que la identificación no sea menor a 0
+            if (int.Parse(identificacion) < 0)
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
+                return RedirectToAction("InformacionEntrenador");
             }
 
             // Verificar si la identificación es numérica
@@ -167,6 +176,7 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionCliente");
             }
         }
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)

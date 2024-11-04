@@ -178,5 +178,62 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
         }
+
+        public EntrenadorModel ObtenerEntrenadorPorIdentificacion(string identificacion)
+        {
+            EntrenadorModel EntrenadorEncontrado = null;
+
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand(
+                        "SELECT E.id_Entrenador, " +
+                        "P.nombre_Persona AS nombre_entrenador, " +
+                        "P.telefono_Persona AS telefono_entrenador, " +
+                        "P.genero_Persona AS genero_entrenador, " +
+                        "AE.nombre_AE AS area_especialidad, " +
+                        "CT.salario, " +
+                        "CT.fecha_inicio_contrato AS fecha_contratacion " +
+                        "FROM Entrenador E " +
+                        "JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+                        "JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+                        "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
+                        "WHERE E.id_Entrenador = :p_id_entrenador", conexionBD))
+                    {
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.Parameters.Add(":p_id_entrenador", OracleDbType.Int32).Value = int.Parse(identificacion);
+
+                        using (OracleDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                EntrenadorEncontrado = new EntrenadorModel
+                                {
+                                    Identificacion = reader["id_Entrenador"]?.ToString() ?? "N/A",
+                                    Nombre = reader["nombre_entrenador"]?.ToString() ?? "Desconocido",
+                                    Telefono = reader["telefono_entrenador"]?.ToString() ?? "No disponible",
+                                    Genero = reader["genero_entrenador"]?.ToString() ?? "Desconocido",
+                                    Especialidad = reader["area_especialidad"]?.ToString() ?? "No especificada",
+                                    Salario = reader["salario"] != DBNull.Value ? reader["salario"].ToString() : "No especificado",
+                                    fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_contratacion"]) : DateTime.MinValue,
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
+            return EntrenadorEncontrado;
+        }
+
     }
 }

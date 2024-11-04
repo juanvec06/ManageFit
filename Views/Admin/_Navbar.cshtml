@@ -6,14 +6,14 @@
         (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || 
          currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente"))) ||
         (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar" || 
-        currentAction == "InformacionEntrenador" || currentAction == "InformacionEntrenadorEspecifico")
-        );
+        currentAction == "InformacionEntrenador" || currentAction == "InformacionEntrenadorEspecifico" ||
+        currentAction == "BuscarEntrenador"));
 
     bool isInAsignarEntrenador = currentController == "Cliente" && (currentAction.StartsWith("AsignarEntrenador"));
 
     bool isInInfoClienteEspecifico = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
 
-    bool isInInfoEntrenadorEspecifico = currentController == "Entrenador" && currentAction.StartsWith("InformacionEntrenadorEspecifico");
+    bool isInInfoEntrenadorEspecifico = currentController == "Entrenador" && currentAction.StartsWith("BuscarEntrenador");
 }
 
 <head>
@@ -97,7 +97,7 @@
 
         @if (isInInfoEntrenadorEspecifico)
         {
-            <a href=" @Url.Action("PaginaAnteriorInfoCliente", "Cuenta")">
+            <a href=" @Url.Action("PaginaAnteriorInfoEntrenador", "Cuenta")">
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
             </a>
         }
