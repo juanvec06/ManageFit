@@ -56,6 +56,12 @@ namespace NET_MVC.Controllers
             return View("InformacionCliente");
         }
 
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult ClienteAsignado()
+        {
+            return View("ClienteAsignado");
+        }
+
         [Authorize(Roles = "Administrador")]
         public IActionResult InformacionClienteEspecifico()
         {
@@ -90,6 +96,7 @@ namespace NET_MVC.Controllers
             return View("AsignarEntrenadorCliente", entrenadores);
         
         }
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult RegistrarCliente(ClienteModel Cliente)
