@@ -9,16 +9,14 @@
     ViewBag.Entrenador = "1111";  // Info desde el controlador
 
 }
-
-<div class="container-grande">
-    <div class="text-Asignar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">ASIGNAR ENTRENADOR</div>
-
-    <div class="search-bar">
-        <label for="identificacion">Identificación:</label>
-        <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
-        <button type="button" onclick="openModal()">Asignar</button>
+<!-- Formulario para enviar la identificación al controlador -->
+<form id="asignarEntrenadorForm" method="post" asp-action="AsignarEntrenadorCliente">
+    <<div class="search-bar">
+        <label for="identificacionEntrenador">Identificación:</label>
+        <input type="text" id="identificacionEntrenador" name="identificacionEntrenador" placeholder="Ingrese la identificación" />
+        <button type="submit" class="btn btn-primary">Asignar</button>
     </div>
-
+</form>
     @Html.Partial("_ModalAsignar")
 
     <div class="table-container">
@@ -46,7 +44,6 @@
             </tbody>
         </table>
     </div>
-</div>
 
 
 <style>

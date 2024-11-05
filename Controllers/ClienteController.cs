@@ -12,6 +12,7 @@ namespace NET_MVC.Controllers
 {
     public class ClienteController : Controller
     {
+        public static ClienteModel auxCliente;
         OracleConnection conexionBD = Conexion.GetConnection();
         AdmPersona consulta = new AdmPersona();
         AdmCliente consultaCliente = new AdmCliente();
@@ -60,6 +61,27 @@ namespace NET_MVC.Controllers
         {
             return View("InformacionClienteEspecifico");
         }
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public JsonResult AsignarEntrenadorCliente(string identificacionEntrenador)
+        {
+
+            List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+            // Verifica si el entrenador está en la lista de disponibles
+            for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
+            {
+                if(identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                {
+                    auxCliente.IdEntrenador = int.Parse(identificacionEntrenador);
+
+
+                    //BOTON DE CANCELAR O CONFIRMAR - luego insertarlo en BD.
+                    return Json(new { success = true, mensaje = "Entrenador asignado correctamente." });
+                }
+            }
+                return Json(new { success = false, mensaje = "El entrenador no está disponible." });
+        }
+
 
         [Authorize(Roles = "Administrador")]
         public IActionResult AsignarEntrenadorCliente()
@@ -82,6 +104,7 @@ namespace NET_MVC.Controllers
                     {
                         //se almacena en TempData los datos del cliente por si se redirecciona a la pagina anterior mediante el boton de la pagina
                         TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
+                        auxCliente = Cliente;
                         return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
                     }
                     else if (Cliente.refMembresia == "General")

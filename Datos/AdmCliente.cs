@@ -28,7 +28,7 @@ namespace NET_MVC.Datos
 
                         // Agregar parámetros para el procedimiento almacenado
                         cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion;
-                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = null;
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = cliente.IdEntrenador;
                         cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = cliente.FechaNacimiento;
 
                         // Ejecutar el procedimiento almacenado
@@ -63,8 +63,6 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-
-        
         public List<ClienteModel> ListarClientes(string sql)
         {
             var clientes = new List<ClienteModel>();
@@ -140,7 +138,6 @@ namespace NET_MVC.Datos
             return existe;
         }
 
-        // Función para verificar la existencia de un cliente
         public bool ClienteExiste(string identificacion)
         {
             bool existe = false;

@@ -6,7 +6,7 @@ namespace NET_MVC.Datos
     public class Conexion
     {
             // Cadena de conexión adaptada con tus datos
-            private static string ruta = "User Id=managefit;Password=oracle;Data Source=localhost:1521/xe";
+            private static string ruta = "User Id=C##BdManageFit;Password=oracle123;Data Source=localhost:1521/orcl";
             private static OracleConnection conexion = new OracleConnection(ruta);
 
             public static bool abrirConexion()
