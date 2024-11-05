@@ -199,5 +199,10 @@ namespace NET_MVC.Controllers
             return RedirectToAction("InformacionEntrenador", "Entrenador");
         }
 
+        public IActionResult PaginaAnteriorClienteAsignado()
+        {
+            return RedirectToAction("Cliente", "Listar");
+        }
+        
     }
 }

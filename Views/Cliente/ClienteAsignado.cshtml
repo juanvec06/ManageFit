@@ -1,0 +1,95 @@
+﻿@model NET_MVC.Models.ClienteModel
+
+@{
+    ViewData["Title"] = "Cliente Asignado";
+    Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
+}
+
+<div class="container cliente-info-container">
+    <div class="cliente-info-left">
+        <div class="cliente-titulo">
+            <h1>CLIENTE PREMIUM</h1>
+        </div>
+    </div>
+
+    <div class="cliente-info-right">
+        <div class="form-group">
+            <input type="text" class="form-control" value="Nombre: @(Model?.Nombre ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Identificación: @(Model?.Identificacion ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Telefono: @(Model?.Telefono ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Género: @(Model?.Genero ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Mebresia: @(Model?.refMembresia ?? "Desconocido")" readonly />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value="Días restantes de membresia: @(Model?.DiasRestantes ?? 0)" readonly />
+        </div>
+    </div>
+</div>
+
+
+<style>
+
+    .cliente-info-container {
+        display: flex;
+        flex-direction: column; /* Organiza el contenido en una columna */
+        align-items: center; /* Centra el contenido horizontalmente */
+        gap: 20px; /* Espacio entre el título y los campos */
+        margin-top: 20px;
+    }
+
+    .cliente-info-left {
+        flex: 1;
+        text-align: center;
+    }
+
+    .cliente-titulo h1 {
+        font-size: 50px;
+        font-weight: 900;
+        line-height: 70px;
+        color: #EE1C25;
+    }
+
+    .cliente-imagen img {
+        max-width: 150px;
+        border-radius: 50%;
+        margin-top: 20px;
+    }
+
+    .cliente-info-right {
+        width: 100%;
+        max-width: 500px;
+        padding-left: 20px;
+        margin-bottom: 65px;
+    }
+
+        .cliente-info-right .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .cliente-info-right .input-label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 16px;
+            color: black; /* Texto en negro */
+        }
+
+        .cliente-info-right .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            color: black;
+        }
+</style>
