@@ -67,6 +67,8 @@ namespace NET_MVC.Controllers
         {
             return View("InformacionClienteEspecifico");
         }
+
+        
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult AsignarEntrenadorCliente(string identificacionEntrenador)
@@ -87,6 +89,112 @@ namespace NET_MVC.Controllers
             }
                 return Json(new { success = false, mensaje = "El entrenador no está disponible." });
         }
+
+        /*
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public JsonResult AsignarEntrenadorCliente(string identificacionEntrenador)
+        {
+            // Verificar que la identificación no esté vacía
+            if (string.IsNullOrWhiteSpace(identificacionEntrenador))
+            {
+                return Json(new { success = false, mensaje = "La identificación no puede estar vacía." });
+            }
+
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacionEntrenador.Length > 10)
+            {
+                return Json(new { success = false, mensaje = "La identificación no puede tener más de 10 dígitos." });
+            }
+
+            // Verificar si la identificación es numérica y convertirla a entero
+            if (!int.TryParse(identificacionEntrenador, out int identificacionNum))
+            {
+                return Json(new { success = false, mensaje = "La identificación debe ser un número válido." });
+            }
+
+            // Verificar que la identificación no sea un número negativo
+            if (identificacionNum < 0)
+            {
+                return Json(new { success = false, mensaje = "La identificación debe ser un número positivo." });
+            }
+
+            // Obtener la lista de entrenadores disponibles
+            List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+
+            // Verifica si el entrenador está en la lista de disponibles
+            for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
+            {
+                if (identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                {
+                    auxCliente.IdEntrenador = identificacionNum;
+
+                    // Retornar mensaje de éxito como JSON
+                    return Json(new { success = true, mensaje = "Entrenador asignado correctamente." });
+                }
+            }
+
+            // Retornar mensaje de error si el entrenador no está disponible
+            return Json(new { success = false, mensaje = "El entrenador no está disponible." });
+        }
+ 
+        */
+
+
+        /*
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult AsignarEntrenadorCliente(string identificacionEntrenador)
+        {
+            // Verificar que la identificación no esté vacía
+            if (string.IsNullOrWhiteSpace(identificacionEntrenador))
+            {
+                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacionEntrenador.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Verificar si la identificación es numérica y convertirla a entero
+            if (!int.TryParse(identificacionEntrenador, out int identificacionNum))
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Verificar que la identificación no sea un número negativo
+            if (identificacionNum < 0)
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Obtener la lista de entrenadores disponibles
+            List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+
+            // Verifica si el entrenador está en la lista de disponibles
+            for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
+            {
+                if (identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                {
+                    auxCliente.IdEntrenador = identificacionNum;
+
+                    // Mensaje de éxito con TempData
+                    TempData["SuccessMessage"] = "Entrenador asignado correctamente.";
+                    return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+                }
+            }
+
+            // Mensaje de error si no está disponible
+            TempData["ErrorMessage"] = "El entrenador no está disponible.";
+            return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+        }
+        */
 
 
         [Authorize(Roles = "Administrador")]
