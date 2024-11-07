@@ -261,6 +261,8 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult BuscarCliente(string identificacion)
         {
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
             // Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))
             {
@@ -295,7 +297,7 @@ namespace NET_MVC.Controllers
 
             if (clienteExiste)
             {
-                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion);
+                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion,IdSede);
 
                 // Verificar si se pudo obtener la información del cliente
                 if (cliente != null)
@@ -304,7 +306,7 @@ namespace NET_MVC.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
+                    TempData["ErrorMessage"] = "Cliente no encontrado.";
                     return RedirectToAction("InformacionCliente");
                 }
             }
@@ -349,35 +351,7 @@ namespace NET_MVC.Controllers
             List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            // La consulta SQL se basa en el filtro seleccionado
-            string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                     "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                     "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                     "WHERE p.id_sede = " + IdSede +
-                     "GROUP BY c.id_cliente";
-
-            switch (filter)
-            {
-                case "all":
-                    break;
-                case "premium":
-                    sql = cadenasql2(1, IdSede); // Clientes premium
-                    break;
-                case "general":
-                    sql = cadenasql2(2, IdSede); // Clientes generales
-                    break;
-                case "masculino":
-                    sql = cadenasql3(1, IdSede); // Género Masculino
-                    break;
-                case "femenino":
-                    sql = cadenasql3(2, IdSede); // Género Femenino
-                    break;
-                case "no-especificado":
-                    sql = cadenasql3(3, IdSede); // Género No especificado
-                    break;
-                default:
-                    break;
-            }
+            string sql = consultaCliente.cadenaListarClientes(filter,IdSede);
 
             // Ejecuta la consulta y obtiene la lista filtrada de clientes
             clientesFiltrados = consultaCliente.ListarClientes(sql);
@@ -433,36 +407,6 @@ namespace NET_MVC.Controllers
                 // Mensaje error
                 return new List<EntrenadorModel> { };
             }
-        }
-        [Authorize(Roles = "Administrador")]
-        private string cadenasql2(int opcion, String IdSede)
-        {
-            string nomMembresia;
-            if (opcion == 1) nomMembresia = "Premium";
-            else nomMembresia = "General";
-
-            string sql2 = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede + " AND m.tipo = '" + nomMembresia + "' " +
-                                "GROUP BY c.id_cliente";
-
-            return sql2;
-        }
-        [Authorize(Roles = "Administrador")]
-        private string cadenasql3(int opcion, String IdSede)
-        {
-            string genero;
-            if (opcion == 1) genero = "M";
-            else if (opcion == 2) genero = "F";
-            else genero = "NE";
-
-            string sql3 = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede + " AND p.genero_persona = '" + genero + "' " +
-                                "GROUP BY c.id_cliente";
-            return sql3;
         }
 
     }
