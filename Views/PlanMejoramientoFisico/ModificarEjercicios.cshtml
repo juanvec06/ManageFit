@@ -1,4 +1,4 @@
-﻿@model PMFModel
+﻿
 @{
     ViewData["Title"] = "Modificar PMF";
     Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
@@ -12,99 +12,68 @@
         MODIFICAR PMF
     </div>
 
-    <form asp-action="AgregarPMF" asp-controller="PlanMejoramientoFisico" method="post" class="form p-3 mt-3">
-        <div class="search-bar">
+    <div class="search-bar">
 
-            <img class="cliente-img" src="/img/check-list.png" alt="Logo">
+        <img class="cliente-img" src="/img/check-list.png" alt="Logo">
 
-            <div class="search-bar-2">
-                <div class="data-field">
-                    <h4>Fecha de valoracion:</h4>
-                    <div class="relative datapicker-styles">
-                        <input id="default-datepicker" asp-for="FechaValoracion" type="date"
-                               class="bg-white border border-gray-300 text-gray-900 text-sm
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                               placeholder="Seleccionar fecha">
-                               <span id="fecha-error" class="text-danger error-message"></span>
-                        <span asp-validation-for="FechaValoracion" class="text-danger error-message"></span>
-                    </div>
-                </div>
+
+        <div class="search-bar-2">
+            <div class="botones">
+                <button type="button" id="añadirEjercicio" class="btn mt-3" onclick="window.location.href='@Url.Action("AgregarEjercicio", "PlanMejoramientoFisico")'">Añadir ejercicio</button>
+                <button type="button" class="btn mt-3">Eliminar ejercicio</button>
+            </div>
         </div>
+       
+    </div>
 
-        <div class="boton">
-            <button type="button" id="guardarPMF" class="btn mt-3">Guardar</button>
-        </div>
-    </form>
+    <div class="table-container">
+        <table class="table table-bordered">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
+                    <th>Genero</th>
+                    <th>Área de especialidad</th>
+                    <th>Fecha de contratación</th>
+                    <th>Clientes asignados</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>Juan</td>
+                    <td>1234567890</td>
+                    <td>Premium</td>
+                    <td>15</td>
+                    <td>Fitness</td>
+                    <td>5</td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Sofi</td>
+                    <td>0987654321</td>
+                    <td>General</td>
+                    <td>10</td>
+                    <td>Yoga</td>
+                    <td>3</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="boton">
+        <button type="button" class="btn mt-3">Guardar</button>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        
-        // Enviar el formulario
-        $('#guardarPMF').on('click', function () {
-            // Limpia mensajes de error anteriores
-            $('#fecha-error').text('');
-            
-            // Validación de campos vacíos
-            let camposValidos = true;
-
-            // Validar el campo de fecha de Valoracion
-            var fechaValoracion = $('#default-datepicker').val();
-            if (!fechaValoracion) {
-                $('#fecha-error').text('Campo obligatorio.');
-                camposValidos = false;
-            } else {
-                var fecha = new Date(fechaValoracion);
-                var hoy = new Date();
-
-                // Comprobar si la fecha es futura
-                if (fecha > hoy) {
-                    $('#fecha-error').text('No puede ser en el futuro.');
-                    camposValidos = false;
-                } else {
-                    var limite = new Date(hoy);
-                    limite.setDate(hoy.getDate() + 7);
-                    if (fechaValoracion > limite) {
-                        $('#fecha-error').text('No puede ser hace más de una semana.');
-                        camposValidos = false;
-                    }  
-                }
-            }
-
-            // Comprobar si todos los campos son válidos
-            if (!camposValidos) {
-                return; // No continuar si hay errores
-            }
-
-            // Si todo está bien, prepara los datos del formulario
-            var formData = {
-                FechaValoracion: fechaValoracion
-            };
-
-            // Envía los datos mediante AJAX
-            $.ajax({
-                url: '@Url.Action("AgregarPMF", "PlanMejoramientoFisico")',
-                type: 'POST',
-                data: formData,
-                success: function (data) {
-                    if (data.success) {
-                        window.location.href = data.redirectUrl;
-                    } else if (data.errors) {
-                        $('#fecha-error').text('PMF existente');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error al guardar el PMF:", error);
-                }
-            });
-
-        });
-    });
-</script>
-
 
 <style>
 
