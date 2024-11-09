@@ -12,6 +12,7 @@ namespace NET_MVC.Controllers
 {
     public class ClienteController : Controller
     {
+        public static ClienteModel auxCliente;
         OracleConnection conexionBD = Conexion.GetConnection();
         AdmPersona consulta = new AdmPersona();
         AdmCliente consultaCliente = new AdmCliente();
@@ -64,11 +65,146 @@ namespace NET_MVC.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult ClienteAsignado()
+        {
+            return View("ClienteAsignado");
+        }
+
         [Authorize(Roles = "Administrador")]
         public IActionResult InformacionClienteEspecifico()
         {
             return View("InformacionClienteEspecifico");
         }
+
+        
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public JsonResult AsignarEntrenadorCliente(string identificacionEntrenador)
+        {
+
+            List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+            // Verifica si el entrenador está en la lista de disponibles
+            for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
+            {
+                if(identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                {
+                    auxCliente.IdEntrenador = int.Parse(identificacionEntrenador);
+
+
+                    //BOTON DE CANCELAR O CONFIRMAR - luego insertarlo en BD.
+                    return Json(new { success = true, mensaje = "Entrenador asignado correctamente." });
+                }
+            }
+                return Json(new { success = false, mensaje = "El entrenador no está disponible." });
+        }
+
+        /*
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public JsonResult AsignarEntrenadorCliente(string identificacionEntrenador)
+        {
+            // Verificar que la identificación no esté vacía
+            if (string.IsNullOrWhiteSpace(identificacionEntrenador))
+            {
+                return Json(new { success = false, mensaje = "La identificación no puede estar vacía." });
+            }
+
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacionEntrenador.Length > 10)
+            {
+                return Json(new { success = false, mensaje = "La identificación no puede tener más de 10 dígitos." });
+            }
+
+            // Verificar si la identificación es numérica y convertirla a entero
+            if (!int.TryParse(identificacionEntrenador, out int identificacionNum))
+            {
+                return Json(new { success = false, mensaje = "La identificación debe ser un número válido." });
+            }
+
+            // Verificar que la identificación no sea un número negativo
+            if (identificacionNum < 0)
+            {
+                return Json(new { success = false, mensaje = "La identificación debe ser un número positivo." });
+            }
+
+            // Obtener la lista de entrenadores disponibles
+            List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+
+            // Verifica si el entrenador está en la lista de disponibles
+            for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
+            {
+                if (identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                {
+                    auxCliente.IdEntrenador = identificacionNum;
+
+                    // Retornar mensaje de éxito como JSON
+                    return Json(new { success = true, mensaje = "Entrenador asignado correctamente." });
+                }
+            }
+
+            // Retornar mensaje de error si el entrenador no está disponible
+            return Json(new { success = false, mensaje = "El entrenador no está disponible." });
+        }
+ 
+        */
+
+
+        /*
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult AsignarEntrenadorCliente(string identificacionEntrenador)
+        {
+            // Verificar que la identificación no esté vacía
+            if (string.IsNullOrWhiteSpace(identificacionEntrenador))
+            {
+                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (identificacionEntrenador.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Verificar si la identificación es numérica y convertirla a entero
+            if (!int.TryParse(identificacionEntrenador, out int identificacionNum))
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Verificar que la identificación no sea un número negativo
+            if (identificacionNum < 0)
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
+            // Obtener la lista de entrenadores disponibles
+            List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
+
+            // Verifica si el entrenador está en la lista de disponibles
+            for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
+            {
+                if (identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                {
+                    auxCliente.IdEntrenador = identificacionNum;
+
+                    // Mensaje de éxito con TempData
+                    TempData["SuccessMessage"] = "Entrenador asignado correctamente.";
+                    return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+                }
+            }
+
+            // Mensaje de error si no está disponible
+            TempData["ErrorMessage"] = "El entrenador no está disponible.";
+            return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+        }
+        */
+
 
         [Authorize(Roles = "Administrador")]
         public IActionResult AsignarEntrenadorCliente()
@@ -77,6 +213,7 @@ namespace NET_MVC.Controllers
             return View("AsignarEntrenadorCliente", entrenadores);
 
         }
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult RegistrarCliente(ClienteModel Cliente)
@@ -91,6 +228,7 @@ namespace NET_MVC.Controllers
                     {
                         //se almacena en TempData los datos del cliente por si se redirecciona a la pagina anterior mediante el boton de la pagina
                         TempData["ClienteDatos"] = JsonConvert.SerializeObject(Cliente);
+                        auxCliente = Cliente;
                         return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
                     }
                     else if (Cliente.refMembresia == "General")
@@ -132,6 +270,8 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Administrador, Entrenador")]
         public IActionResult BuscarCliente(string identificacion)
         {
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
             // Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))
             {
@@ -173,7 +313,7 @@ namespace NET_MVC.Controllers
 
             if (clienteExiste)
             {
-                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion);
+                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion,IdSede);
 
                 // Verificar si se pudo obtener la información del cliente
                 if (cliente != null && User.IsInRole("Administrador"))
@@ -187,7 +327,7 @@ namespace NET_MVC.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
+                    TempData["ErrorMessage"] = "Cliente no encontrado.";
                     return RedirectToAction("InformacionCliente");
                 }
             }
@@ -243,35 +383,7 @@ namespace NET_MVC.Controllers
             List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            // La consulta SQL se basa en el filtro seleccionado
-            string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                     "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                     "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                     "WHERE p.id_sede = " + IdSede +
-                     "GROUP BY c.id_cliente";
-
-            switch (filter)
-            {
-                case "all":
-                    break;
-                case "premium":
-                    sql = cadenasql2(1, IdSede); // Clientes premium
-                    break;
-                case "general":
-                    sql = cadenasql2(2, IdSede); // Clientes generales
-                    break;
-                case "masculino":
-                    sql = cadenasql3(1, IdSede); // Género Masculino
-                    break;
-                case "femenino":
-                    sql = cadenasql3(2, IdSede); // Género Femenino
-                    break;
-                case "no-especificado":
-                    sql = cadenasql3(3, IdSede); // Género No especificado
-                    break;
-                default:
-                    break;
-            }
+            string sql = consultaCliente.cadenaListarClientes(filter,IdSede);
 
             // Ejecuta la consulta y obtiene la lista filtrada de clientes
             clientesFiltrados = consultaCliente.ListarClientes(sql);

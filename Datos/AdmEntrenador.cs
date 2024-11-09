@@ -1,4 +1,5 @@
-﻿using NET_MVC.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
 using System.Security.Claims;
 
@@ -179,7 +180,100 @@ namespace NET_MVC.Datos
             }
         }
 
-        public EntrenadorModel ObtenerEntrenadorPorIdentificacion(string identificacion)
+        public string cadenaListarEntrenadores(string filter, string IdSede)
+        {
+            string sql = "SELECT E.id_Entrenador, " +
+                 "MAX(P.nombre_Persona) AS nombre_entrenador, " +
+                 "MAX(P.telefono_Persona) AS telefono_entrenador, " +
+                 "MAX(P.genero_persona) AS genero_entrenador, " +
+                 "MAX(AE.nombre_AE) AS area_especialidad, " +
+                 "COUNT(C.id_Cliente) AS numero_clientes, " +
+                 "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
+                 "MAX(CT.salario) AS salario " +
+                 "FROM Entrenador E " +
+                 "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+                 "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+                 "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
+                 "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
+                 "WHERE P.id_Sede = " + IdSede +
+                 " GROUP BY E.id_Entrenador";
+
+            // Aplica el filtro según la selección
+            switch (filter)
+            {
+                case "all":
+                    break;
+                case "crossfit":
+                    sql = cadenaSqlAreaEspecialidad(1, IdSede); // Crossfit
+                    break;
+                case "fuerza":
+                    sql = cadenaSqlAreaEspecialidad(2, IdSede); // Fuerza
+                    break;
+                case "reduccion":
+                    sql = cadenaSqlAreaEspecialidad(3, IdSede); // Reducción de peso
+                    break;
+                case "masculino":
+                    sql = cadenaSqlGenero(1, IdSede); // Género Masculino
+                    break;
+                case "femenino":
+                    sql = cadenaSqlGenero(2, IdSede); // Género Femenino
+                    break;
+                case "no-especificado":
+                    sql = cadenaSqlGenero(3, IdSede); // Género No especificado
+                    break;
+                default:
+                    break;
+            }
+            return sql;
+        }
+
+        private string cadenaSqlAreaEspecialidad(int opcion, string IdSede)
+        {
+            string areaEspecialidad = opcion == 1 ? "Crossfit" :
+                                      opcion == 2 ? "Fuerza" :
+                                      opcion == 3 ? "Reducción de peso" : "Culturismo";
+
+            return "SELECT E.id_Entrenador, " +
+          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
+          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
+          "MAX(P.genero_persona) AS genero_entrenador, " +
+          "MAX(AE.nombre_AE) AS area_especialidad, " +
+          "COUNT(C.id_Cliente) AS numero_clientes, " +
+          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
+          "MAX(CT.salario) AS salario " +
+          "FROM Entrenador E " +
+          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
+          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
+          "WHERE P.id_Sede = " + IdSede + " AND AE.nombre_AE = '" + areaEspecialidad + "' " +
+          "GROUP BY E.id_Entrenador";
+        }
+
+        private string cadenaSqlGenero(int opcion, string IdSede)
+        {
+            string genero = opcion == 1 ? "M" : 
+                            opcion == 2 ? "F" : 
+                            "NE";
+
+            return "SELECT E.id_Entrenador, " +
+          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
+          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
+          "MAX(P.genero_persona) AS genero_entrenador, " +
+          "MAX(AE.nombre_AE) AS area_especialidad, " +
+          "COUNT(C.id_Cliente) AS numero_clientes, " +
+          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
+          "MAX(CT.salario) AS salario " +
+          "FROM Entrenador E " +
+          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
+          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
+          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
+          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
+          "WHERE P.id_Sede = " + IdSede + " AND P.genero_Persona = '" + genero + "' " +
+          "GROUP BY E.id_Entrenador";
+        }
+
+        public EntrenadorModel ObtenerEntrenadorPorIdentificacion(string identificacion, string idSede)
         {
             EntrenadorModel EntrenadorEncontrado = null;
 
@@ -199,10 +293,11 @@ namespace NET_MVC.Datos
                         "JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
                         "JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
                         "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-                        "WHERE E.id_Entrenador = :p_id_entrenador", conexionBD))
+                        "WHERE E.id_Entrenador = :p_id_entrenador AND id_sede = :p_id_sede", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.Text;
                         cmd.Parameters.Add(":p_id_entrenador", OracleDbType.Int32).Value = int.Parse(identificacion);
+                        cmd.Parameters.Add(":p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
 
                         using (OracleDataReader reader = cmd.ExecuteReader())
                         {

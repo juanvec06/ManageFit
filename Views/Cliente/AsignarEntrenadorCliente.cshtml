@@ -11,14 +11,16 @@
 }
 
 <div class="container-grande">
-    <div class="text-Asignar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">ASIGNAR ENTRENADOR</div>
+<div class="text-Asignar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">ASIGNAR ENTRENADOR</div>
 
-    <div class="search-bar">
-        <label for="identificacion">Identificación:</label>
-        <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
-        <button type="button" onclick="openModal()">Asignar</button>
+
+<form id="asignarEntrenadorForm" method="post" asp-action="AsignarEntrenadorCliente">
+    <<div class="search-bar">
+        <label for="identificacionEntrenador">Identificación:</label>
+        <input type="text" id="identificacionEntrenador" name="identificacionEntrenador" placeholder="Ingrese la identificación" />
+        <button type="submit" class="btn btn-primary">Asignar</button>
     </div>
-
+</form>
     @Html.Partial("_ModalAsignar")
 
     <div class="table-container">
@@ -46,10 +48,56 @@
             </tbody>
         </table>
     </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ViewData["ValidationError"] as string))
+    {
+        <div class="error-message">
+            @ViewData["ValidationError"]
+        </div>
+    }
 </div>
 
+<script>
+    /*
+    function asignarEntrenador() {
+    let identificacionEntrenador = document.getElementById('identificacion').value;
+
+    $.ajax({
+        url: '/Cliente/AsignarEntrenadorCliente',
+        type: 'POST',
+        data: { identificacionEntrenador: identificacionEntrenador },
+        success: function (response) {
+            if (response.success) {
+                alert(response.mensaje);  // Muestra mensaje de éxito
+            } else {
+                alert(response.mensaje);  // Muestra mensaje de error
+            }
+        },
+        error: function () {
+            alert('Ocurrió un error al intentar asignar el entrenador.');
+        }
+    });
+    }
+
+    */
+</script>
 
 <style>
+    
+    .error-message {
+       position: absolute;
+       bottom: 10px;
+       left: 30px;
+       font-size: 20px;
+       color: red;
+     }
+
     .container-grande {
         display: flex;
         flex-direction: column;

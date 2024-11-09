@@ -5,10 +5,16 @@
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
     bool isInConsultar = (currentController == "Cliente" && (currentAction == "Listar") || currentController == "Entrenador" && (currentAction == "DashboardEntrenador"));
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "Listar") || 
-        currentController == "PlanMejoramientoFisico" && (currentAction == "PMF") ||
-        currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF") ||
-        currentController == "Cliente" && (currentAction == "BuscarCliente"));
+        (currentController == "Cliente" && (currentAction == "ClienteAsignado" || currentAction == "Listar") ||
+        (currentController == "PlanMejoramientoFisico" && ((currentAction.StartsWith("PMF") ||
+        (currentAction.StartsWith("modificarPMF"))))));
+
+    bool isInClienteAsignado = (currentController == "Cliente" && currentAction.StartsWith("ClienteAsignado"))
+    || (currentController == "PlanMejoramientoFisico" && (currentAction.StartsWith("modificarPMF") || currentAction.StartsWith("PMF") || currentAction.StartsWith("AgregarEjercicio")));
+
+    bool isInAsignarEjercicio = (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("AgregarEjercicio"));
+
+    bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("ClienteAsignado");
 }
 
 <head>
@@ -22,7 +28,8 @@
 <div id="navbar">
     <img class="admin-img" src="/img/entrenador.png" alt="Logo">
     <ul>
-        @if (isInConsultar)
+
+        @if (!isInClienteAsignado)
         {
             <li>
                 <a href="@Url.Action("Listar", "Cliente")"
@@ -30,14 +37,22 @@
                     <i class="now-ui-icons design_bullet-list-67"></i> Clientes asignados
                 </a>
             </li>
+
         }
-        @if (!isInConsultar)
+
+        @if (isInAsignarEjercicio || isInClienteAsignado)
         {
-            <li>
-                <a href="#" class="text-black">
-                    Código cliente:<br> @(Model.Identificacion ?? "Desconocido")
-                </a>
+            <li class="codigoCliente">
+                <h3>
+                    Codigo Cliente: <br />
+                    <span>000000000</span>
+                </h3>
             </li>
+        }
+
+        @if (isInClienteAsignado && !isInAsignarEjercicio)
+        {
+  
             <li>
                 <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico")"
                    class="nav-btn @(currentAction == "modificarPMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
@@ -51,7 +66,9 @@
                     <i class="now-ui-icons design_bullet-list-67"></i> PMF
                 </a>
             </li>
+
         }
+        
     </ul>
 
     <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
@@ -70,6 +87,13 @@
             </a>
 
         }
+
+        @if (isInClientePremium)
+        {
+            <a href=" @Url.Action("PaginaAnteriorClienteAsignado", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
     </div>
 
 </div>
@@ -86,5 +110,11 @@
         color: black;
         text-align: justify;
         font-weight: bold;
+    }
+
+    .codigoCliente{
+        color: black; 
+        margin-left: 50px;
+        font-size:20px;
     }
 </style>

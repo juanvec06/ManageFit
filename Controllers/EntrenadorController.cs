@@ -121,6 +121,8 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult BuscarEntrenador(string identificacion)
         {
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
             // Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))
             {
@@ -154,7 +156,7 @@ namespace NET_MVC.Controllers
 
             if (EntrenadorExistente)
             {
-                var entrenador = consultaEntrenador.ObtenerEntrenadorPorIdentificacion(identificacion);
+                var entrenador = consultaEntrenador.ObtenerEntrenadorPorIdentificacion(identificacion, IdSede);
 
                 // Verificar si se pudo obtener la información del cliente
                 if (entrenador != null)
@@ -163,7 +165,7 @@ namespace NET_MVC.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Error al obtener la información del cliente.";
+                    TempData["ErrorMessage"] = "Entrenador no encontrado.";
                     return RedirectToAction("InformacionEntrenador");
                 }
             }
@@ -184,50 +186,7 @@ namespace NET_MVC.Controllers
                 List<EntrenadorModel> entrenadoresFiltrados = new List<EntrenadorModel>();
                 string IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-                string sql = "SELECT E.id_Entrenador, " +
-                 "MAX(P.nombre_Persona) AS nombre_entrenador, " +
-                 "MAX(P.telefono_Persona) AS telefono_entrenador, " +
-                 "MAX(P.genero_persona) AS genero_entrenador, " +
-                 "MAX(AE.nombre_AE) AS area_especialidad, " +
-                 "COUNT(C.id_Cliente) AS numero_clientes, " +
-                 "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
-                 "MAX(CT.salario) AS salario " +
-                 "FROM Entrenador E " +
-                 "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-                 "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-                 "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
-                 "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-                 "WHERE P.id_Sede = " + IdSede +
-                 " GROUP BY E.id_Entrenador";
-
-
-                // Aplica el filtro según la selección
-                switch (filter)
-                {
-                    case "all":
-                        break;
-                    case "crossfit":
-                        sql = cadenaSqlAreaEspecialidad(1, IdSede); // Crossfit
-                        break;
-                    case "fuerza":
-                        sql = cadenaSqlAreaEspecialidad(2, IdSede); // Fuerza
-                        break;
-                    case "reduccion":
-                        sql = cadenaSqlAreaEspecialidad(3, IdSede); // Reducción de peso
-                        break;
-                    case "masculino":
-                        sql = cadenaSqlGenero(1, IdSede); // Género Masculino
-                        break;
-                    case "femenino":
-                        sql = cadenaSqlGenero(2, IdSede); // Género Femenino
-                        break;
-                    case "no-especificado":
-                        sql = cadenaSqlGenero(3, IdSede); // Género No especificado
-                        break;
-                    default:
-                        break;
-                }
-
+                string sql = consultaEntrenador.cadenaListarEntrenadores(filter, IdSede);
                 // Ejecutar la consulta y obtener los entrenadores filtrados
                 entrenadoresFiltrados = consultaEntrenador.ListarEntrenadores(sql);
 
@@ -244,51 +203,5 @@ namespace NET_MVC.Controllers
             }
         }
 
-        [Authorize(Roles = "Administrador")]
-        private string cadenaSqlAreaEspecialidad(int opcion, string IdSede)
-        {
-            string areaEspecialidad = opcion == 1 ? "Crossfit" :
-                                      opcion == 2 ? "Fuerza" :
-                                      opcion == 3 ? "Reducción de peso" : "Culturismo";
-
-            return "SELECT E.id_Entrenador, " +
-          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
-          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
-          "MAX(P.genero_persona) AS genero_entrenador, " +
-          "MAX(AE.nombre_AE) AS area_especialidad, " +
-          "COUNT(C.id_Cliente) AS numero_clientes, " +
-          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
-          "MAX(CT.salario) AS salario " +
-          "FROM Entrenador E " +
-          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
-          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-          "WHERE P.id_Sede = " + IdSede + " AND AE.nombre_AE = '" + areaEspecialidad + "' " +
-          "GROUP BY E.id_Entrenador";
-        }
-
-
-        [Authorize(Roles = "Administrador")]
-        private string cadenaSqlGenero(int opcion, string IdSede)
-        {
-            string genero = opcion == 1 ? "M" : opcion == 2 ? "F" : "NE";
-
-            return "SELECT E.id_Entrenador, " +
-          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
-          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
-          "MAX(P.genero_persona) AS genero_entrenador, " +
-          "MAX(AE.nombre_AE) AS area_especialidad, " +
-          "COUNT(C.id_Cliente) AS numero_clientes, " +
-          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
-          "MAX(CT.salario) AS salario " +
-          "FROM Entrenador E " +
-          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
-          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-          "WHERE P.id_Sede = " + IdSede + " AND P.genero_Persona = '" + genero + "' " +
-          "GROUP BY E.id_Entrenador";
-        }
     }
 }

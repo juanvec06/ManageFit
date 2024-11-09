@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using NET_MVC.Models;
 using NuGet.Protocol.Plugins;
@@ -29,7 +30,7 @@ namespace NET_MVC.Datos
 
                         // Agregar parámetros para el procedimiento almacenado
                         cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion;
-                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = null;
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = cliente.IdEntrenador;
                         cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = cliente.FechaNacimiento;
 
                         // Ejecutar el procedimiento almacenado
@@ -64,8 +65,62 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-
         
+        public string cadenaListarClientes(string filter, string IdSede)
+        {
+            string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
+                     "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                     "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                     "WHERE p.id_sede = " + IdSede +
+                     " GROUP BY c.id_cliente";
+
+            switch (filter)
+            {
+                case "all":
+                    break;
+                case "premium":
+                    sql = cadenasql2(1, IdSede); // Clientes premium
+                    break;
+                case "general":
+                    sql = cadenasql2(2, IdSede); // Clientes generales
+                    break;
+                case "masculino":
+                    sql = cadenasql3(1, IdSede); // Género Masculino
+                    break;
+                case "femenino":
+                    sql = cadenasql3(2, IdSede); // Género Femenino
+                    break;
+                case "no-especificado":
+                    sql = cadenasql3(3, IdSede); // Género No especificado
+                    break;
+                default:
+                    break;
+            }
+            return sql;
+        }
+        private string cadenasql2(int opcion, String IdSede)
+        {
+            string nomMembresia = opcion == 1 ? "Premium" :
+                                  "General";
+
+            return "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
+                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                                "WHERE p.id_sede = " + IdSede + " AND m.tipo = '" + nomMembresia + "' " +
+                                "GROUP BY c.id_cliente";
+        }
+        private string cadenasql3(int opcion, String IdSede)
+        {
+            string genero = opcion == 1 ? "M" :
+                            opcion == 2 ? "F" :
+                            "NE";
+
+            return "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
+                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
+                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
+                                "WHERE p.id_sede = " + IdSede + " AND p.genero_persona = '" + genero + "' " +
+                                "GROUP BY c.id_cliente";
+        }
         public List<ClienteModel> ListarClientes(string sql)
         {
             var clientes = new List<ClienteModel>();
@@ -233,7 +288,7 @@ namespace NET_MVC.Datos
             return existe;
         }
 
-        public ClienteModel ObtenerClientePorIdentificacion(string identificacion)
+        public ClienteModel ObtenerClientePorIdentificacion(string identificacion, string idSede)
         {
             ClienteModel clienteEncontrado = null;
 
@@ -247,10 +302,11 @@ namespace NET_MVC.Datos
                       "FROM Cliente c " +
                       "JOIN Persona p ON c.id_cliente = p.id_persona " +
                       "JOIN Membresia m ON c.id_cliente = m.id_cliente " +
-                      "WHERE c.id_cliente = :p_id_cliente", conexionBD))
+                      "WHERE c.id_cliente = :p_id_cliente AND id_sede = :p_id_sede", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.Text;
                         cmd.Parameters.Add(":p_id_cliente", OracleDbType.Int32).Value = int.Parse(identificacion);
+                        cmd.Parameters.Add(":p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
 
                         using (OracleDataReader reader = cmd.ExecuteReader())
                         {
