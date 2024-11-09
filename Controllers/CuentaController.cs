@@ -156,7 +156,15 @@ namespace NET_MVC.Controllers
 
         public IActionResult Home()
         {
-            return RedirectToAction("DashboardAdministrador", "Admin");
+            if (User.IsInRole("Administrador"))
+            {
+                return RedirectToAction("DashboardAdministrador", "Admin");
+            }
+            else if (User.IsInRole("Entrenador"))
+            {
+                return RedirectToAction("DashboardEntrenador", "Entrenador");
+            }
+            return View();
         }
         /**
         *<summary>

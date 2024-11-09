@@ -12,11 +12,14 @@
         CLIENTES
     </div>
 
-    <div class="search-bar">
-        <label for="identificacion">Identificación:</label>
-        <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
-        <button type="button" onclick="openModal()">Buscar</button>
-    </div>
+    <form id="buscarClienteForm" method="post" asp-action="BuscarCliente">
+        <div class="search-bar">
+            <label for="identificacion">Identificación:</label>
+            <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
+
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
 
     <div class="table-container">
         <table class="table table-bordered">
@@ -37,13 +40,24 @@
                         <td>@cliente.Nombre</td>
                         <td>@cliente.Telefono</td>
                         <td>@cliente.refMembresia</td>
-                        <td>@cliente.fechaMembresia</td>
+                        <td>@cliente.DiasRestantes</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
-
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ViewData["ValidationError"] as string))
+    {
+        <div class="error-message">
+            @ViewData["ValidationError"]
+        </div>
+    }
 </div>
 
 <!-- Asegúrate de que jQuery esté cargado -->
@@ -325,5 +339,13 @@
     .small-column {
         width: 200px; /* Puedes ajustar el ancho según lo necesario */
         text-align: center;
+    }
+
+    .error-message {
+        position: absolute;
+        bottom: 10px;
+        left: 30px;
+        font-size: 20px;
+        color: red;
     }
 </style>

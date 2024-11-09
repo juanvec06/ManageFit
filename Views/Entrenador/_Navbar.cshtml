@@ -1,12 +1,14 @@
-﻿@{
+﻿@model ClienteModel
+@{
     //Este Navbar es de Entrenador
     string currentAction = ViewContext.RouteData.Values["action"].ToString();
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
-
+    bool isInConsultar = (currentController == "Cliente" && (currentAction == "Listar") || currentController == "Entrenador" && (currentAction == "DashboardEntrenador"));
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "Consultar") || 
+        (currentController == "Cliente" && (currentAction == "Listar") || 
         currentController == "PlanMejoramientoFisico" && (currentAction == "PMF") ||
-        currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF"));
+        currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF") ||
+        currentController == "Cliente" && (currentAction == "BuscarCliente"));
 }
 
 <head>
@@ -20,26 +22,36 @@
 <div id="navbar">
     <img class="admin-img" src="/img/entrenador.png" alt="Logo">
     <ul>
-        <li>
-            <a href="@Url.Action("Listar", "Cliente")"
-               class="nav-btn @(currentAction == "Listar" && currentController == "Cliente" ? "active" : "")">
-                <i class="now-ui-icons design_bullet-list-67"></i> Clientes asignados
-            </a>
-        </li>
+        @if (isInConsultar)
+        {
+            <li>
+                <a href="@Url.Action("Listar", "Cliente")"
+                   class="nav-btn @(currentAction == "Listar" && currentController == "Cliente" ? "active" : "")">
+                    <i class="now-ui-icons design_bullet-list-67"></i> Clientes asignados
+                </a>
+            </li>
+        }
+        @if (!isInConsultar)
+        {
+            <li>
+                <a href="#" class="text-black">
+                    Código cliente:<br> @(Model.Identificacion ?? "Desconocido")
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico")"
+                   class="nav-btn @(currentAction == "modificarPMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
+                    <i class="now-ui-icons design_bullet-list-67"></i> Modificar PMF
+                </a>
+            </li>
 
-        <li>
-            <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico")"
-               class="nav-btn @(currentAction == "modificarPMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
-                <i class="now-ui-icons design_bullet-list-67"></i> Modificar PMF
-            </a>
-        </li>
-
-        <li>
-            <a href="@Url.Action("PMF", "PlanMejoramientoFisico")"
-               class="nav-btn @(currentAction == "PMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
-                <i class="now-ui-icons design_bullet-list-67"></i> PMF
-            </a>
-        </li>
+            <li>
+                <a href="@Url.Action("PMF", "PlanMejoramientoFisico")"
+                   class="nav-btn @(currentAction == "PMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
+                    <i class="now-ui-icons design_bullet-list-67"></i> PMF
+                </a>
+            </li>
+        }
     </ul>
 
     <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
@@ -67,5 +79,12 @@
         background-color: #EE1C25;
         color: white;
         font-weight: 600;
+        text-align: center;
+    }
+
+    .text-black {
+        color: black;
+        text-align: justify;
+        font-weight: bold;
     }
 </style>

@@ -42,17 +42,26 @@ namespace NET_MVC.Controllers
             }
             else if (User.IsInRole("Entrenador"))
             {
-                return View("ListarClientesAsignados", new List<ClienteModel> { });
+                var ClientesAsignados = ObtenerClientesAsignados();
+                return View("ListarClientesAsignados", ClientesAsignados);
             }
 
             // Si el usuario no tiene ninguno de los roles, podrías redirigir a una vista de error o acceso denegado
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Entrenador")]
         public IActionResult InformacionCliente()
         {
-            return View("InformacionCliente");
+            if (User.IsInRole("Administrador"))
+            {
+                return View("InformacionCliente");
+            }
+            else if (User.IsInRole("Entrenador"))
+            {
+                return RedirectToAction("Listar");
+            }
+            return View();
         }
 
         [Authorize(Roles = "Administrador")]
@@ -66,7 +75,7 @@ namespace NET_MVC.Controllers
         {
             List<EntrenadorModel> entrenadores = ObtenerEntrenadoresDisponibles();
             return View("AsignarEntrenadorCliente", entrenadores);
-        
+
         }
         [Authorize(Roles = "Administrador")]
         [HttpPost]
@@ -118,15 +127,22 @@ namespace NET_MVC.Controllers
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
-        
-        [Authorize(Roles = "Administrador")]
+
         [HttpPost]
+        [Authorize(Roles = "Administrador, Entrenador")]
         public IActionResult BuscarCliente(string identificacion)
         {
             // Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))
             {
-                TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
+                if (User.IsInRole("Administrador"))
+                {
+                    TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
+                }
+                else if (User.IsInRole("Entrenador"))
+                {
+                    TempData["ErrorMessage"] = "Por favor diligenciar los campos marcados como obligatorios.";
+                }
                 return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
             }
 
@@ -160,9 +176,14 @@ namespace NET_MVC.Controllers
                 var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion);
 
                 // Verificar si se pudo obtener la información del cliente
-                if (cliente != null)
+                if (cliente != null && User.IsInRole("Administrador"))
                 {
                     return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
+                }
+                else if (cliente != null && User.IsInRole("Entrenador"))
+                {
+                    TempData["Objetivo"] = ObtenerObjetivoDe(identificacion);
+                    return View("InformacionClienteAsignado", cliente); // Mostrar la información del cliente
                 }
                 else
                 {
@@ -172,11 +193,22 @@ namespace NET_MVC.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "Cliente no encontrado.";
+                if (User.IsInRole("Administrador"))
+                {
+                    TempData["ErrorMessage"] = "Cliente no encontrado.";
+                }
+                else if (User.IsInRole("Entrenador"))
+                {
+                    TempData["ErrorMessage"] = "Cliente no existente.";
+                }
                 return RedirectToAction("InformacionCliente");
             }
         }
-
+        [Authorize(Roles ="Entrenador")]
+        public string ObtenerObjetivoDe(string id)
+        {
+            return consultaCliente.GetObjetivo(id);
+        }
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
@@ -294,6 +326,21 @@ namespace NET_MVC.Controllers
             {
                 // Mensaje error
                 return new List<EntrenadorModel> { };
+            }
+        }
+        [Authorize(Roles = "Entrenador")]
+        private List<ClienteModel> ObtenerClientesAsignados()
+        {
+            String IdEntrenador = User.FindFirst(ClaimTypes.Name)?.Value;
+            List<ClienteModel> clientes = consultaCliente.ListarClientesAsignados(IdEntrenador);
+            if (clientes.Count() > 0)
+            {
+                return clientes;
+            }
+            else
+            {
+                // Mensaje no hay entrenadores disponibles
+                return new List<ClienteModel> { };
             }
         }
         [Authorize(Roles = "Administrador")]
