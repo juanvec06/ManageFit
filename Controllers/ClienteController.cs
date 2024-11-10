@@ -285,7 +285,7 @@ namespace NET_MVC.Controllers
                 }
                 return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
             }
-
+           
             // Verificar que la identificación no tenga más de 10 dígitos
             if (identificacion.Length > 10)
             {
@@ -293,19 +293,18 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
             }
 
+            // Verificar si la identificación es numérica
+            if (!int.TryParse(identificacion, out _))
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                return RedirectToAction("InformacionCliente");
+            }
 
             // Verificar que la identificación no sea menor a 0
             if (int.Parse(identificacion) < 0)
             {
                 TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
                 return RedirectToAction("InformacionEntrenador");
-            }
-
-            // Verificar si la identificación es numérica
-            if (!int.TryParse(identificacion, out _))
-            {
-                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
-                return RedirectToAction("InformacionCliente");
             }
 
             // Verificar si la persona existe en la base de datos
@@ -322,7 +321,7 @@ namespace NET_MVC.Controllers
                 }
                 else if (cliente != null && User.IsInRole("Entrenador"))
                 {
-                    TempData["Objetivo"] = ObtenerObjetivoDe(identificacion);
+                    TempData["ClienteId"] = identificacion;
                     return View("InformacionClienteAsignado", cliente); // Mostrar la información del cliente
                 }
                 else

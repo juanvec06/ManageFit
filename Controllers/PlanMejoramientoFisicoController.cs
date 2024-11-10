@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 using NET_MVC.Datos;
 using NET_MVC.Models;
@@ -17,16 +18,18 @@ namespace NET_MVC.Controllers
             return View();
         }
 
-        public IActionResult modificarPMF()
+        public IActionResult modificarPMF(string clienteID)
         {
+            TempData["ClienteId"] = clienteID;
             return View("ModificarPMF");
         }
 
         [HttpPost]
-        public JsonResult AgregarPMF(PMFModel pmf)
+        public JsonResult AgregarPMF(PMFModel pmf, string clienteID)
         {
             HttpContext.Session.SetString("FechaValoracion", pmf.FechaValoracion.ToString());
-            pmf.IdCliente = 4;
+            int IdCliente = int.Parse(clienteID);
+            pmf.IdCliente = IdCliente;
             //pmf.IdCliente = int.Parse(HttpContext.Session.GetString("4"));
             if (ModelState.IsValid)
             {
@@ -35,6 +38,7 @@ namespace NET_MVC.Controllers
                     var respuesta = consulta.AgregarPMF(pmf);
                     if (respuesta)
                     {
+                        TempData["ClienteId"] = clienteID;
                         return Json(new { success = true, redirectUrl = Url.Action("modificarEjercicios") });
                     }
                     else
@@ -58,14 +62,14 @@ namespace NET_MVC.Controllers
         {
             return View("modificarEjercicios");
         }
-        public IActionResult AgregarEjercicio()
+        public IActionResult AgregarEjercicio(int clienteID)
         {
             List<NombreEjercicio> opciones = consulta.ObtenerOpciones();
             var modelo = new EjercicioModel
             {
                 Opciones = opciones
             };
-
+            TempData["ClienteId"] = clienteID;
             return View("AgregarEjercicio", modelo);
         }
 
@@ -75,9 +79,10 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
-        public JsonResult AgregarEjercicioProc(EjercicioModel ejercicio)
+        public JsonResult AgregarEjercicioProc(EjercicioModel ejercicio, string clienteID)
         {
-            ejercicio.IdCliente = 4;
+            int IdCliente = int.Parse(clienteID);
+            ejercicio.IdCliente = IdCliente;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
             if (ModelState.IsValid)
             {

@@ -1,20 +1,20 @@
-﻿@model ClienteModel
+﻿
 @{
     //Este Navbar es de Entrenador
     string currentAction = ViewContext.RouteData.Values["action"].ToString();
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
     bool isInConsultar = (currentController == "Cliente" && (currentAction == "Listar") || currentController == "Entrenador" && (currentAction == "DashboardEntrenador"));
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "ClienteAsignado" || currentAction == "Listar") ||
+        (currentController == "Cliente" && (currentAction == "BuscarCliente" || currentAction == "Listar") ||
         (currentController == "PlanMejoramientoFisico" && ((currentAction.StartsWith("PMF") ||
         (currentAction.StartsWith("modificarPMF"))))));
 
-    bool isInClienteAsignado = (currentController == "Cliente" && currentAction.StartsWith("ClienteAsignado"))
+    bool isInClienteAsignado = (currentController == "Cliente" && currentAction.StartsWith("BuscarCliente"))
     || (currentController == "PlanMejoramientoFisico" && (currentAction.StartsWith("modificarPMF") || currentAction.StartsWith("PMF") || currentAction.StartsWith("AgregarEjercicio")));
 
     bool isInAsignarEjercicio = (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("AgregarEjercicio"));
 
-    bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("ClienteAsignado");
+    bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
 }
 
 <head>
@@ -45,16 +45,16 @@
             <li class="codigoCliente">
                 <h3>
                     Codigo Cliente: <br />
-                    <span>000000000</span>
+                    <span>@(TempData["ClienteId"] ?? "000000000")</span>
                 </h3>
             </li>
         }
 
         @if (isInClienteAsignado && !isInAsignarEjercicio)
         {
-  
+            var clienteId = TempData["ClienteId"] as string ?? "000000000"; // Recupera el ID del cliente o usa un valor predeterminado
             <li>
-                <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico")"
+                <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico", new { clienteId = clienteId })"
                    class="nav-btn @(currentAction == "modificarPMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
                     <i class="now-ui-icons design_bullet-list-67"></i> Modificar PMF
                 </a>
