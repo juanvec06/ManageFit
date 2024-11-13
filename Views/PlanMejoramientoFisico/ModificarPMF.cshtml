@@ -5,24 +5,25 @@
 }
 
 <div class="container-grande">
-    <div class="text-Asignar" style="text-align: center; color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">
+    <div class="text-Asignar" style="text-align: center;
+    color: #EE1C25;
+    font-size: 50px;
+    font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word">
         MODIFICAR PMF
     </div>
 
     <form asp-action="AgregarPMF" asp-controller="PlanMejoramientoFisico" method="post" class="form p-3 mt-3">
-        <!-- Campo oculto para el ClienteID -->
-        <input type="hidden" name="clienteID" value="@TempData["ClienteID"]" />
-
         <div class="search-bar">
+
             <img class="cliente-img" src="/img/check-list.png" alt="Logo">
 
             <div class="search-bar-2">
                 <div class="data-field">
-                    <h4>Fecha de valoración:</h4>
+                    <h4>Fecha de valoracion:</h4>
                     <div class="relative datapicker-styles">
                         <input id="default-datepicker" asp-for="FechaValoracion" type="date"
                                class="bg-white border border-gray-300 text-gray-900 text-sm
-                                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                placeholder="Seleccionar fecha">
                         <span id="fecha-error" class="text-danger error-message"></span>
                         <span asp-validation-for="FechaValoracion" class="text-danger error-message"></span>
@@ -31,24 +32,22 @@
             </div>
 
             <div class="boton">
-                <button type="submit" id="guardarPMF" class="btn mt-3">Guardar</button>
+                <button type="button" id="guardarPMF" class="btn mt-3">Modificar</button>
             </div>
-        </div>
     </form>
 </div>
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script>
     $(document).ready(function () {
-        
+
         // Enviar el formulario
         $('#guardarPMF').on('click', function () {
             // Limpia mensajes de error anteriores
             $('#fecha-error').text('');
-            
+
             // Validación de campos vacíos
             let camposValidos = true;
 
@@ -60,18 +59,16 @@
             } else {
                 var fecha = new Date(fechaValoracion);
                 var hoy = new Date();
-
+                var limite = new Date(hoy.getDate() + 7);
                 // Comprobar si la fecha es futura
                 if (fecha > hoy) {
                     $('#fecha-error').text('No puede ser en el futuro.');
                     camposValidos = false;
                 } else {
-                    var limite = new Date(hoy);
-                    limite.setDate(hoy.getDate() + 7);
                     if (fechaValoracion > limite) {
                         $('#fecha-error').text('No puede ser hace más de una semana.');
                         camposValidos = false;
-                    }  
+                    }
                 }
             }
 
@@ -82,8 +79,7 @@
 
             // Si todo está bien, prepara los datos del formulario
             var formData = {
-                FechaValoracion: fechaValoracion,
-                ClienteID: '@TempData["ClienteID"]' 
+                FechaValoracion: fechaValoracion
             };
 
             // Envía los datos mediante AJAX
@@ -111,10 +107,10 @@
 <style>
 
     #default-datepicker {
-        width: 400px; 
+        width: 400px;
         height: 50px;
         font-size: 16px;
-        border-radius: 10px; 
+        border-radius: 10px;
     }
 
     .container-grande {
@@ -141,20 +137,20 @@
         align-items: center;
     }
 
-    .data-field h4 {
-        margin-right: 15px;
-        padding: 8px;
-        background-color: #969393;
-        border-radius: 10px;
-        color: black;
-        white-space: nowrap;
-    }
+        .data-field h4 {
+            margin-right: 15px;
+            padding: 8px;
+            background-color: #969393;
+            border-radius: 10px;
+            color: black;
+            white-space: nowrap;
+        }
 
 
 
     .search-bar-2 {
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
         align-items: flex-start;
         margin-left: 40px;
     }
@@ -176,7 +172,7 @@
         line-height: 70px;
         word-wrap: break-word;
     }
-    
+
     .table-container {
         width: 95%;
         margin: 0 auto;
@@ -200,10 +196,10 @@
         border: 2px solid #dee2e6;
     }
 
-    .botones{
+    .botones {
         display: flex;
         gap: 10px;
-        margin-top: 5px; 
+        margin-top: 5px;
     }
 
     .btn {

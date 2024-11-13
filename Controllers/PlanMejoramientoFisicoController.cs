@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 using NET_MVC.Datos;
 using NET_MVC.Models;
@@ -17,38 +16,44 @@ namespace NET_MVC.Controllers
         {
             return View();
         }
-
-        public IActionResult modificarPMF(string clienteID)
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult modificarPMF()
         {
-            TempData["ClienteId"] = clienteID;
+
             return View("ModificarPMF");
         }
 
+        [Authorize(Roles = "Entrenador")]
         [HttpPost]
-        public JsonResult AgregarPMF(PMFModel pmf, string clienteID)
+        public JsonResult AgregarPMF(PMFModel pmf)
         {
             HttpContext.Session.SetString("FechaValoracion", pmf.FechaValoracion.ToString());
-            int IdCliente = int.Parse(clienteID);
-            pmf.IdCliente = IdCliente;
-            //pmf.IdCliente = int.Parse(HttpContext.Session.GetString("4"));
+            pmf.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio"));
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var respuesta = consulta.AgregarPMF(pmf);
-                    if (respuesta)
+                    var existencia = consulta.PmfExistente(pmf);
+                    if (existencia)
                     {
-                        TempData["ClienteId"] = clienteID;
                         return Json(new { success = true, redirectUrl = Url.Action("modificarEjercicios") });
                     }
                     else
                     {
-                        return Json(new { existe = respuesta });
+                        var respuesta = consulta.AgregarPMF(pmf);
+                        if (respuesta)
+                        {
+                            return Json(new { success = true, redirectUrl = Url.Action("modificarEjercicios") });
+                        }
+                        else
+                        {
+                            return Json(new { existe = respuesta });
+                        }
                     }
                 }
                 catch (OracleException oex)
                 {
-                    
+
                     return Json(new { success = false, errors = new { MensajeError = "Error inesperado: " + oex.Message } });
                 }
                 catch (Exception ex)
@@ -58,31 +63,48 @@ namespace NET_MVC.Controllers
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
+
+        [Authorize(Roles = "Entrenador")]
+        private List<EjercicioModel> ObtenerEjercicios()
+        {
+            int idCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
+            DateTime FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
+            List<EjercicioModel> ejercicios = consulta.ListarEjercicios(idCliente, FechaValoracion);
+            if (ejercicios.Count() > 0)
+            {
+                return ejercicios;
+            }
+            else
+            {
+                // Mensaje no hay entrenadores disponibles
+                return new List<EjercicioModel> { };
+            }
+        }
+
+        [Authorize(Roles = "Entrenador")]
         public IActionResult modificarEjercicios()
         {
-            return View("modificarEjercicios");
+            var ejercicios = ObtenerEjercicios();
+            return View("modificarEjercicios", ejercicios);
         }
-        public IActionResult AgregarEjercicio(int clienteID)
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult AgregarEjercicio()
         {
             List<NombreEjercicio> opciones = consulta.ObtenerOpciones();
             var modelo = new EjercicioModel
             {
                 Opciones = opciones
             };
-            TempData["ClienteId"] = clienteID;
+
             return View("AgregarEjercicio", modelo);
         }
 
-        public IActionResult PMF()
-        {
-            return View("PMF");
-        }
 
+        [Authorize(Roles = "Entrenador")]
         [HttpPost]
-        public JsonResult AgregarEjercicioProc(EjercicioModel ejercicio, string clienteID)
+        public JsonResult AgregarEjercicioProc(EjercicioModel ejercicio)
         {
-            int IdCliente = int.Parse(clienteID);
-            ejercicio.IdCliente = IdCliente;
+            ejercicio.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
             if (ModelState.IsValid)
             {

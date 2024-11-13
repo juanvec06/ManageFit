@@ -1,4 +1,5 @@
-﻿
+﻿@model List<NET_MVC.Models.EjercicioModel>
+
 @{
     ViewData["Title"] = "Modificar PMF";
     Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
@@ -19,11 +20,11 @@
 
         <div class="search-bar-2">
             <div class="botones">
-                <button type="button" id="añadirEjercicio" class="btn mt-3" onclick="window.location.href='@Url.Action("AgregarEjercicio", "PlanMejoramientoFisico",new { clienteID = TempData["ClienteID"] })'">Añadir ejercicio</button>
+                <button type="button" id="añadirEjercicio" class="btn mt-3" onclick="window.location.href='@Url.Action("AgregarEjercicio", "PlanMejoramientoFisico")'">Añadir ejercicio</button>
                 <button type="button" class="btn mt-3">Eliminar ejercicio</button>
             </div>
         </div>
-       
+
     </div>
 
     <div class="table-container">
@@ -31,38 +32,22 @@
 
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nombre</th>
-                    <th>Telefono</th>
-                    <th>Genero</th>
-                    <th>Área de especialidad</th>
-                    <th>Fecha de contratación</th>
-                    <th>Clientes asignados</th>
+                    <th>Repeticiones</th>
+                    <th>Series</th>
+                    <th>Dia de la semana</th>
                 </tr>
             </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>1</td>
-                    <td>Juan</td>
-                    <td>1234567890</td>
-                    <td>Premium</td>
-                    <td>15</td>
-                    <td>Fitness</td>
-                    <td>5</td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>Sofi</td>
-                    <td>0987654321</td>
-                    <td>General</td>
-                    <td>10</td>
-                    <td>Yoga</td>
-                    <td>3</td>
-                </tr>
-
+            <tbody id="tabla-clientes">
+                @foreach (var ejercicio in Model)
+                {
+                    <tr>
+                        <td>@ejercicio.NombreString</td>
+                        <td>@ejercicio.Repeticiones</td>
+                        <td>@ejercicio.Series</td>
+                        <td>@ejercicio.Dia</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -78,10 +63,10 @@
 <style>
 
     #default-datepicker {
-        width: 400px; 
+        width: 400px;
         height: 50px;
         font-size: 16px;
-        border-radius: 10px; 
+        border-radius: 10px;
     }
 
     .container-grande {
@@ -108,20 +93,20 @@
         align-items: center;
     }
 
-    .data-field h4 {
-        margin-right: 15px;
-        padding: 8px;
-        background-color: #969393;
-        border-radius: 10px;
-        color: black;
-        white-space: nowrap;
-    }
+        .data-field h4 {
+            margin-right: 15px;
+            padding: 8px;
+            background-color: #969393;
+            border-radius: 10px;
+            color: black;
+            white-space: nowrap;
+        }
 
 
 
     .search-bar-2 {
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
         align-items: flex-start;
         margin-left: 40px;
     }
@@ -143,7 +128,7 @@
         line-height: 70px;
         word-wrap: break-word;
     }
-    
+
     .table-container {
         width: 95%;
         margin: 0 auto;
@@ -167,10 +152,10 @@
         border: 2px solid #dee2e6;
     }
 
-    .botones{
+    .botones {
         display: flex;
         gap: 10px;
-        margin-top: 5px; 
+        margin-top: 5px;
     }
 
     .btn {

@@ -96,7 +96,7 @@
             let camposValidos = true;
 
             // Validar el campo de dia de la semana
-            var nombre = $('#Nombre').val();  
+            var nombre = $('#Nombre').val();
             if (!nombre) {
                 $('#nombre-error').text('Campo obligatorio.');
                 camposValidos = false;
@@ -129,7 +129,7 @@
             }
 
             // Validar el campo de dia de la semana
-            var dia = $('#Dia').val();  
+            var dia = $('#Dia').val();
             if (!dia) {
                 $('#dia-error').text('Campo obligatorio.');
                 camposValidos = false;
@@ -145,8 +145,7 @@
                 Nombre: nombre,
                 Repeticiones: repeticiones,
                 Series: series,
-                Dia: dia,
-                ClienteID: '@TempData["ClienteID"]'
+                Dia: dia
             };
 
             // Envía los datos mediante AJAX
@@ -173,7 +172,7 @@
 
 <style>
 
-    .text-registrar{
+    .text-registrar {
         margin-right: 30px;
     }
 
@@ -228,9 +227,9 @@
         left: 64%;
     }
 
-    .wrapper .btn:hover {
-        background-color: darkred;
-    }
+        .wrapper .btn:hover {
+            background-color: darkred;
+        }
 
     .wrapper a:hover {
         color: #039BE5;
