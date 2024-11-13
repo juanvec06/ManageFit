@@ -77,7 +77,7 @@ namespace NET_MVC.Controllers
             return View("InformacionClienteEspecifico");
         }
 
-        
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult AsignarEntrenadorCliente(string identificacionEntrenador)
@@ -87,7 +87,7 @@ namespace NET_MVC.Controllers
             // Verifica si el entrenador está en la lista de disponibles
             for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
             {
-                if(identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
+                if (identificacionEntrenador == entrenadoresDisponibles[varIdx].Identificacion)
                 {
                     auxCliente.IdEntrenador = int.Parse(identificacionEntrenador);
 
@@ -96,7 +96,7 @@ namespace NET_MVC.Controllers
                     return Json(new { success = true, mensaje = "Entrenador asignado correctamente." });
                 }
             }
-                return Json(new { success = false, mensaje = "El entrenador no está disponible." });
+            return Json(new { success = false, mensaje = "El entrenador no está disponible." });
         }
 
         /*
@@ -271,7 +271,6 @@ namespace NET_MVC.Controllers
         public IActionResult BuscarCliente(string identificacion)
         {
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-
             // Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))
             {
@@ -285,7 +284,7 @@ namespace NET_MVC.Controllers
                 }
                 return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
             }
-           
+
             // Verificar que la identificación no tenga más de 10 dígitos
             if (identificacion.Length > 10)
             {
@@ -312,8 +311,8 @@ namespace NET_MVC.Controllers
 
             if (clienteExiste)
             {
-                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion,IdSede);
-
+                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion, IdSede);
+                HttpContext.Session.SetString("ClienteIdEjercicio", identificacion.ToString());
                 // Verificar si se pudo obtener la información del cliente
                 if (cliente != null && User.IsInRole("Administrador"))
                 {
@@ -343,11 +342,7 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionCliente");
             }
         }
-        [Authorize(Roles ="Entrenador")]
-        public string ObtenerObjetivoDe(string id)
-        {
-            return consultaCliente.GetObjetivo(id);
-        }
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public JsonResult VerificarClienteExistente(string identificacion)
@@ -382,7 +377,7 @@ namespace NET_MVC.Controllers
             List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            string sql = consultaCliente.cadenaListarClientes(filter,IdSede);
+            string sql = consultaCliente.cadenaListarClientes(filter, IdSede);
 
             // Ejecuta la consulta y obtiene la lista filtrada de clientes
             clientesFiltrados = consultaCliente.ListarClientes(sql);
@@ -415,6 +410,7 @@ namespace NET_MVC.Controllers
                 return new List<ClienteModel> { };
             }
         }
+
         [Authorize(Roles = "Administrador")]
         private List<EntrenadorModel> ObtenerEntrenadoresDisponibles()
         {
@@ -439,6 +435,7 @@ namespace NET_MVC.Controllers
                 return new List<EntrenadorModel> { };
             }
         }
+
         [Authorize(Roles = "Entrenador")]
         private List<ClienteModel> ObtenerClientesAsignados()
         {
@@ -453,36 +450,6 @@ namespace NET_MVC.Controllers
                 // Mensaje no hay entrenadores disponibles
                 return new List<ClienteModel> { };
             }
-        }
-        [Authorize(Roles = "Administrador")]
-        private string cadenasql2(int opcion, String IdSede)
-        {
-            string nomMembresia;
-            if (opcion == 1) nomMembresia = "Premium";
-            else nomMembresia = "General";
-
-            string sql2 = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede + " AND m.tipo = '" + nomMembresia + "' " +
-                                "GROUP BY c.id_cliente";
-
-            return sql2;
-        }
-        [Authorize(Roles = "Administrador")]
-        private string cadenasql3(int opcion, String IdSede)
-        {
-            string genero;
-            if (opcion == 1) genero = "M";
-            else if (opcion == 2) genero = "F";
-            else genero = "NE";
-
-            string sql3 = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede + " AND p.genero_persona = '" + genero + "' " +
-                                "GROUP BY c.id_cliente";
-            return sql3;
         }
 
     }

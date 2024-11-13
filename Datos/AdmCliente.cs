@@ -65,7 +65,7 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-        
+
         public string cadenaListarClientes(string filter, string IdSede)
         {
             string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
@@ -163,29 +163,44 @@ namespace NET_MVC.Datos
         public List<ClienteModel> ListarClientesAsignados(string idEntrenador)
         {
             List<ClienteModel> clientes = new List<ClienteModel>();
-            if (Conexion.abrirConexion())
+            try
             {
-                string sql = "SELECT CLIENTE.id_cliente AS id_cliente, PERSONA.nombre_persona AS nombre, PERSONA.telefono_persona AS telefono, MEMBRESIA.tipo AS membresia,calcular_dias_restantes(CLIENTE.id_cliente) AS dias_restantes " +
-                             "FROM cliente" +
-                             "    INNER JOIN persona ON cliente.id_cliente = persona.id_persona" +
-                             "    INNER JOIN membresia ON cliente.id_cliente = membresia.id_cliente" +
-                             "    WHERE CLIENTE.id_entrenador = "+idEntrenador;
-                using (OracleCommand query = new OracleCommand(sql, conexionBD))
+                if (Conexion.abrirConexion())
                 {
-                    OracleDataReader reader = query.ExecuteReader();
-                    while (reader.Read())
+                    string sql = "SELECT CLIENTE.id_cliente AS id_cliente, PERSONA.nombre_persona AS nombre, PERSONA.telefono_persona AS telefono, MEMBRESIA.tipo AS membresia,calcular_dias_restantes(CLIENTE.id_cliente) AS dias_restantes " +
+                                 "FROM cliente" +
+                                 "    INNER JOIN persona ON cliente.id_cliente = persona.id_persona" +
+                                 "    INNER JOIN membresia ON cliente.id_cliente = membresia.id_cliente" +
+                                 "    WHERE CLIENTE.id_entrenador = " + idEntrenador;
+                    using (OracleCommand query = new OracleCommand(sql, conexionBD))
                     {
-                        ClienteModel objcliente = new ClienteModel
+                        OracleDataReader reader = query.ExecuteReader();
+                        while (reader.Read())
                         {
-                            Identificacion = reader["id_cliente"].ToString(),
-                            Nombre = reader["nombre"].ToString(),
-                            Telefono = reader["telefono"].ToString(),
-                            refMembresia = reader["membresia"].ToString(),
-                            DiasRestantes = Convert.ToInt32(reader["dias_restantes"])
-                        };
-                        clientes.Add(objcliente);
+                            ClienteModel objcliente = new ClienteModel
+                            {
+                                Identificacion = reader["id_cliente"].ToString(),
+                                Nombre = reader["nombre"].ToString(),
+                                Telefono = reader["telefono"].ToString(),
+                                refMembresia = reader["membresia"].ToString(),
+                                DiasRestantes = Convert.ToInt32(reader["dias_restantes"])
+                            };
+                            clientes.Add(objcliente);
+                        }
                     }
                 }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); //Cerrar la conexión
             }
             return clientes;
         }
@@ -224,39 +239,7 @@ namespace NET_MVC.Datos
             }
             return existe;
         }
-        public string GetObjetivo(string id)
-        {
-            string objetivo = "";
-            try
-            {
-                if (Conexion.abrirConexion())
-                {
-                    using (OracleCommand cmd = new OracleCommand(
-                        "SELECT OBJETIVO FROM CLIENTE NATURAL JOIN PMF WHERE ID_CLIENTE = :p_id_cliente", conexionBD))
-                    {
-                        cmd.Parameters.Add(":p_id_cliente", OracleDbType.Varchar2).Value = id;
 
-                        using (OracleDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                objetivo = reader.GetString(0);
-                            }
-                        }
-                    }
-                }
-                return objetivo;
-            }
-            catch (OracleException oex)
-            {
-                throw new Exception("Error en Oracle: " + oex.Message);
-            }
-            finally
-            {
-                Conexion.cerrarConexion();
-            }
-        }
-        // Función para verificar la existencia de un cliente
         public bool ClienteExiste(string identificacion)
         {
             bool existe = false;

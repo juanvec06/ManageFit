@@ -63,48 +63,6 @@
 <!-- Asegúrate de que jQuery esté cargado -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        // Cuando se presiona el botón de filtrar
-        $('#filtrar').on('click', function () {
-            var selectedFilter = $('#filter').val(); // Obtiene el valor del filtro seleccionado
-
-            // Realiza la solicitud Ajax
-            $.ajax({
-                url: '@Url.Action("Filtrar", "Cliente")', // Acción en el controlador
-                type: 'POST',
-                data: { filter: selectedFilter }, // Enviamos el filtro seleccionado al servidor
-                success: function (response) {
-
-                    // Limpiar el cuerpo de la tabla
-                    $('#tabla-clientes').empty();
-
-                    // Recorre los clientes devueltos y los agrega a la tabla
-                    $.each(response.clientes, function (index, cliente) {
-                        $('#tabla-clientes').append(
-                            `<tr>
-                                    <td>${cliente.identificacion}</td>
-                                    <td>${cliente.nombre}</td>
-                                    <td>${cliente.telefono}</td>
-                                    <td>${cliente.refMembresia}</td>
-                                    <td>${cliente.fechaMembresia}</td>
-                                </tr>`
-                        );
-                    });
-
-                    // Actualiza el total de clientes mostrados
-                    $('#total-clientes').text(response.totalClientes);
-                },
-                error: function () {
-                    alert("Error al aplicar el filtro.");
-                }
-            });
-        });
-    });
-</script>
-
-
-
 <style>
 
     .search-bar {

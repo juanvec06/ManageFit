@@ -108,7 +108,7 @@ namespace NET_MVC.Datos
                                 });
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -126,6 +126,87 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
             return opciones;
+        }
+
+        public List<EjercicioModel> ListarEjercicios(int idCliente, DateTime FechaValoracion)
+        {
+            string fecha = FechaValoracion.ToString("yyyy-MM-dd");
+            List<EjercicioModel> ejercicios = new List<EjercicioModel>();
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    string sql = "SELECT NOMBREEJERCICIO.NOMBRE_EJERCICIO as nombre, " +
+                                 "EJERCICIO.NUMERO_REPETICIONES as repeticiones, " +
+                                 "EJERCICIO.NUMERO_SERIES as series, " +
+                                 "EJERCICIO.DIA_SEMANA dia " +
+                                 "FROM EJERCICIO " +
+                                 "INNER JOIN NOMBREEJERCICIO ON EJERCICIO.ID_NOMBRE_EJERCICIO = NOMBREEJERCICIO.ID_NOMBRE_EJERCICIO " +
+                                 "WHERE EJERCICIO.ID_CLIENTE = " + idCliente + " AND EJERCICIO.ID_FECHA_VALORACION = TO_DATE('" + fecha + "', 'yyyy-MM-dd')";
+
+                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    {
+                        OracleDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            EjercicioModel objejercicio = new EjercicioModel
+                            {
+                                NombreString = reader["nombre"].ToString(),
+                                Repeticiones = Convert.ToInt32(reader["repeticiones"]),
+                                Series = Convert.ToInt32(reader["series"]),
+                                Dia = reader["dia"].ToString(),
+                            };
+                            ejercicios.Add(objejercicio);
+                        }
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); //Cerrar la conexión
+            }
+            return ejercicios;
+        }
+
+        public bool PmfExistente(PMFModel pmf)
+        {
+            bool existe = false;
+            DateTime fecha = Convert.ToDateTime(pmf.FechaValoracion);
+            string fechaString = fecha.ToString("yyyy-MM-dd");
+
+            try
+            {
+                string sql = "SELECT COUNT(*) FROM pmf WHERE id_cliente = " + pmf.IdCliente +
+                    " AND FECHA_VALORACION = TO_DATE('" + fechaString + "', 'yyyy-MM-dd')";
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    {
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        // Si el contador es mayor a 0, significa que el cliente existe
+                        existe = count > 0;
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
+            return existe;
         }
     }
 }

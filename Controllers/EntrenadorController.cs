@@ -45,7 +45,7 @@ namespace NET_MVC.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Administrador")]
+        [Authorize(Roles = "Administrador")]
         public JsonResult RegistrarEntrenador(EntrenadorModel Entrenador)
         {
             // Obtener el usuario actual
@@ -138,7 +138,7 @@ namespace NET_MVC.Controllers
             }
 
             // Verificar que la identificación no sea menor a 0
-            if(int.Parse(identificacion) < 0)
+            if (int.Parse(identificacion) < 0)
             {
                 TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
                 return RedirectToAction("InformacionEntrenador");
@@ -196,7 +196,7 @@ namespace NET_MVC.Controllers
                     totalEntrenadores = entrenadoresFiltrados.Count
                 });
 
-                }
+            }
             catch (Exception ex)
             {
                 return Json(new { error = ex.Message });
