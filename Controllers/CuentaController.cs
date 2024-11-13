@@ -209,7 +209,7 @@ namespace NET_MVC.Controllers
 
         public IActionResult PaginaAnteriorClienteAsignado()
         {
-            return RedirectToAction("Cliente", "Listar");
+            return RedirectToAction("Listar", "Cliente");
         }
         
     }

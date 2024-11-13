@@ -324,10 +324,13 @@ namespace NET_MVC.Controllers
                     TempData["ClienteId"] = identificacion;
                     return View("InformacionClienteAsignado", cliente); // Mostrar la información del cliente
                 }
-                else
+                else if(User.IsInRole("Administrador"))
                 {
                     TempData["ErrorMessage"] = "Cliente no encontrado.";
-                    return RedirectToAction("InformacionCliente");
+                }
+                else if (User.IsInRole("Entrenador"))
+                {
+                    TempData["ErrorMessage"] = "Cliente no existente.";
                 }
             }
             else
@@ -340,8 +343,8 @@ namespace NET_MVC.Controllers
                 {
                     TempData["ErrorMessage"] = "Cliente no existente.";
                 }
-                return RedirectToAction("InformacionCliente");
             }
+            return RedirectToAction("InformacionCliente");
         }
         [Authorize(Roles ="Entrenador")]
         public string ObtenerObjetivoDe(string id)
