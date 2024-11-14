@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using NET_MVC.Models;
 using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
@@ -30,7 +31,12 @@ namespace NET_MVC.Datos
 
                         // Agregar parámetros para el procedimiento almacenado
                         cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion;
-                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = cliente.IdEntrenador;
+                        if(cliente.IdEntrenador == 0 || cliente.IdEntrenador == null){
+                            cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = null;
+                        }
+                        else{
+                            cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = cliente.IdEntrenador;
+                        }
                         cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = cliente.FechaNacimiento;
 
                         // Ejecutar el procedimiento almacenado
