@@ -12,8 +12,7 @@
         CLIENTES
     </div>
 
-
-    <form id="buscarClienteForm" method="post" asp-action="ClienteAsignado">
+    <form id="buscarClienteForm" method="post" asp-action="BuscarCliente">
         <div class="search-bar">
             <label for="identificacion">Identificación:</label>
             <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
@@ -41,59 +40,28 @@
                         <td>@cliente.Nombre</td>
                         <td>@cliente.Telefono</td>
                         <td>@cliente.refMembresia</td>
-                        <td>@cliente.fechaMembresia</td>
+                        <td>@cliente.DiasRestantes</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
-
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ViewData["ValidationError"] as string))
+    {
+        <div class="error-message">
+            @ViewData["ValidationError"]
+        </div>
+    }
 </div>
 
 <!-- Asegúrate de que jQuery esté cargado -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        // Cuando se presiona el botón de filtrar
-        $('#filtrar').on('click', function () {
-            var selectedFilter = $('#filter').val(); // Obtiene el valor del filtro seleccionado
-
-            // Realiza la solicitud Ajax
-            $.ajax({
-                url: '@Url.Action("Filtrar", "Cliente")', // Acción en el controlador
-                type: 'POST',
-                data: { filter: selectedFilter }, // Enviamos el filtro seleccionado al servidor
-                success: function (response) {
-
-                    // Limpiar el cuerpo de la tabla
-                    $('#tabla-clientes').empty();
-
-                    // Recorre los clientes devueltos y los agrega a la tabla
-                    $.each(response.clientes, function (index, cliente) {
-                        $('#tabla-clientes').append(
-                            `<tr>
-                                    <td>${cliente.identificacion}</td>
-                                    <td>${cliente.nombre}</td>
-                                    <td>${cliente.telefono}</td>
-                                    <td>${cliente.refMembresia}</td>
-                                    <td>${cliente.fechaMembresia}</td>
-                                </tr>`
-                        );
-                    });
-
-                    // Actualiza el total de clientes mostrados
-                    $('#total-clientes').text(response.totalClientes);
-                },
-                error: function () {
-                    alert("Error al aplicar el filtro.");
-                }
-            });
-        });
-    });
-</script>
-
-
 
 <style>
 
@@ -272,5 +240,13 @@
     .small-column {
         width: 200px; /* Puedes ajustar el ancho según lo necesario */
         text-align: center;
+    }
+
+    .error-message {
+        position: absolute;
+        bottom: 10px;
+        left: 30px;
+        font-size: 20px;
+        color: red;
     }
 </style>

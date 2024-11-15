@@ -61,7 +61,7 @@ namespace NET_MVC.Datos
                         "INNER JOIN AREAESPECIALIDAD ae ON e.id_ae = ae.id_ae\r\nLEFT JOIN CLIENTE c ON c.id_entrenador = e.id_entrenador " +
                         "WHERE p.id_sede = " + IdSede +
                         "GROUP BY e.id_entrenador " +
-                        "HAVING COUNT(c.id_cliente) < 5";  
+                        "HAVING COUNT(c.id_cliente) < 5";
                     using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
                     {
                         OracleDataReader reader = cmd.ExecuteReader();
@@ -153,7 +153,7 @@ namespace NET_MVC.Datos
                                     Especialidad = reader["area_especialidad"]?.ToString() ?? "No especificada",
                                     fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_contratacion"]) : DateTime.MinValue,
                                     ClientesAsignados = reader["numero_clientes"] != DBNull.Value ? Convert.ToInt32(reader["numero_clientes"]) : 0,
-                                   
+
                                 };
                                 entrenadores.Add(objEntrenador);
                             }
@@ -252,8 +252,8 @@ namespace NET_MVC.Datos
 
         private string cadenaSqlGenero(int opcion, string IdSede)
         {
-            string genero = opcion == 1 ? "M" : 
-                            opcion == 2 ? "F" : 
+            string genero = opcion == 1 ? "M" :
+                            opcion == 2 ? "F" :
                             "NE";
 
             return "SELECT E.id_Entrenador, " +

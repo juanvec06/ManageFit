@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using NET_MVC.Models;
 using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
@@ -29,7 +31,12 @@ namespace NET_MVC.Datos
 
                         // Agregar parámetros para el procedimiento almacenado
                         cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion;
-                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = cliente.IdEntrenador;
+                        if(cliente.IdEntrenador == 0 || cliente.IdEntrenador == null){
+                            cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = null;
+                        }
+                        else{
+                            cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = cliente.IdEntrenador;
+                        }
                         cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = cliente.FechaNacimiento;
 
                         // Ejecutar el procedimiento almacenado
@@ -64,7 +71,7 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-        
+
         public string cadenaListarClientes(string filter, string IdSede)
         {
             string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
@@ -158,6 +165,50 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
+        }
+        public List<ClienteModel> ListarClientesAsignados(string idEntrenador)
+        {
+            List<ClienteModel> clientes = new List<ClienteModel>();
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    string sql = "SELECT CLIENTE.id_cliente AS id_cliente, PERSONA.nombre_persona AS nombre, PERSONA.telefono_persona AS telefono, MEMBRESIA.tipo AS membresia,calcular_dias_restantes(CLIENTE.id_cliente) AS dias_restantes " +
+                                 "FROM cliente" +
+                                 "    INNER JOIN persona ON cliente.id_cliente = persona.id_persona" +
+                                 "    INNER JOIN membresia ON cliente.id_cliente = membresia.id_cliente" +
+                                 "    WHERE CLIENTE.id_entrenador = " + idEntrenador;
+                    using (OracleCommand query = new OracleCommand(sql, conexionBD))
+                    {
+                        OracleDataReader reader = query.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            ClienteModel objcliente = new ClienteModel
+                            {
+                                Identificacion = reader["id_cliente"].ToString(),
+                                Nombre = reader["nombre"].ToString(),
+                                Telefono = reader["telefono"].ToString(),
+                                refMembresia = reader["membresia"].ToString(),
+                                DiasRestantes = Convert.ToInt32(reader["dias_restantes"])
+                            };
+                            clientes.Add(objcliente);
+                        }
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); //Cerrar la conexión
+            }
+            return clientes;
         }
         public bool eliminarCliente(string identificacion)
         {

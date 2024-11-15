@@ -1,19 +1,20 @@
-﻿@{
+﻿
+@{
     //Este Navbar es de Entrenador
     string currentAction = ViewContext.RouteData.Values["action"].ToString();
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
+    bool isInConsultar = (currentController == "Cliente" && (currentAction == "Listar") || currentController == "Entrenador" && (currentAction == "DashboardEntrenador"));
+    bool isInPrincipalPage =
+        (currentController == "Entrenador" && (currentAction == "DashboardEntrenador"));
 
-    bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "ClienteAsignado" || currentAction == "Listar") ||
-        (currentController == "PlanMejoramientoFisico" && ((currentAction.StartsWith("PMF") ||
-        (currentAction.StartsWith("modificarPMF"))))));
-
-    bool isInClienteAsignado = (currentController == "Cliente" && currentAction.StartsWith("ClienteAsignado"))
-    || (currentController == "PlanMejoramientoFisico" && (currentAction.StartsWith("modificarPMF") || currentAction.StartsWith("PMF") || currentAction.StartsWith("AgregarEjercicio")));
+    bool isInClienteAsignado = (currentController == "Cliente" && currentAction.StartsWith("BuscarCliente"))
+    || (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("modificarPMF")) || (currentController.StartsWith("PlanMejoramientoFisico"));
 
     bool isInAsignarEjercicio = (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("AgregarEjercicio"));
 
-    bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("ClienteAsignado");
+    bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
+    bool isInModificarPMF = (currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF"));
+    bool isInGenericGoBackPage = (currentController == "PlanMejoramientoFisico" && currentAction == "AgregarEjercicio") || (currentController == "PlanMejoramientoFisico" && currentAction == "modificarEjercicios");
 }
 
 <head>
@@ -27,7 +28,7 @@
 <div id="navbar">
     <img class="admin-img" src="/img/entrenador.png" alt="Logo">
     <ul>
-
+        @using Microsoft.AspNetCore.Http
         @if (!isInClienteAsignado)
         {
             <li>
@@ -44,16 +45,16 @@
             <li class="codigoCliente">
                 <h3>
                     Codigo Cliente: <br />
-                    <span>000000000</span>
+                    <span>@(Context.Session.GetString("ClienteIdEjercicio") ?? "000000000")</span>
                 </h3>
             </li>
         }
 
         @if (isInClienteAsignado && !isInAsignarEjercicio)
         {
-  
+            var clienteId = TempData["ClienteId"] as string ?? "000000000"; // Recupera el ID del cliente o usa un valor predeterminado
             <li>
-                <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico")"
+                <a href="@Url.Action("modificarPMF", "PlanMejoramientoFisico", new { clienteId = clienteId })"
                    class="nav-btn @(currentAction == "modificarPMF" && currentController == "PlanMejoramientoFisico" ? "active" : "")">
                     <i class="now-ui-icons design_bullet-list-67"></i> Modificar PMF
                 </a>
@@ -78,8 +79,8 @@
             <img class="logout-img" src="/img/logout.png" alt="salir">
         </a>
 
-        @* Muestra la imagen "home" solo si se está dentro de alguna página del navbar *@
-        @if (isInNavbarPage)
+        @* Muestra la imagen "home" solo si no esta en la pagina principal *@
+        @if (!isInPrincipalPage)
         {
             <a href="@Url.Action("Home", "Cuenta")">
                 <img class="home-img visible" src="/img/home.png" alt="home">
@@ -93,6 +94,18 @@
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
             </a>
         }
+        @if (isInModificarPMF)
+        {
+            <a href=" @Url.Action("PaginaAnteriorPMF", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+        @if (isInGenericGoBackPage)
+        {
+            <a href="javascript:void(0);" onclick="window.history.back()">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
     </div>
 
 </div>
@@ -102,6 +115,13 @@
         background-color: #EE1C25;
         color: white;
         font-weight: 600;
+        text-align: center;
+    }
+
+    .text-black {
+        color: black;
+        text-align: justify;
+        font-weight: bold;
     }
 
     .codigoCliente{
