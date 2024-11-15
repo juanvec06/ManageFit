@@ -330,5 +330,31 @@ namespace NET_MVC.Datos
             return EntrenadorEncontrado;
         }
 
+        // GRAFICAS DEL INICIO:
+        public int ObtenerTotalEntrenadoresPorSede(int idSede)
+        {
+            int totalEntrenadores = 0;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM Entrenador e JOIN Persona p ON e.id_Entrenador = p.id_Persona WHERE p.id_Sede = :idSede", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter(":idSede", idSede));
+                        totalEntrenadores = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return totalEntrenadores;
+        }
+
     }
 }

@@ -113,5 +113,63 @@ namespace NET_MVC.Datos
             }
             return existe;
         }
+
+        // GRAFICAS DEL INICIO:
+        public int ObtenerTotalPersonasPorSede(int idSede)
+        {
+            int totalPersonas = 0;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM Persona WHERE id_Sede = :idSede", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter(":idSede", idSede));
+                        totalPersonas = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return totalPersonas;
+        }
+
+        public int ObtenerIdSedePorUsuario(string usuario)
+        {
+            int idSede = 0;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SELECT id_sede FROM CuentaSede WHERE id_sede = :usuario", conexionBD))
+                    {
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.Parameters.Add(new OracleParameter("usuario", usuario));
+
+                        object result = cmd.ExecuteScalar();
+                        if (result != null && int.TryParse(result.ToString(), out int sedeId))
+                        {
+                            idSede = sedeId;
+                        }
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return idSede;
+        }
+
     }
 }

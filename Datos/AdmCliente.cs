@@ -276,5 +276,50 @@ namespace NET_MVC.Datos
             return clienteEncontrado;
         }
 
+        // GRAFICAS DEL INICIO: 
+        public int ObtenerTotalClientesPorSede(int idSede)
+        {
+            int totalClientes = 0;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM Cliente c JOIN Persona p ON c.id_Cliente = p.id_Persona WHERE p.id_Sede = :idSede", conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter(":idSede", idSede));
+                        totalClientes = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception("Error en Oracle: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return totalClientes;
+        }
+
+        public int ObtenerTotalClientesPorTipo(int idSede, string tipoMembresia)
+        {
+            int total = 0;
+            if (Conexion.abrirConexion())
+            {
+                using (OracleCommand cmd = new OracleCommand(
+                    "SELECT COUNT(*) FROM Cliente c " +
+                    "JOIN Membresia m ON c.id_cliente = m.id_cliente " +
+                    "WHERE c.id_sede = :idSede AND m.tipo = :tipoMembresia", conexionBD))
+                {
+                    cmd.Parameters.Add(new OracleParameter("idSede", idSede));
+                    cmd.Parameters.Add(new OracleParameter("tipoMembresia", tipoMembresia));
+                    total = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            return total;
+        }
+
+
     }
 }
