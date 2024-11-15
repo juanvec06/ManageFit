@@ -17,6 +17,8 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Entrenador")]
         public IActionResult DashboardEntrenador()
         {
+            if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
+                HttpContext.Session.Remove("ClienteIdEjercicio");
             return View(); // Devuelve la vista Login.cshtml
         }
 

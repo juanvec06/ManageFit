@@ -1,4 +1,4 @@
-﻿
+﻿    
 using Oracle.ManagedDataAccess.Client;
 
 namespace NET_MVC.Datos
@@ -6,7 +6,7 @@ namespace NET_MVC.Datos
     public class Conexion
     {
             // Cadena de conexión adaptada con tus datos
-            private static string ruta = "User Id=managefit;Password=oracle;Data Source=localhost:1521/xe";
+            private static string ruta = "User Id=prueba1;Password=oracle;Data Source=localhost:1521/xe";
             private static OracleConnection conexion = new OracleConnection(ruta);
 
             public static bool abrirConexion()

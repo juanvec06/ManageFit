@@ -59,17 +59,15 @@
             } else {
                 var fecha = new Date(fechaValoracion);
                 var hoy = new Date();
-                var limite = new Date(hoy.getDate() + 7);
-                // Comprobar si la fecha es futura
+                var limite = new Date();
+                limite.setDate(hoy.getDate() - 7);                  
                 if (fecha > hoy) {
                     $('#fecha-error').text('No puede ser en el futuro.');
                     camposValidos = false;
-                } else {
-                    if (fechaValoracion > limite) {
-                        $('#fecha-error').text('No puede ser hace más de una semana.');
-                        camposValidos = false;
-                    }
-                }
+                } else if (fecha < limite) {
+                    $('#fecha-error').text('No puede ser hace más de una semana.');
+                    camposValidos = false;
+                }   
             }
 
             // Comprobar si todos los campos son válidos

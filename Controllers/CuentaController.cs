@@ -71,6 +71,10 @@ namespace NET_MVC.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
+                HttpContext.Session.Remove("ClienteIdEjercicio");
+
             return RedirectToAction("Login", "Cuenta");
         }
         private bool EsUsuarioValido(string usuario, string contraseña, out string rol)
@@ -211,6 +215,20 @@ namespace NET_MVC.Controllers
         {
             return RedirectToAction("Listar", "Cliente");
         }
-        
+        public IActionResult PaginaAnteriorPMF()
+        {
+            string previousUrl = TempData["prevousUrl"].ToString();
+
+            if (!string.IsNullOrEmpty(previousUrl))
+            {
+                
+                return Redirect(previousUrl); // Redirige a la URL anterior
+            }
+
+            // Si no hay URL anterior (por ejemplo, si se accedió directamente), redirigir a una página predeterminada
+            return RedirectToAction("Index", "Home");
+        }
+
+
     }
 }

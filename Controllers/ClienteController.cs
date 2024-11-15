@@ -37,6 +37,8 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Entrenador, Administrador")]
         public IActionResult Listar()
         {
+            if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
+                HttpContext.Session.Remove("ClienteIdEjercicio");
             if (User.IsInRole("Administrador"))
             {
                 return View("ListarCliente", new List<ClienteModel> { });
@@ -266,10 +268,16 @@ namespace NET_MVC.Controllers
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
 
+        [HttpGet]
         [HttpPost]
         [Authorize(Roles = "Administrador, Entrenador")]
         public IActionResult BuscarCliente(string identificacion)
         {
+            if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
+            {
+                identificacion = HttpContext.Session.GetString("ClienteIdEjercicio");//esto para el boton de ir atras de la pagina, se envia nulo cuando se usa
+            }
+
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
             // Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))

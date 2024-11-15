@@ -19,7 +19,8 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Entrenador")]
         public IActionResult modificarPMF()
         {
-
+            string previousUrl = Request.Headers["Referer"].ToString();
+            TempData["prevousUrl"] = previousUrl;
             return View("ModificarPMF");
         }
 
