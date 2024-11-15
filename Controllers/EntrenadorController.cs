@@ -12,6 +12,7 @@ namespace NET_MVC.Controllers
     public class EntrenadorController : Controller
     {
         AdmPersona consulta = new AdmPersona();
+        AdmCliente consultaCliente = new AdmCliente();
         AdmEntrenador consultaEntrenador = new AdmEntrenador();
 
         [Authorize(Roles = "Entrenador")]
@@ -178,31 +179,23 @@ namespace NET_MVC.Controllers
             }
         }
 
-        [HttpPost]
         [Authorize(Roles = "Administrador")]
+        [HttpPost]
         public JsonResult Filtrar(string filter)
         {
-            try
+            List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            string sql = consultaCliente.cadenaListarClientes(filter, IdSede);
+
+            // Ejecuta la consulta y obtiene la lista filtrada de clientes
+            clientesFiltrados = consultaCliente.ListarClientes(sql);
+
+            return Json(new
             {
-
-                List<EntrenadorModel> entrenadoresFiltrados = new List<EntrenadorModel>();
-                string IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-
-                string sql = consultaEntrenador.cadenaListarEntrenadores(filter, IdSede);
-                // Ejecutar la consulta y obtener los entrenadores filtrados
-                entrenadoresFiltrados = consultaEntrenador.ListarEntrenadores(sql);
-
-                return Json(new
-                {
-                    entrenadores = entrenadoresFiltrados,
-                    totalEntrenadores = entrenadoresFiltrados.Count
-                });
-
-            }
-            catch (Exception ex)
-            {
-                return Json(new { error = ex.Message });
-            }
+                clientes = clientesFiltrados,
+                totalClientes = clientesFiltrados.Count
+            });
         }
 
     }
