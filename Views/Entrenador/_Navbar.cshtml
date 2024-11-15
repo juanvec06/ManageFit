@@ -12,9 +12,16 @@
 
     bool isInAsignarEjercicio = (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("AgregarEjercicio"));
 
+
     bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
     bool isInModificarPMF = (currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF"));
-    bool isInGenericGoBackPage = (currentController == "PlanMejoramientoFisico" && currentAction == "AgregarEjercicio") || (currentController == "PlanMejoramientoFisico" && currentAction == "modificarEjercicios");
+    bool isInGenericGoBackPage = (currentController == "PlanMejoramientoFisico" && currentAction == "AgregarEjercicio") || 
+    (currentController == "PlanMejoramientoFisico" && currentAction == "modificarEjercicios") ||
+    (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("BuscarEjercicio") ||
+    (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("BuscarActualizarEjercicio") ||
+    (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("EliminarEjercicio"))
+    ));
+    
 }
 
 <head>
@@ -26,7 +33,9 @@
 </head>
 
 <div id="navbar">
+
     <img class="admin-img" src="/img/entrenador.png" alt="Logo">
+
     <ul>
         @using Microsoft.AspNetCore.Http
         @if (!isInClienteAsignado)
@@ -85,7 +94,6 @@
             <a href="@Url.Action("Home", "Cuenta")">
                 <img class="home-img visible" src="/img/home.png" alt="home">
             </a>
-
         }
 
         @if (isInClientePremium)
@@ -94,12 +102,14 @@
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
             </a>
         }
+
         @if (isInModificarPMF)
         {
             <a href=" @Url.Action("PaginaAnteriorPMF", "Cuenta")">
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
             </a>
         }
+
         @if (isInGenericGoBackPage)
         {
             <a href="javascript:void(0);" onclick="window.history.back()">
@@ -111,6 +121,17 @@
 </div>
 
 <style>
+
+    .codigoCliente span {
+        color: black; 
+        font-weight: bold;
+        font-size: 24px; 
+    }
+
+    .logo-img{
+        margin-top:150px;
+    }
+
     #navbar ul li a.nav-btn.active {
         background-color: #EE1C25;
         color: white;
@@ -129,4 +150,5 @@
         margin-left: 50px;
         font-size:20px;
     }
+
 </style>

@@ -356,21 +356,37 @@ namespace NET_MVC.Datos
         public int ObtenerTotalClientesPorTipo(int idSede, string tipoMembresia)
         {
             int total = 0;
-            if (Conexion.abrirConexion())
+
+            try
             {
-                using (OracleCommand cmd = new OracleCommand(
-                    "SELECT COUNT(*) FROM Cliente c " +
-                    "JOIN Membresia m ON c.id_cliente = m.id_cliente " +
-                    "WHERE c.id_sede = :idSede AND m.tipo = :tipoMembresia", conexionBD))
+                if (Conexion.abrirConexion())
                 {
-                    cmd.Parameters.Add(new OracleParameter("idSede", idSede));
-                    cmd.Parameters.Add(new OracleParameter("tipoMembresia", tipoMembresia));
-                    total = Convert.ToInt32(cmd.ExecuteScalar());
+                    using (OracleCommand cmd = new OracleCommand(@"
+                SELECT COUNT(*)
+                FROM Cliente c
+                JOIN Persona p ON c.id_Cliente = p.id_Persona
+                JOIN Membresia m ON c.id_Cliente = m.id_Cliente
+                WHERE p.id_Sede = :idSede AND m.tipo = :tipoMembresia", conexionBD))
+                    {
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.Parameters.Add("idSede", OracleDbType.Int32).Value = idSede;
+                        cmd.Parameters.Add("tipoMembresia", OracleDbType.Varchar2).Value = tipoMembresia;
+
+                        total = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
                 }
             }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
             return total;
         }
-
 
     }
 }

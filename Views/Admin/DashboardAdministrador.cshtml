@@ -14,24 +14,26 @@
 
 <div class="container-flex">
 
-    <div class="admin-info">
-        <img class="user-img" src="/img/user.png" alt="boton de salida">
-        <div style="text-align:
-        center; color: #EE1C25; font-size: 48px;
+    <div class="container-flex" style="position: relative;">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success tempdata-message">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <div class="admin-info">
+            <img class="user-img" src="/img/user.png" alt="boton de salida">
+            <div style="text-align:
+        center; color: #EE1C25; font-size: 35px;
         font-style: italic; font-weight: 900; line-height: 70px;
         word-wrap: break-word">
-            Bienvenido/a Administrador
+                Bienvenido/a Administrador
+            </div>
         </div>
-    </div>    
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success tempdata-message">
-            @TempData["SuccessMessage"]
-        </div>
-    }
 
-    <div class="chart-section">
+        <div class="chart-section">
         <div class="chart-container">
             <canvas id="estadisticasChart"></canvas>
         </div>
@@ -88,7 +90,6 @@
         }
     });
 
-    // Gráfico de pastel para Clientes Premium y General
     var ctx2 = document.getElementById('clientesChart').getContext('2d');
     var clientesChart = new Chart(ctx2, {
         type: 'pie',
@@ -103,7 +104,7 @@
             }]
         },
         options: {
-            responsive: true,
+            responsive: false, // Desactiva el ajuste automático
             plugins: {
                 legend: { position: 'top' },
                 title: { display: true, text: 'Distribución de Clientes Premium y General' }
@@ -113,17 +114,42 @@
 </script>
 
 <style>
+
     .container-flex {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: center; 
         gap: 20px;
+        width: 100%; 
+        margin: 0 auto; 
+    }
+
+    .chart-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 50px; 
+        justify-content: center; 
+        align-items: center; 
+        width: 100%; 
+        margin: 0 auto; 
+    }
+
+    .chart-container {
+        width: 40%; 
+        max-width: 400px; 
+        text-align: center; 
+    }
+
+    #clientesChart {
+        width: 250px; 
+        height: 250px;
+        margin: 0 auto; 
     }
 
     .admin-info {
+        margin-top: 35px;
         display: flex;
         align-items: center;
-        gap: 20px;
     }
 
     .user-img {
@@ -131,30 +157,21 @@
         height: auto;
     }
 
-    .tempdata-message {
-        background-color: transparent;
-        border: none;
-        color: #EE1C25;
-        font-size: 24px;
-        font-weight: 900;
-        font-style: italic;
-        text-transform: uppercase;
-    }
-
-    /* Sección de gráficos */
-    .chart-section {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-        justify-content: center;
-        width: 100%;
-    }
-
-    /* Estilo para los contenedores de gráficos */
-    .chart-container {
-        width: 45%;
-        max-width: 600px;
-    }
+        .tempdata-message {
+            position: absolute; 
+            border: none; 
+            left:20px;
+            background-color: rgba(238, 28, 37, 0.8); 
+            color: white; 
+            font-size: 14px; 
+            font-weight: bold;
+            font-style: italic;
+            text-transform: uppercase;
+            padding: 10px 15px; 
+            border-radius: 5px; 
+            z-index: 1000; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+        }
 </style>
 
 

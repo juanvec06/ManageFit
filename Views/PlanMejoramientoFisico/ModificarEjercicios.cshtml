@@ -15,13 +15,11 @@
 
     <div class="search-bar">
 
-        <img class="cliente-img" src="/img/check-list.png" alt="Logo">
-
-
         <div class="search-bar-2">
             <div class="botones">
                 <button type="button" id="añadirEjercicio" class="btn mt-3" onclick="window.location.href='@Url.Action("AgregarEjercicio", "PlanMejoramientoFisico")'">Añadir ejercicio</button>
-                <button type="button" class="btn mt-3">Eliminar ejercicio</button>
+                <button type="button" id="añadirEjercicio" class="btn mt-3" onclick="window.location.href='@Url.Action("BuscarActualizarEjercicio", "PlanMejoramientoFisico")'">Actualizar ejercicio</button>
+                <button type="button" id="añadirEjercicio" class="btn mt-3" onclick="window.location.href='@Url.Action("EliminarEjercicio", "PlanMejoramientoFisico")'">Eliminar ejercicio</button>
             </div>
         </div>
 
@@ -32,6 +30,8 @@
 
             <thead>
                 <tr>
+
+                    <th>ID</th>
                     <th>Nombre</th>
                     <th>Repeticiones</th>
                     <th>Series</th>
@@ -42,6 +42,7 @@
                 @foreach (var ejercicio in Model)
                 {
                     <tr>
+                        <td>id(falta)</td>
                         <td>@ejercicio.NombreString</td>
                         <td>@ejercicio.Repeticiones</td>
                         <td>@ejercicio.Series</td>
@@ -102,13 +103,10 @@
             white-space: nowrap;
         }
 
-
-
     .search-bar-2 {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin-left: 40px;
     }
 
     .container-grande {

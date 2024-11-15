@@ -1,6 +1,6 @@
 ﻿@model EjercicioModel
 @{
-    ViewData["Title"] = "Agregar Ejercicio";
+    ViewData["Title"] = "Actualizar Ejercicio";
     Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
 }
 
@@ -16,17 +16,15 @@
 
     <div class="login-container">
 
-        <img class="cliente-img" src="/img/excercise.png" alt="Logo">
-
         <div class="wrapper">
 
             <div class="text-registrar" style="text-align: center;
             color: #EE1C25; font-size: 50px; font-style: italic; font-weight: 900;
             line-height: 70px; word-wrap: break-word">
-                AÑADIR EJERCICIO
+                ACTUALIZAR EJERCICIO
             </div>
 
-            <form asp-action="AgregarEjercicioProc" asp-controller="PlanMejoramientoFisico" method="post" class="form p-3 mt-3">
+            <form asp-action="ActualizarEjercicioProc" asp-controller="PlanMejoramientoFisico" method="post" class="form p-3 mt-3">
 
                 <div class="form-container">
 
@@ -34,10 +32,6 @@
                         <h4>Nombre:</h4>
                         <select asp-for="Nombre" class="form-control custom-select">
                             <option value="">Seleccione nombre</option>
-                            @foreach (var opcion in Model.Opciones)
-                            {
-                                <option value="@opcion.IdEjercicio"> @opcion.NameEjercicio</option>
-                            }
                         </select>
                         <span id="nombre-error" class="text-danger error-message" style="margin-left: 10px;"></span>
                         <span asp-validation-for="Nombre" class="text-danger error-message"></span>
@@ -45,7 +39,7 @@
 
                     <div class="form-field num-rep">
                         <h4>Numero de Repeticiones:</h4>
-                        <<input asp-for="Repeticiones" type="text">
+                        <input asp-for="Repeticiones" type="text">
                         <span id="repeticiones-error" class="text-danger error-message" style="margin-left: 10px;"></span>
                         <span asp-validation-for="Repeticiones" class="text-danger error-message"></span>
                     </div>
@@ -56,7 +50,6 @@
                         <span id="series-error" class="text-danger error-message" style="margin-left: 10px;"></span>
                         <span asp-validation-for="Series" class="text-danger error-message"></span>
                     </div>
-
 
                     <div class="form-field">
                         <h4>Dia de la semana:</h4>
@@ -76,7 +69,7 @@
                 </div>
                 
 
-                <button type="button" id="guardarEjercicio" class="btn mt-3">Guardar</button>
+                <button type="button" id="actualizarEjercicio" class="btn mt-3">Actualizar</button>
 
             </form>
 
@@ -90,7 +83,7 @@
 <script>
     $(document).ready(function () {
         // Enviar el formulario
-        $('#guardarEjercicio').on('click', function () {
+        $('#actualizarEjercicio').on('click', function () {
             // Limpia mensajes de error anteriores
             $('#nombre-error').text('');
             $('#repeticiones-error').text('');
@@ -100,7 +93,7 @@
             // Validación de campos vacíos
             let camposValidos = true;
 
-            // Validar el campo de dia de la semana
+            // Validar el campo de nombre
             var nombre = $('#Nombre').val();
             if (!nombre) {
                 $('#nombre-error').text('Campo obligatorio.');
@@ -123,7 +116,6 @@
                 camposValidos = false;
             }
 
-
             // Validar el campo de series
             var series = $('#Series').val().trim();
             if (series === '') {
@@ -135,7 +127,7 @@
             } else if (series < 0) {
                 $('#series-error').text('No puede ser un número negativo.');
                 camposValidos = false;
-            } else if (repeticiones.length > 10) {
+            } else if (series.length > 10) {
                 $('#series-error').text('No puede tener más de 10 dígitos.');
                 camposValidos = false;
             }
@@ -162,7 +154,7 @@
 
             // Envía los datos mediante AJAX
             $.ajax({
-                url: '@Url.Action("AgregarEjercicioProc", "PlanMejoramientoFisico")',
+                url: '@Url.Action("ActualizarEjercicioProc", "PlanMejoramientoFisico")',
                 type: 'POST',
                 data: formData,
                 success: function (data) {
@@ -174,7 +166,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("Error al guardar el ejercicio:", error);
+                    console.error("Error al actualizar el ejercicio:", error);
                 }
             });
 
@@ -184,12 +176,12 @@
 
 <style>
 
-    .form-container{
-        margin-left:35px;
+    .form-container {
+        margin-left: 35px;
     }
 
-    .num-rep{
-        margin-top:10px;
+    .num-rep {
+        margin-top: 10px;
     }
 
     .text-registrar {
@@ -207,15 +199,6 @@
 
     .wrapper {
         padding: 60px;
-        margin-left: 200px;
-    }
-
-    .cliente-img {
-        width: 200px;
-        height: 200px;
-        position: absolute;
-        bottom: 25%;
-        right: 72%;
     }
 
     .wrapper .btn {
@@ -365,5 +348,3 @@
     }
 
 </style>
-
-

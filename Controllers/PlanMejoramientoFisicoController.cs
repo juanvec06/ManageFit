@@ -100,6 +100,24 @@ namespace NET_MVC.Controllers
             return View("AgregarEjercicio", modelo);
         }
 
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult BuscarActualizarEjercicio()
+        {
+            return View("BuscarEjercicioActualizar");
+        }
+
+        [Authorize(Roles = "Entrenador")]
+        [HttpPost]
+        public IActionResult BuscarEjercicio()
+        {
+            return View("ActualizarEjercicio");
+        }
+
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult EliminarEjercicio()
+        {
+            return View("EliminarEjercicio");
+        }
 
         [Authorize(Roles = "Entrenador")]
         [HttpPost]

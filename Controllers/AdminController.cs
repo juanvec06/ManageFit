@@ -28,9 +28,11 @@ namespace NET_MVC.Controllers
             ViewBag.TotalEntrenadores = consultaEntrenador.ObtenerTotalEntrenadoresPorSede(idSede);
             ViewBag.TotalPersonas = consultaPersona.ObtenerTotalPersonasPorSede(idSede);
 
+            // Nuevas consultas para el gráfico de pastel (Premium y General)
+            ViewBag.ClientesPremium = consultaCliente.ObtenerTotalClientesPorTipo(idSede, "Premium");
+            ViewBag.ClientesGeneral = consultaCliente.ObtenerTotalClientesPorTipo(idSede, "General");
+
             return View();
         }
-
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model EjercicioModel
 @{
-    ViewData["Title"] = "Eliminar Ejercicio";
+    ViewData["Title"] = "Buscar Ejercicio Actualizar";
     Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
 }
 
@@ -8,14 +8,14 @@
 
 
     <div class="text-eliminar">
-         ElIMINAR EJERCICIO
+        BUSCAR EJERCICIO
     </div>
 
-    <form id="buscarClienteForm" method="post" asp-action="EliminarEjercicio">
+    <form id="buscarClienteForm" method="post" asp-action="BuscarEjercicio">
         <div class="search-bar">
             <input type="text" id="identificacion" name="identificacion" placeholder="Identificación:">
 
-            <button type="submit" class="btn btn-primary">Eliminar</button>
+            <button type="submit" class="btn btn-primary">Buscar</button>
         </div>
     </form>
 

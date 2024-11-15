@@ -133,12 +133,20 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionEntrenador"); // Redirigir a la página donde se muestra el formulario
             }
 
+            // Verificar si la identificación es numérica
+            if (!int.TryParse(identificacion, out int identificacionNumero))
+            {
+                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                return RedirectToAction("InformacionEntrenador");
+            }
+
             // Verificar que la identificación no tenga más de 10 dígitos
             if (identificacion.Length > 10)
             {
                 TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
                 return RedirectToAction("InformacionEntrenador"); // Redirigir a la página donde se muestra el formulario
             }
+
 
             // Verificar que la identificación no sea menor a 0
             if (int.Parse(identificacion) < 0)
@@ -147,12 +155,6 @@ namespace NET_MVC.Controllers
                 return RedirectToAction("InformacionEntrenador");
             }
 
-            // Verificar si la identificación es numérica
-            if (!int.TryParse(identificacion, out _))
-            {
-                TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
-                return RedirectToAction("InformacionEntrenador");
-            }
 
             // Verificar si la persona existe en la base de datos
             bool EntrenadorExistente = consultaEntrenador.EntrenadorExistente(identificacion);
