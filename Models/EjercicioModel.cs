@@ -2,6 +2,7 @@
 {
     public class EjercicioModel
     {
+        public string? IdEjercicio { get; set; }
         public int? IdCliente { get; set; }
         public DateTime? FechaValoracion { get; set; }
         public int? Nombre { get; set; }

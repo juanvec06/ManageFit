@@ -13,7 +13,7 @@
 
     <form id="buscarClienteForm" method="post" asp-action="EliminarEjercicio">
         <div class="search-bar">
-            <input type="text" id="identificacion" name="identificacion" placeholder="Identificación:">
+            <input type="text" asp-for="IdEjercicio" id="identificacion" name="IdEjercicio" placeholder="Identificación:">
 
             <button type="submit" class="btn btn-primary">Eliminar</button>
         </div>

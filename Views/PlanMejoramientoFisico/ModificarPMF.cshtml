@@ -60,12 +60,12 @@
                 var fecha = new Date(fechaValoracion);
                 var hoy = new Date();
                 var limite = new Date();
-                limite.setDate(hoy.getDate() - 7);                  
+                limite.setDate(hoy.getDate() - 366);                  
                 if (fecha > hoy) {
                     $('#fecha-error').text('No puede ser en el futuro.');
                     camposValidos = false;
                 } else if (fecha < limite) {
-                    $('#fecha-error').text('No puede ser hace más de una semana.');
+                    $('#fecha-error').text('No puede ser hace más de un año.');
                     camposValidos = false;
                 }   
             }
