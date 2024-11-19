@@ -207,10 +207,10 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Administrador, Entrenador")]
         public IActionResult BuscarCliente(string identificacion)
         {
-            if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
+            /*if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
             {
                 identificacion = HttpContext.Session.GetString("ClienteIdEjercicio");//esto para el boton de ir atras de la pagina, se envia nulo cuando se usa
-            }
+            }*/
 
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
             // Verificar que la identificación no esté vacía
@@ -322,10 +322,10 @@ namespace NET_MVC.Controllers
             List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            string sql = consultaCliente.cadenaListarClientes(filter, IdSede);
+            //string sql = consultaCliente.cadenaListarClientes(filter, IdSede);
 
             // Ejecuta la consulta y obtiene la lista filtrada de clientes
-            clientesFiltrados = consultaCliente.ListarClientes(sql);
+            clientesFiltrados = consultaCliente.ListarClientes(filter, IdSede);
 
             return Json(new
             {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+using System.Data;
 using System.Security.Claims;
 
 namespace NET_MVC.Datos
@@ -48,33 +50,51 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-
-        public List<EntrenadorModel> ListarEntrenadoresDisponibles(string IdSede)
+        
+        public List<EntrenadorModel> ListarEntrenadoresDisponibles(string idSede)
         {
             var entrenadores = new List<EntrenadorModel>();
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    string sql = "SELECT e.id_entrenador, MAX(p.nombre_persona) AS nombre_entrenador, MAX(nombre_ae) area_especialidad, COUNT(c.id_cliente) AS num_clientes " +
-                        "FROM ENTRENADOR e INNER JOIN PERSONA p ON e.id_entrenador = p.id_persona " +
-                        "INNER JOIN AREAESPECIALIDAD ae ON e.id_ae = ae.id_ae\r\nLEFT JOIN CLIENTE c ON c.id_entrenador = e.id_entrenador " +
-                        "WHERE p.id_sede = " + IdSede +
-                        "GROUP BY e.id_entrenador " +
-                        "HAVING COUNT(c.id_cliente) < 5";
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("sp_listar_entrenadores_disponibles", conexionBD))
                     {
-                        OracleDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
+
+                        // Parámetro de salida para el cursor
+                        OracleParameter refCursorParam = new OracleParameter("p_resultado", OracleDbType.RefCursor);
+                        refCursorParam.Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add(refCursorParam);
+
+                        // Ejecutar el comando
+                        cmd.ExecuteNonQuery();
+
+                        // Verificar si el cursor tiene datos antes de intentar leer
+                        if (refCursorParam.Value != null)
                         {
-                            EntrenadorModel entrenador = new EntrenadorModel
+                            using (OracleDataReader reader = ((OracleRefCursor)refCursorParam.Value).GetDataReader())
                             {
-                                Identificacion = reader["ID_ENTRENADOR"].ToString(),
-                                Nombre = reader["NOMBRE_ENTRENADOR"].ToString(),
-                                Especialidad = reader["AREA_ESPECIALIDAD"].ToString(),
-                                ClientesAsignados = Convert.ToInt32(reader["NUM_CLIENTES"])
-                            };
-                            entrenadores.Add(entrenador);
+                                while (reader.Read())
+                                {
+                                    EntrenadorModel entrenador = new EntrenadorModel
+                                    {
+                                        Identificacion = reader["ID_ENTRENADOR"].ToString(),
+                                        Nombre = reader["NOMBRE_ENTRENADOR"].ToString(),
+                                        Especialidad = reader["AREA_ESPECIALIDAD"].ToString(),
+                                        ClientesAsignados = Convert.ToInt32(reader["NUM_CLIENTES"])
+                                    };
+                                    entrenadores.Add(entrenador);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("El cursor no contiene datos.");
                         }
                     }
                 }
@@ -90,31 +110,47 @@ namespace NET_MVC.Datos
             }
             finally
             {
-                Conexion.cerrarConexion(); //Cerrar la conexión
+                Conexion.cerrarConexion(); // Cerrar la conexión
             }
-
         }
 
         public bool EntrenadorExistente(string idEntrenador)
         {
-            bool existe = false;
+            if (string.IsNullOrEmpty(idEntrenador))
+            {
+                throw new ArgumentException("El ID del entrenador no puede estar vacío.");
+            }
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(
-                        "SELECT COUNT(*) FROM Entrenador WHERE id_entrenador = :p_id_entrenador", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("ENTRENADOR_EXISTE", conexionBD))
                     {
-                        // Agrega el parámetro id_entrenador para evitar inyecciones SQL
-                        cmd.Parameters.Add(":p_id_entrenador", OracleDbType.Varchar2).Value = idEntrenador;
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                        // Ejecuta la consulta y obtiene el número de coincidencias
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("P_ID_ENTRENADOR", OracleDbType.Varchar2).Value = idEntrenador;
 
-                        // Si el contador es mayor que 0, el entrenador existe
-                        existe = count > 0;
+                        // Parámetro de salida
+                        var existeParam = new OracleParameter("P_EXISTE", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(existeParam);
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Convertir el valor de salida desde OracleDecimal a int
+                        var existeDecimal = (Oracle.ManagedDataAccess.Types.OracleDecimal)existeParam.Value;
+                        int existe = existeDecimal.ToInt32();
+
+                        // Si el valor es 1, el entrenador existe
+                        return existe == 1;
                     }
                 }
+                return false;
             }
             catch (OracleException oex)
             {
@@ -122,45 +158,53 @@ namespace NET_MVC.Datos
             }
             finally
             {
-                // Cierra la conexión a la base de datos
                 Conexion.cerrarConexion();
             }
-
-            return existe;
         }
 
-
-        public List<EntrenadorModel> ListarEntrenadores(string sql)
+        public List<EntrenadorModel> ListarEntrenadores(string idSede, string filtro)
         {
             var entrenadores = new List<EntrenadorModel>();
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("LISTAR_ENTRENADORES", conexionBD))
                     {
-                        OracleDataReader reader = cmd.ExecuteReader();
-                        if (reader.HasRows)
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("P_ID_SEDE", OracleDbType.Varchar2).Value = idSede;
+                        cmd.Parameters.Add("P_FILTER", OracleDbType.Varchar2).Value = filtro;
+
+                        // Parámetro de salida (cursor)
+                        var refCursor = new OracleParameter("P_ENTRENADORES", OracleDbType.RefCursor)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(refCursor);
+
+                        // Ejecutar el procedimiento almacenado
+                        using (OracleDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                EntrenadorModel objEntrenador = new EntrenadorModel
+                                var objEntrenador = new EntrenadorModel
                                 {
                                     Identificacion = reader["id_Entrenador"]?.ToString() ?? "N/A",
                                     Genero = reader["genero_entrenador"]?.ToString() ?? "Desconocido",
                                     Nombre = reader["nombre_entrenador"]?.ToString() ?? "Desconocido",
                                     Telefono = reader["telefono_entrenador"]?.ToString() ?? "No disponible",
                                     Especialidad = reader["area_especialidad"]?.ToString() ?? "No especificada",
-                                    fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_contratacion"]) : DateTime.MinValue,
-                                    ClientesAsignados = reader["numero_clientes"] != DBNull.Value ? Convert.ToInt32(reader["numero_clientes"]) : 0,
-
+                                    fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value
+                                        ? Convert.ToDateTime(reader["fecha_contratacion"])
+                                        : DateTime.MinValue,
+                                    ClientesAsignados = reader["numero_clientes"] != DBNull.Value
+                                        ? Convert.ToInt32(reader["numero_clientes"])
+                                        : 0
                                 };
                                 entrenadores.Add(objEntrenador);
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine("No se encontraron resultados.");
                         }
                     }
                 }
@@ -178,99 +222,6 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
-        }
-
-        public string cadenaListarEntrenadores(string filter, string IdSede)
-        {
-            string sql = "SELECT E.id_Entrenador, " +
-                 "MAX(P.nombre_Persona) AS nombre_entrenador, " +
-                 "MAX(P.telefono_Persona) AS telefono_entrenador, " +
-                 "MAX(P.genero_persona) AS genero_entrenador, " +
-                 "MAX(AE.nombre_AE) AS area_especialidad, " +
-                 "COUNT(C.id_Cliente) AS numero_clientes, " +
-                 "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
-                 "MAX(CT.salario) AS salario " +
-                 "FROM Entrenador E " +
-                 "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-                 "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-                 "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
-                 "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-                 "WHERE P.id_Sede = " + IdSede +
-                 " GROUP BY E.id_Entrenador";
-
-            // Aplica el filtro según la selección
-            switch (filter)
-            {
-                case "all":
-                    break;
-                case "crossfit":
-                    sql = cadenaSqlAreaEspecialidad(1, IdSede); // Crossfit
-                    break;
-                case "fuerza":
-                    sql = cadenaSqlAreaEspecialidad(2, IdSede); // Fuerza
-                    break;
-                case "reduccion":
-                    sql = cadenaSqlAreaEspecialidad(3, IdSede); // Reducción de peso
-                    break;
-                case "masculino":
-                    sql = cadenaSqlGenero(1, IdSede); // Género Masculino
-                    break;
-                case "femenino":
-                    sql = cadenaSqlGenero(2, IdSede); // Género Femenino
-                    break;
-                case "no-especificado":
-                    sql = cadenaSqlGenero(3, IdSede); // Género No especificado
-                    break;
-                default:
-                    break;
-            }
-            return sql;
-        }
-
-        private string cadenaSqlAreaEspecialidad(int opcion, string IdSede)
-        {
-            string areaEspecialidad = opcion == 1 ? "Crossfit" :
-                                      opcion == 2 ? "Fuerza" :
-                                      opcion == 3 ? "Reducción de peso" : "Culturismo";
-
-            return "SELECT E.id_Entrenador, " +
-          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
-          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
-          "MAX(P.genero_persona) AS genero_entrenador, " +
-          "MAX(AE.nombre_AE) AS area_especialidad, " +
-          "COUNT(C.id_Cliente) AS numero_clientes, " +
-          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
-          "MAX(CT.salario) AS salario " +
-          "FROM Entrenador E " +
-          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
-          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-          "WHERE P.id_Sede = " + IdSede + " AND AE.nombre_AE = '" + areaEspecialidad + "' " +
-          "GROUP BY E.id_Entrenador";
-        }
-
-        private string cadenaSqlGenero(int opcion, string IdSede)
-        {
-            string genero = opcion == 1 ? "M" :
-                            opcion == 2 ? "F" :
-                            "NE";
-
-            return "SELECT E.id_Entrenador, " +
-          "MAX(P.nombre_Persona) AS nombre_entrenador, " +
-          "MAX(P.telefono_Persona) AS telefono_entrenador, " +
-          "MAX(P.genero_persona) AS genero_entrenador, " +
-          "MAX(AE.nombre_AE) AS area_especialidad, " +
-          "COUNT(C.id_Cliente) AS numero_clientes, " +
-          "MAX(CT.fecha_inicio_contrato) AS fecha_contratacion, " +
-          "MAX(CT.salario) AS salario " +
-          "FROM Entrenador E " +
-          "INNER JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-          "INNER JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-          "LEFT JOIN Cliente C ON E.id_Entrenador = C.id_Entrenador " +
-          "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-          "WHERE P.id_Sede = " + IdSede + " AND P.genero_Persona = '" + genero + "' " +
-          "GROUP BY E.id_Entrenador";
         }
 
         public EntrenadorModel ObtenerEntrenadorPorIdentificacion(string identificacion, string idSede)
@@ -281,46 +232,48 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(
-                        "SELECT E.id_Entrenador, " +
-                        "P.nombre_Persona AS nombre_entrenador, " +
-                        "P.telefono_Persona AS telefono_entrenador, " +
-                        "P.genero_Persona AS genero_entrenador, " +
-                        "AE.nombre_AE AS area_especialidad, " +
-                        "CT.salario, " +
-                        "CT.fecha_inicio_contrato AS fecha_contratacion " +
-                        "FROM Entrenador E " +
-                        "JOIN Persona P ON E.id_Entrenador = P.id_Persona " +
-                        "JOIN AreaEspecialidad AE ON E.id_AE = AE.id_AE " +
-                        "LEFT JOIN Contrato CT ON E.id_Entrenador = CT.id_entrenador " +
-                        "WHERE E.id_Entrenador = :p_id_entrenador AND id_sede = :p_id_sede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("ObtenerEntrenadorPorIdentificacion", conexionBD))
                     {
-                        cmd.CommandType = System.Data.CommandType.Text;
-                        cmd.Parameters.Add(":p_id_entrenador", OracleDbType.Int32).Value = int.Parse(identificacion);
-                        cmd.Parameters.Add(":p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        using (OracleDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
+                        // Pasamos los parámetros de entrada
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = int.Parse(identificacion);
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
+
+                        // Parámetros de salida
+                        cmd.Parameters.Add("p_identificacion", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_genero", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_especialidad", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_salario", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_fecha_contratacion", OracleDbType.Date).Direction = ParameterDirection.Output;
+
+                        // Ejecutamos el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+                            // Crear objeto de modelo con los valores de salida
+                            EntrenadorEncontrado = new EntrenadorModel
                             {
-                                EntrenadorEncontrado = new EntrenadorModel
-                                {
-                                    Identificacion = reader["id_Entrenador"]?.ToString() ?? "N/A",
-                                    Nombre = reader["nombre_entrenador"]?.ToString() ?? "Desconocido",
-                                    Telefono = reader["telefono_entrenador"]?.ToString() ?? "No disponible",
-                                    Genero = reader["genero_entrenador"]?.ToString() ?? "Desconocido",
-                                    Especialidad = reader["area_especialidad"]?.ToString() ?? "No especificada",
-                                    Salario = reader["salario"] != DBNull.Value ? reader["salario"].ToString() : "No especificado",
-                                    fechaInicioContrato = reader["fecha_contratacion"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_contratacion"]) : DateTime.MinValue,
-                                };
-                            }
-                        }
+                                Identificacion = cmd.Parameters["p_identificacion"].Value != DBNull.Value ? cmd.Parameters["p_identificacion"].Value.ToString() : "N/A",
+                                Nombre = cmd.Parameters["p_nombre"].Value != DBNull.Value ? cmd.Parameters["p_nombre"].Value.ToString() : "Desconocido",
+                                Telefono = cmd.Parameters["p_telefono"].Value != DBNull.Value ? cmd.Parameters["p_telefono"].Value.ToString() : "No disponible",
+                                Genero = cmd.Parameters["p_genero"].Value != DBNull.Value ? cmd.Parameters["p_genero"].Value.ToString() : "Desconocido",
+                                Especialidad = cmd.Parameters["p_especialidad"].Value != DBNull.Value ? cmd.Parameters["p_especialidad"].Value.ToString() : "No especificada",
+                                Salario = cmd.Parameters["p_salario"].Value != DBNull.Value ? cmd.Parameters["p_salario"].Value.ToString() : "No especificado",
+                                fechaInicioContrato = cmd.Parameters["p_fecha_contratacion"].Value != DBNull.Value
+                                ? ((OracleDate)cmd.Parameters["p_fecha_contratacion"].Value).Value // Uso de .Value para obtener DateTime
+                                : DateTime.MinValue
+                            };
                     }
                 }
             }
             catch (OracleException oex)
             {
-                throw new Exception("Error en Oracle: " + oex.Message);
+                return EntrenadorEncontrado;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
             }
             finally
             {
@@ -334,14 +287,27 @@ namespace NET_MVC.Datos
         public int ObtenerTotalEntrenadoresPorSede(int idSede)
         {
             int totalEntrenadores = 0;
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM Entrenador e JOIN Persona p ON e.id_Entrenador = p.id_Persona WHERE p.id_Sede = :idSede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("ObtenerTotalEntrenadoresPorSede", conexionBD))
                     {
-                        cmd.Parameters.Add(new OracleParameter(":idSede", idSede));
-                        totalEntrenadores = Convert.ToInt32(cmd.ExecuteScalar());
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
+
+                        // Parámetro de salida
+                        cmd.Parameters.Add("p_total_entrenadores", OracleDbType.Int32).Direction = ParameterDirection.Output;
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el valor del parámetro de salida y convertirlo a entero
+                        OracleDecimal oracleDecimalValue = (OracleDecimal)cmd.Parameters["p_total_entrenadores"].Value;
+                        totalEntrenadores = oracleDecimalValue.ToInt32();  // Convertir de OracleDecimal a int
                     }
                 }
             }
@@ -349,10 +315,15 @@ namespace NET_MVC.Datos
             {
                 throw new Exception("Error en Oracle: " + ex.Message);
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
             finally
             {
                 Conexion.cerrarConexion();
             }
+
             return totalEntrenadores;
         }
 

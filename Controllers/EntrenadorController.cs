@@ -185,18 +185,16 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public JsonResult Filtrar(string filter)
         {
-            List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
+            List<EntrenadorModel> entrenadoresFiltrados = new List<EntrenadorModel>();
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            string sql = consultaCliente.cadenaListarClientes(filter, IdSede);
-
             // Ejecuta la consulta y obtiene la lista filtrada de clientes
-            clientesFiltrados = consultaCliente.ListarClientes(sql);
+            entrenadoresFiltrados = consultaEntrenador.ListarEntrenadores(IdSede, filter);
 
             return Json(new
             {
-                clientes = clientesFiltrados,
-                totalClientes = clientesFiltrados.Count
+                entrenadores = entrenadoresFiltrados,
+                totalEntrenadores = entrenadoresFiltrados.Count
             });
         }
 

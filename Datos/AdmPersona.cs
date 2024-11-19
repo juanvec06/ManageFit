@@ -1,6 +1,7 @@
 ﻿
 using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
+using System.Data;
 
 namespace NET_MVC.Datos
 {
@@ -57,6 +58,11 @@ namespace NET_MVC.Datos
         {
             bool existe = false;
 
+            if (string.IsNullOrEmpty(identificacion))
+            {
+                throw new Exception("La identificación no puede estar vacía.");
+            }
+
             if (!int.TryParse(identificacion, out int idPersona))
             {
                 throw new Exception("La identificación debe ser un número entero válido.");
@@ -66,24 +72,44 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM PERSONA WHERE id_persona = :id", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("PERSONA_EXISTE", conexionBD))
                     {
-                        cmd.Parameters.Add(new OracleParameter("id", idPersona));
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
-                        existe = count > 0;
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("P_ID_PERSONA", OracleDbType.Int32).Value = idPersona;
+
+                        // Parámetro de salida
+                        var existeParam = new OracleParameter("P_EXISTE", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(existeParam);
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Convertir el valor de salida desde OracleDecimal a int
+                        var existeDecimal = (Oracle.ManagedDataAccess.Types.OracleDecimal)existeParam.Value;
+                        int existeResultado = existeDecimal.ToInt32();
+
+                        // Si el resultado es 1, la persona existe
+                        existe = existeResultado == 1;
                     }
                 }
             }
-            catch (OracleException ex)
+            catch (OracleException oex)
             {
-                throw new Exception("Error en Oracle: " + ex.Message);
+                throw new Exception("Error en Oracle: " + oex.Message);
             }
             finally
             {
                 Conexion.cerrarConexion();
             }
+
             return existe;
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
         public bool eliminarPersona(string identificacion)
         {
             bool existe = false;
@@ -118,14 +144,31 @@ namespace NET_MVC.Datos
         public int ObtenerTotalPersonasPorSede(int idSede)
         {
             int totalPersonas = 0;
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM Persona WHERE id_Sede = :idSede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("OBTENER_TOTAL_PERSONAS_POR_SEDE", conexionBD))
                     {
-                        cmd.Parameters.Add(new OracleParameter(":idSede", idSede));
-                        totalPersonas = Convert.ToInt32(cmd.ExecuteScalar());
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("P_ID_SEDE", OracleDbType.Int32).Value = idSede;
+
+                        // Parámetro de salida
+                        var totalPersonasParam = new OracleParameter("P_TOTAL_PERSONAS", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(totalPersonasParam);
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el total de personas desde el parámetro de salida
+                        var totalDecimal = (Oracle.ManagedDataAccess.Types.OracleDecimal)totalPersonasParam.Value;
+                        totalPersonas = totalDecimal.ToInt32();
                     }
                 }
             }
@@ -137,6 +180,7 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion();
             }
+
             return totalPersonas;
         }
 
