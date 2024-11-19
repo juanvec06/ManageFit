@@ -1,0 +1,122 @@
+﻿@model NET_MVC.Models.ClienteModel
+
+@{
+    ViewData["Title"] = "Actualizar Membresia";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+
+<div class="container-grande">
+    <div class="cliente-info-left">
+        <div class="cliente-titulo">
+            <h1>Actualizar Membresia</h1>
+        </div>
+    </div>
+
+    <div class="cliente-info-right">
+
+        <form id="buscarClienteForm" method="post" asp-action="GuardarActualizacionMembresia" asp-controller="Cliente">
+            <div class="search-bar">
+
+                <h3>Id del cliente: <span>@(Model?.Identificacion)</span></h3>
+
+                <!-- Campo oculto para enviar la identificación -->
+                <input type="hidden" asp-for="Identificacion" />
+
+                <div class="form-group">
+                    <div class="form-field">
+                        <select asp-for="refMembresia" class="form-control custom-select">
+                            <option value="">Seleccionar una opción</option>
+                            <option value="General">Plan General</option>
+                            <option value="Premium">Plan Premium</option>
+                        </select>
+                        <span id="membresia-error" class="text-danger error-message" style="margin-left: 10px;"></span>
+                        <span asp-validation-for="refMembresia" class="text-danger error-message"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+       
+    </div>
+</div>
+
+
+<style>
+
+    .container-grande {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .search-bar {
+        width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 20px;
+    }
+
+    .cliente-titulo h1 {
+        font-size: 50px;
+        font-weight: 900;
+        line-height: 70px;
+        color: #EE1C25;
+    }
+
+    .custom-select {
+        margin-top: 10px;
+        text-align: center;
+        text-align-last: center;
+        border-radius: 20px;
+        padding: 0;
+        font-size: 1.2rem;
+        border: 2px solid #dcdcdc;
+        background-color: #f9f9f9;
+        appearance: none;
+        background-image: url('/img/flechaAbajo.png');
+        background-position: right 10px center;
+        background-repeat: no-repeat;
+        background-size: 15px;
+        height: 50px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 500px;
+    }
+
+    .form-field, .data-field {
+        display: flex;
+        align-items: center;
+    }
+
+
+
+    .search-bar button {
+        background-color: #EE1C25;
+        margin:0;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 40px;
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 190px;
+        height: 45px;
+        font-family: Inter, sans-serif;
+        font-weight: bold;
+        font-size: 20px;
+        font-style: italic;
+        line-height: 70px;
+        word-wrap: break-word;
+    }
+    
+</style>
+

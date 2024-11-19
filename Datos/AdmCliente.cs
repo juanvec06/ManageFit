@@ -74,6 +74,35 @@ namespace NET_MVC.Datos
             return rpta;
         }
 
+        public bool ActualizarMembresiaCliente(string identificacion, string nuevaMembresia)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SP_ACTUALIZAR_MEMBRESIA", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("p_id_cliente", OracleDbType.Varchar2).Value = identificacion;
+                        cmd.Parameters.Add("p_nueva_membresia", OracleDbType.Varchar2).Value = nuevaMembresia;
+
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error al actualizar la membresía: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return false;
+        }
+
+
         public List<ClienteModel> ListarClientes(string filter, string IdSede)
         {
             var clientes = new List<ClienteModel>();
@@ -396,5 +425,47 @@ namespace NET_MVC.Datos
             return total;
         }
 
+        public string VerificarMensajeTrigger(string idCliente)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("SP_VERIFICAR_MENSAJE_TRIGGER", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada: ID del cliente
+                        cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = idCliente;
+
+                        // Parámetro de salida para el mensaje
+                        cmd.Parameters.Add("p_mensaje", OracleDbType.Varchar2, 500).Direction = ParameterDirection.Output;
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el mensaje de salida
+                        if (cmd.Parameters["p_mensaje"].Value != DBNull.Value)
+                        {
+                            mensaje = cmd.Parameters["p_mensaje"].Value.ToString();
+                        }
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle al verificar mensaje del trigger: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
+            return mensaje;
+        }
+
     }
+
 }

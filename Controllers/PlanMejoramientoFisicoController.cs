@@ -251,6 +251,9 @@ namespace NET_MVC.Controllers
                     return Json(new { success = false, errors = new { MensajeError = ex.Message } });
                 }
             }
+
+            Console.WriteLine("Redirigiendo a: " + Url.Action("ModificarEjercicios"));
+
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
 

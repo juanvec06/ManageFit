@@ -74,9 +74,80 @@ namespace NET_MVC.Controllers
         }
 
         [Authorize(Roles = "Administrador")]
+        public IActionResult ActualizarMembresia()
+        {
+            return View("ActualizarMembresia");
+        }
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult BuscarActualizarMembresia()
+        {
+            return View("BuscarActualizarMembresia");
+        }
+
+        [Authorize(Roles = "Administrador")]
         public IActionResult InformacionClienteEspecifico()
         {
             return View("InformacionClienteEspecifico");
+        }
+
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult ActualizarMembresia(string identificacion)
+        {
+            if (string.IsNullOrWhiteSpace(identificacion))
+            {
+                TempData["ErrorMessage"] = "Debe ingresar una identificación válida.";
+                return RedirectToAction("BuscarActualizarMembresia");
+            }
+
+            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            // Verificar si el cliente existe
+            var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion, IdSede);
+            if (cliente == null)
+            {
+                TempData["ErrorMessage"] = "No se encontró un cliente con la identificación proporcionada.";
+                return RedirectToAction("BuscarActualizarMembresia");
+            }
+
+            // Pasar el modelo a la vista "ActualizarMembresia"
+            return View("ActualizarMembresia", cliente);
+        }
+
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult GuardarActualizacionMembresia(ClienteModel cliente)
+        {
+            Console.WriteLine($"Identificación del cliente: {cliente.Identificacion}");
+            if (string.IsNullOrWhiteSpace(cliente.refMembresia))
+            {
+                TempData["ErrorMessage"] = "Debe seleccionar un tipo de membresía.";
+                return View("ActualizarMembresia", cliente);
+            }
+
+            // Llamar al método que actualiza la membresía
+            bool resultado = consultaCliente.ActualizarMembresiaCliente(cliente.Identificacion, cliente.refMembresia);
+
+            if (resultado)
+            {
+                // Llamar al método que verifica el mensaje del trigger
+                string mensajeTrigger = consultaCliente.VerificarMensajeTrigger(cliente.Identificacion);
+
+                // Mostrar mensajes en TempData
+                if (!string.IsNullOrEmpty(mensajeTrigger))
+                {
+                    TempData["TriggerMessage"] = mensajeTrigger;
+                }
+
+                TempData["SuccessMessageMembresia"] = "La membresía se actualizó correctamente.";
+                return RedirectToAction("BuscarActualizarMembresia");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Ocurrió un error al actualizar la membresía.";
+                return View("ActualizarMembresia", cliente);
+            }
         }
 
 

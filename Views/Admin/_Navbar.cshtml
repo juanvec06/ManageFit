@@ -4,7 +4,7 @@
 
     bool isInNavbarPage =
         (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || 
-         currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente"))) ||
+         currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente") || currentAction.StartsWith("BuscarActualizarMembresia"))) ||
         (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar" || 
         currentAction == "InformacionEntrenador" || currentAction == "InformacionEntrenadorEspecifico" ||
         currentAction == "BuscarEntrenador"));
@@ -60,6 +60,12 @@
             <a href="@Url.Action("InformacionEntrenador", "Entrenador")"
                class="nav-btn @(currentAction == "InformacionEntrenador" && currentController == "Entrenador" ? "active" : "")">
                 Información entrenador
+            </a>
+        </li>
+        <li>
+            <a href="@Url.Action("BuscarActualizarMembresia", "Cliente")"
+               class="nav-btn @(currentAction == "BuscarActualizarMembresia" && currentController == "Cliente" ? "active" : "")">
+                Actualizar Membresia
             </a>
         </li>
     </ul>
