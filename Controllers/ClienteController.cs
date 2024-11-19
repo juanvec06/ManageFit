@@ -84,6 +84,12 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult AsignarEntrenadorCliente(string identificacionEntrenador)
         {
+            var a = auxCliente;
+            if (auxCliente.IdEntrenador != 0)
+            {
+                TempData["ErrorMessage"] = "El cliente ya tiene un entrenador asignado";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
             if (string.IsNullOrWhiteSpace(identificacionEntrenador))
             {
                 TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
@@ -125,7 +131,7 @@ namespace NET_MVC.Controllers
                     {
                         var auxRegistrarCliente = consultaCliente.RegistrarCliente(auxCliente);
                     }
-
+                    TempData["ClienteDatos"] = null;
                     TempData["SuccessMessage"] = "Cliente registrado correctamente";
                     return RedirectToAction("DashboardAdministrador", "Admin");
                 }
