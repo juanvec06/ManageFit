@@ -1,6 +1,8 @@
 ﻿using NET_MVC.Models;
 using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
 using System.Collections.Generic;
+using System.Data;
 
 namespace NET_MVC.Datos
 {
@@ -169,6 +171,7 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
+        
         public List<NombreEjercicio> ObtenerOpciones()
         {
             List<NombreEjercicio> opciones = new List<NombreEjercicio>();
@@ -214,34 +217,43 @@ namespace NET_MVC.Datos
 
         public List<EjercicioModel> ListarEjercicios(int idCliente, DateTime FechaValoracion)
         {
-            string fecha = FechaValoracion.ToString("yyyy-MM-dd");
             List<EjercicioModel> ejercicios = new List<EjercicioModel>();
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    string sql = "SELECT ID_EJERCICIO as id, NOMBREEJERCICIO.NOMBRE_EJERCICIO as nombre, " +
-                                 "EJERCICIO.NUMERO_REPETICIONES as repeticiones, " +
-                                 "EJERCICIO.NUMERO_SERIES as series, " +
-                                 "EJERCICIO.DIA_SEMANA dia " +
-                                 "FROM EJERCICIO " +
-                                 "INNER JOIN NOMBREEJERCICIO ON EJERCICIO.ID_NOMBRE_EJERCICIO = NOMBREEJERCICIO.ID_NOMBRE_EJERCICIO " +
-                                 "WHERE EJERCICIO.ID_CLIENTE = " + idCliente + " AND EJERCICIO.ID_FECHA_VALORACION = TO_DATE('" + fecha + "', 'yyyy-MM-dd')";
-
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("ListarEjercicios", conexionBD))
                     {
-                        OracleDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("p_idCliente", OracleDbType.Int32).Value = idCliente;
+                        cmd.Parameters.Add("p_fechaValoracion", OracleDbType.Date).Value = FechaValoracion;
+
+                        // Parámetro de salida
+                        OracleParameter resultadoParam = new OracleParameter("p_resultado", OracleDbType.RefCursor);
+                        resultadoParam.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(resultadoParam);
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Leer los resultados del cursor
+                        using (OracleDataReader reader = ((OracleRefCursor)cmd.Parameters["p_resultado"].Value).GetDataReader())
                         {
-                            EjercicioModel objejercicio = new EjercicioModel
+                            while (reader.Read())
                             {
-                                IdEjercicio = reader["id"].ToString(),
-                                NombreString = reader["nombre"].ToString(),
-                                Repeticiones = Convert.ToInt32(reader["repeticiones"]),
-                                Series = Convert.ToInt32(reader["series"]),
-                                Dia = reader["dia"].ToString(),
-                            };
-                            ejercicios.Add(objejercicio);
+                                EjercicioModel objejercicio = new EjercicioModel
+                                {
+                                    IdEjercicio = reader["id"].ToString(),
+                                    NombreString = reader["nombre"].ToString(),
+                                    Repeticiones = Convert.ToInt32(reader["repeticiones"]),
+                                    Series = Convert.ToInt32(reader["series"]),
+                                    Dia = reader["dia"].ToString(),
+                                };
+                                ejercicios.Add(objejercicio);
+                            }
                         }
                     }
                 }
@@ -256,29 +268,43 @@ namespace NET_MVC.Datos
             }
             finally
             {
-                Conexion.cerrarConexion(); //Cerrar la conexión
+                Conexion.cerrarConexion(); // Cerrar la conexión
             }
+
             return ejercicios;
         }
 
         public bool PmfExistente(PMFModel pmf)
         {
             bool existe = false;
-            DateTime fecha = Convert.ToDateTime(pmf.FechaValoracion);
-            string fechaString = fecha.ToString("yyyy-MM-dd");
 
             try
             {
-                string sql = "SELECT COUNT(*) FROM pmf WHERE id_cliente = " + pmf.IdCliente +
-                    " AND FECHA_VALORACION = TO_DATE('" + fechaString + "', 'yyyy-MM-dd')";
+                // Convertir la fecha
+                DateTime fecha = Convert.ToDateTime(pmf.FechaValoracion);
+
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    // Llamar al procedimiento almacenado
+                    using (OracleCommand cmd = new OracleCommand("PmfExistente", conexionBD))
                     {
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                        // Si el contador es mayor a 0, significa que el cliente existe
-                        existe = count > 0;
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("p_idCliente", OracleDbType.Int32).Value = pmf.IdCliente;
+                        cmd.Parameters.Add("p_fechaValoracion", OracleDbType.Date).Value = fecha;
+
+                        // Parámetro de salida
+                        OracleParameter existeParam = new OracleParameter("p_existe", OracleDbType.Int32);
+                        existeParam.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(existeParam);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el valor de la salida y convertirlo
+                        var oracleDecimal = (Oracle.ManagedDataAccess.Types.OracleDecimal)existeParam.Value;
+                        existe = oracleDecimal.ToInt32() > 0; // Convertir y verificar si es mayor que 0
                     }
                 }
             }
@@ -286,9 +312,13 @@ namespace NET_MVC.Datos
             {
                 throw new Exception("Error en Oracle: " + oex.Message);
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
             finally
             {
-                Conexion.cerrarConexion();
+                Conexion.cerrarConexion(); // Cerrar la conexión
             }
 
             return existe;
@@ -297,22 +327,35 @@ namespace NET_MVC.Datos
         public bool EjercicioExistente(EjercicioModel ejercicio)
         {
             bool existe = false;
-            DateTime fecha = Convert.ToDateTime(ejercicio.FechaValoracion);
-            string fechaString = fecha.ToString("yyyy-MM-dd");
 
             try
             {
-                string sql = "SELECT COUNT(*) FROM ejercicio WHERE ID_EJERCICIO = " + ejercicio.IdEjercicio +
-                            " AND id_cliente = " + ejercicio.IdCliente +
-                            " AND ID_FECHA_VALORACION = TO_DATE('" + fechaString + "', 'yyyy-MM-dd')";
+                // Convertir la fecha
+                DateTime fecha = Convert.ToDateTime(ejercicio.FechaValoracion);
+
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    // Llamar al procedimiento almacenado
+                    using (OracleCommand cmd = new OracleCommand("SP_EJERCICIO_EXISTENTE", conexionBD))
                     {
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                        // Si el contador es mayor a 0, significa que el cliente existe
-                        existe = count > 0;
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("p_idEjercicio", OracleDbType.Int32).Value = Convert.ToInt32(ejercicio.IdEjercicio);
+                        cmd.Parameters.Add("p_idCliente", OracleDbType.Int32).Value = Convert.ToInt32(ejercicio.IdCliente);
+                        cmd.Parameters.Add("p_fechaValoracion", OracleDbType.Date).Value = fecha;
+
+                        // Parámetro de salida
+                        OracleParameter existeParam = new OracleParameter("p_existe", OracleDbType.Decimal);
+                        existeParam.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(existeParam);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el valor del parámetro de salida y convertirlo a int
+                        var result = (Oracle.ManagedDataAccess.Types.OracleDecimal)existeParam.Value;
+                        existe = result.Value > 0;
                     }
                 }
             }
@@ -320,9 +363,13 @@ namespace NET_MVC.Datos
             {
                 throw new Exception("Error en Oracle: " + oex.Message);
             }
+            catch (Exception ex)
+            {
+                return existe;
+            }
             finally
             {
-                Conexion.cerrarConexion();
+                Conexion.cerrarConexion(); // Cerrar la conexión
             }
 
             return existe;
@@ -330,48 +377,48 @@ namespace NET_MVC.Datos
 
         public EjercicioModel ObtenerDatosEjercicio(string IdEjercicio)
         {
+            EjercicioModel objejercicio = null;
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    string sql = "SELECT ID_EJERCICIO as id, NOMBREEJERCICIO.NOMBRE_EJERCICIO as nombre, " +
-                                 "EJERCICIO.ID_CLIENTE as idcliente, " +
-                                 "EJERCICIO.ID_FECHA_VALORACION as fecha, " +
-                                 "EJERCICIO.NUMERO_REPETICIONES as repeticiones, " +
-                                 "EJERCICIO.NUMERO_SERIES as series, " +
-                                 "EJERCICIO.DIA_SEMANA dia " +
-                                 "FROM EJERCICIO " +
-                                 "INNER JOIN NOMBREEJERCICIO ON EJERCICIO.ID_NOMBRE_EJERCICIO = NOMBREEJERCICIO.ID_NOMBRE_EJERCICIO " +
-                                 "WHERE EJERCICIO.ID_EJERCICIO = " + IdEjercicio;
-
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("SP_OBTENER_DATOS_EJERCICIO", conexionBD))
                     {
-                        using (OracleDataReader reader = cmd.ExecuteReader())
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("p_idEjercicio", OracleDbType.Varchar2).Value = IdEjercicio;
+
+                        // Parámetros de salida
+                        cmd.Parameters.Add("p_idCliente", OracleDbType.Int32).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_fecha", OracleDbType.Date).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_repeticiones", OracleDbType.Int32).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_series", OracleDbType.Int32).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("p_dia", OracleDbType.Varchar2, 20).Direction = ParameterDirection.Output;
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Asignar los valores devueltos al modelo
+                        objejercicio = new EjercicioModel
                         {
-                            // Verificamos si hay filas
-                            if (reader.Read())
-                            {
-                                // Asignamos los valores al objeto EjercicioModel
-                                EjercicioModel objejercicio = new EjercicioModel
-                                {
-                                    IdEjercicio = reader["id"].ToString(),
-                                    IdCliente = Convert.ToInt32(reader["idcliente"]),
-                                    FechaValoracion = Convert.ToDateTime(reader["fecha"]),
-                                    NombreString = reader["nombre"].ToString(),
-                                    Repeticiones = Convert.ToInt32(reader["repeticiones"]),
-                                    Series = Convert.ToInt32(reader["series"]),
-                                    Dia = reader["dia"].ToString()
-                                };
-                                objejercicio.Opciones = ObtenerOpciones();
-                                objejercicio.Nombre = objejercicio.Opciones.Where(p => p.NameEjercicio == objejercicio.NombreString)
-                                                                           .Select(p => p.IdEjercicio).FirstOrDefault();
-                                return objejercicio; 
-                            }
-                            else
-                            {
-                                throw new Exception("Ejercicio no encontrado.");
-                            }
-                        }
+                            IdEjercicio = IdEjercicio,
+                            IdCliente = ((Oracle.ManagedDataAccess.Types.OracleDecimal)cmd.Parameters["p_idCliente"].Value).ToInt32(),
+                            FechaValoracion = ((Oracle.ManagedDataAccess.Types.OracleDate)cmd.Parameters["p_fecha"].Value).Value,
+                            NombreString = cmd.Parameters["p_nombre"].Value.ToString(),
+                            Repeticiones = ((Oracle.ManagedDataAccess.Types.OracleDecimal)cmd.Parameters["p_repeticiones"].Value).ToInt32(),
+                            Series = ((Oracle.ManagedDataAccess.Types.OracleDecimal)cmd.Parameters["p_series"].Value).ToInt32(),
+                            Dia = cmd.Parameters["p_dia"].Value.ToString()
+                        };
+
+                        // Opciones adicionales
+                        objejercicio.Opciones = ObtenerOpciones();
+                        objejercicio.Nombre = objejercicio.Opciones
+                            .Where(p => p.NameEjercicio == objejercicio.NombreString)
+                            .Select(p => p.IdEjercicio)
+                            .FirstOrDefault();
                     }
                 }
             }
@@ -385,9 +432,12 @@ namespace NET_MVC.Datos
             }
             finally
             {
-                Conexion.cerrarConexion(); //Cerrar la conexión
+                Conexion.cerrarConexion(); // Cerrar la conexión
             }
-            return null;
+
+            return objejercicio ?? throw new Exception("Ejercicio no encontrado.");
         }
+
+
     }
 }

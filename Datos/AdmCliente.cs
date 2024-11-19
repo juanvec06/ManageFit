@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using NET_MVC.Models;
 using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+using System.Data;
 
 namespace NET_MVC.Datos
 {
@@ -72,82 +74,38 @@ namespace NET_MVC.Datos
             return rpta;
         }
 
-        public string cadenaListarClientes(string filter, string IdSede)
-        {
-            string sql = "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                     "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                     "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                     "WHERE p.id_sede = " + IdSede +
-                     " GROUP BY c.id_cliente";
-
-            switch (filter)
-            {
-                case "all":
-                    break;
-                case "premium":
-                    sql = cadenasql2(1, IdSede); // Clientes premium
-                    break;
-                case "general":
-                    sql = cadenasql2(2, IdSede); // Clientes generales
-                    break;
-                case "masculino":
-                    sql = cadenasql3(1, IdSede); // Género Masculino
-                    break;
-                case "femenino":
-                    sql = cadenasql3(2, IdSede); // Género Femenino
-                    break;
-                case "no-especificado":
-                    sql = cadenasql3(3, IdSede); // Género No especificado
-                    break;
-                default:
-                    break;
-            }
-            return sql;
-        }
-        private string cadenasql2(int opcion, String IdSede)
-        {
-            string nomMembresia = opcion == 1 ? "Premium" :
-                                  "General";
-
-            return "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede + " AND m.tipo = '" + nomMembresia + "' " +
-                                "GROUP BY c.id_cliente";
-        }
-        private string cadenasql3(int opcion, String IdSede)
-        {
-            string genero = opcion == 1 ? "M" :
-                            opcion == 2 ? "F" :
-                            "NE";
-
-            return "SELECT c.id_cliente, MAX(p.nombre_persona) AS nombre, MAX(p.telefono_persona) AS telefono,MAX(m.tipo) AS membresia, TO_CHAR(MAX(m.fecha_suscripcion), 'DD-MM-YYYY') AS fecha " +
-                                "FROM cliente c INNER JOIN persona p ON c.id_cliente = p.id_persona " +
-                                "INNER JOIN membresia m ON c.id_cliente = m.id_cliente " +
-                                "WHERE p.id_sede = " + IdSede + " AND p.genero_persona = '" + genero + "' " +
-                                "GROUP BY c.id_cliente";
-        }
-        public List<ClienteModel> ListarClientes(string sql)
+        public List<ClienteModel> ListarClientes(string filter, string IdSede)
         {
             var clientes = new List<ClienteModel>();
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(sql, conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("LISTAR_CLIENTES", conexionBD))
                     {
-                        OracleDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("P_FILTER", OracleDbType.Varchar2).Value = filter;
+                        cmd.Parameters.Add("P_ID_SEDE", OracleDbType.Int32).Value = Convert.ToInt32(IdSede);
+
+                        // Parámetro de salida (cursor)
+                        cmd.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (OracleDataReader reader = cmd.ExecuteReader())
                         {
-                            ClienteModel objcliente = new ClienteModel
+                            while (reader.Read())
                             {
-                                Identificacion = reader["id_cliente"].ToString(),
-                                Nombre = reader["nombre"].ToString(),
-                                Telefono = reader["telefono"].ToString(),
-                                refMembresia = reader["membresia"].ToString(),
-                                fechaMembresia = reader["fecha"].ToString(),
-                            };
-                            clientes.Add(objcliente);
+                                ClienteModel objcliente = new ClienteModel
+                                {
+                                    Identificacion = reader["id_cliente"].ToString(),
+                                    Nombre = reader["nombre"].ToString(),
+                                    Telefono = reader["telefono"].ToString(),
+                                    refMembresia = reader["membresia"].ToString(),
+                                    fechaMembresia = reader["fecha"].ToString(),
+                                };
+                                clientes.Add(objcliente);
+                            }
                         }
                     }
                 }
@@ -166,35 +124,42 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
         }
+
         public List<ClienteModel> ListarClientesAsignados(string idEntrenador)
         {
-            List<ClienteModel> clientes = new List<ClienteModel>();
+            var clientes = new List<ClienteModel>();
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    string sql = "SELECT CLIENTE.id_cliente AS id_cliente, PERSONA.nombre_persona AS nombre, PERSONA.telefono_persona AS telefono, MEMBRESIA.tipo AS membresia,calcular_dias_restantes(CLIENTE.id_cliente) AS dias_restantes " +
-                                 "FROM cliente" +
-                                 "    INNER JOIN persona ON cliente.id_cliente = persona.id_persona" +
-                                 "    INNER JOIN membresia ON cliente.id_cliente = membresia.id_cliente" +
-                                 "    WHERE CLIENTE.id_entrenador = " + idEntrenador;
-                    using (OracleCommand query = new OracleCommand(sql, conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("LISTAR_CLIENTES_ASIGNADOS", conexionBD))
                     {
-                        OracleDataReader reader = query.ExecuteReader();
-                        while (reader.Read())
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("P_ID_ENTRENADOR", OracleDbType.Int32).Value = Convert.ToInt32(idEntrenador);
+
+                        // Parámetro de salida (cursor)
+                        cmd.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (OracleDataReader reader = cmd.ExecuteReader())
                         {
-                            ClienteModel objcliente = new ClienteModel
+                            while (reader.Read())
                             {
-                                Identificacion = reader["id_cliente"].ToString(),
-                                Nombre = reader["nombre"].ToString(),
-                                Telefono = reader["telefono"].ToString(),
-                                refMembresia = reader["membresia"].ToString(),
-                                DiasRestantes = Convert.ToInt32(reader["dias_restantes"])
-                            };
-                            clientes.Add(objcliente);
+                                ClienteModel objcliente = new ClienteModel
+                                {
+                                    Identificacion = reader["id_cliente"].ToString(),
+                                    Nombre = reader["nombre"].ToString(),
+                                    Telefono = reader["telefono"].ToString(),
+                                    refMembresia = reader["membresia"].ToString(),
+                                    DiasRestantes = Convert.ToInt32(reader["dias_restantes"])
+                                };
+                                clientes.Add(objcliente);
+                            }
                         }
                     }
                 }
+                return clientes;
             }
             catch (OracleException oex)
             {
@@ -208,8 +173,8 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
-            return clientes;
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
         public bool eliminarCliente(string identificacion)
         {
             bool existe = false;
@@ -248,22 +213,40 @@ namespace NET_MVC.Datos
 
         public bool ClienteExiste(string identificacion)
         {
-            bool existe = false;
+            if (string.IsNullOrEmpty(identificacion))
+            {
+                throw new ArgumentException("La identificación no puede estar vacía.");
+            }
+
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(
-                        "SELECT COUNT(*) FROM Cliente WHERE id_cliente = :p_id_cliente", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("CLIENTE_EXISTE", conexionBD))
                     {
-                        cmd.Parameters.Add(":p_id_cliente", OracleDbType.Varchar2).Value = identificacion;
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("P_ID_CLIENTE", OracleDbType.Varchar2).Value = identificacion;
 
-                        // Si el contador es mayor a 0, significa que el cliente existe
-                        existe = count > 0;
+                        // Parámetro de salida
+                        var existeParam = new OracleParameter("P_EXISTE", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(existeParam);
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Convertir el valor de salida desde OracleDecimal a int
+                        var existeDecimal = (Oracle.ManagedDataAccess.Types.OracleDecimal)existeParam.Value;
+                        int existe = existeDecimal.ToInt32();
+
+                        return existe == 1;
                     }
                 }
+                return false;
             }
             catch (OracleException oex)
             {
@@ -273,8 +256,6 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion();
             }
-
-            return existe;
         }
 
         public ClienteModel ObtenerClientePorIdentificacion(string identificacion, string idSede)
@@ -285,39 +266,44 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(
-                      "SELECT c.id_cliente, p.nombre_persona AS nombre, p.telefono_persona AS telefono, p.genero_persona AS genero, m.tipo, " +
-                      "calcular_dias_restantes(c.id_cliente) AS dias_restantes " +
-                      "FROM Cliente c " +
-                      "JOIN Persona p ON c.id_cliente = p.id_persona " +
-                      "JOIN Membresia m ON c.id_cliente = m.id_cliente " +
-                      "WHERE c.id_cliente = :p_id_cliente AND id_sede = :p_id_sede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("sp_obtener_cliente", conexionBD))
                     {
-                        cmd.CommandType = System.Data.CommandType.Text;
-                        cmd.Parameters.Add(":p_id_cliente", OracleDbType.Int32).Value = int.Parse(identificacion);
-                        cmd.Parameters.Add(":p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        using (OracleDataReader reader = cmd.ExecuteReader())
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = int.Parse(identificacion);
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = int.Parse(idSede);
+
+                        // Parámetros de salida
+                        cmd.Parameters.Add("p_id", OracleDbType.Int32).Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2, 100).Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2, 20).Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add("p_genero", OracleDbType.Varchar2, 10).Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add("p_tipo", OracleDbType.Varchar2, 50).Direction = System.Data.ParameterDirection.Output;
+                        cmd.Parameters.Add("p_dias_restantes", OracleDbType.Int32).Direction = System.Data.ParameterDirection.Output;
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        clienteEncontrado = new ClienteModel
                         {
-                            if (reader.Read())
-                            {
-                                clienteEncontrado = new ClienteModel
-                                {
-                                    Identificacion = reader["id_cliente"].ToString(),
-                                    Nombre = reader["nombre"].ToString(),
-                                    Telefono = reader["telefono"].ToString(),
-                                    Genero = reader["genero"].ToString(),
-                                    refMembresia = reader["tipo"].ToString(),
-                                    DiasRestantes = Convert.ToInt32(reader["dias_restantes"])
-                                };
-                            }
-                        }
+                            Identificacion = cmd.Parameters["p_id"].Value.ToString(),
+                            Nombre = cmd.Parameters["p_nombre"].Value.ToString(),
+                            Telefono = cmd.Parameters["p_telefono"].Value.ToString(),
+                            Genero = cmd.Parameters["p_genero"].Value.ToString(),
+                            refMembresia = cmd.Parameters["p_tipo"].Value.ToString(),
+                            DiasRestantes = cmd.Parameters["p_dias_restantes"].Value != DBNull.Value
+                                ? (cmd.Parameters["p_dias_restantes"].Value is OracleDecimal ?
+                                    ((OracleDecimal)cmd.Parameters["p_dias_restantes"].Value).ToInt32() :
+                                    Convert.ToInt32(cmd.Parameters["p_dias_restantes"].Value))
+                                : 0 // Valor predeterminado si es nulo
+                        };
                     }
                 }
             }
             catch (OracleException oex)
             {
-                throw new Exception("Error en Oracle: " + oex.Message);
+                return clienteEncontrado;
             }
             finally
             {
@@ -327,7 +313,8 @@ namespace NET_MVC.Datos
             return clienteEncontrado;
         }
 
-        // GRAFICAS DEL INICIO: 
+        
+
         public int ObtenerTotalClientesPorSede(int idSede)
         {
             int totalClientes = 0;
@@ -335,10 +322,24 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("SELECT COUNT(*) FROM Cliente c JOIN Persona p ON c.id_Cliente = p.id_Persona WHERE p.id_Sede = :idSede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("sp_obtener_total_clientes", conexionBD))
                     {
-                        cmd.Parameters.Add(new OracleParameter(":idSede", idSede));
-                        totalClientes = Convert.ToInt32(cmd.ExecuteScalar());
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        // Parámetro de entrada
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
+
+                        // Parámetro de salida
+                        cmd.Parameters.Add("p_total_clientes", OracleDbType.Int32).Direction = System.Data.ParameterDirection.Output;
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el valor del parámetro de salida
+                        if (cmd.Parameters["p_total_clientes"].Value != DBNull.Value)
+                        {
+                            totalClientes = Convert.ToInt32(((OracleDecimal)cmd.Parameters["p_total_clientes"].Value).Value);
+                        }
                     }
                 }
             }
@@ -350,29 +351,36 @@ namespace NET_MVC.Datos
             {
                 Conexion.cerrarConexion();
             }
+
             return totalClientes;
         }
 
         public int ObtenerTotalClientesPorTipo(int idSede, string tipoMembresia)
         {
             int total = 0;
-
             try
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand(@"
-                SELECT COUNT(*)
-                FROM Cliente c
-                JOIN Persona p ON c.id_Cliente = p.id_Persona
-                JOIN Membresia m ON c.id_Cliente = m.id_Cliente
-                WHERE p.id_Sede = :idSede AND m.tipo = :tipoMembresia", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("sp_obtener_total_clientes_por_tipo", conexionBD))
                     {
-                        cmd.CommandType = System.Data.CommandType.Text;
-                        cmd.Parameters.Add("idSede", OracleDbType.Int32).Value = idSede;
-                        cmd.Parameters.Add("tipoMembresia", OracleDbType.Varchar2).Value = tipoMembresia;
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        total = Convert.ToInt32(cmd.ExecuteScalar());
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
+                        cmd.Parameters.Add("p_tipo_membresia", OracleDbType.Varchar2).Value = tipoMembresia;
+
+                        // Parámetro de salida
+                        cmd.Parameters.Add("p_total", OracleDbType.Int32).Direction = System.Data.ParameterDirection.Output;
+
+                        // Ejecutar el procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Obtener el valor del parámetro de salida
+                        if (cmd.Parameters["p_total"].Value != DBNull.Value)
+                        {
+                            total = Convert.ToInt32(((OracleDecimal)cmd.Parameters["p_total"].Value).Value);
+                        }
                     }
                 }
             }
