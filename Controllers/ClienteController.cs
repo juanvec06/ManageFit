@@ -213,10 +213,10 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Administrador, Entrenador")]
         public IActionResult BuscarCliente(string identificacion)
         {
-            /*if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
+            if (HttpContext.Session.GetString("ClienteIdEjercicio") != null && User.IsInRole("Entrenador"))
             {
                 identificacion = HttpContext.Session.GetString("ClienteIdEjercicio");//esto para el boton de ir atras de la pagina, se envia nulo cuando se usa
-            }*/
+            }
 
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
             // Verificar que la identificación no esté vacía
