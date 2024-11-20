@@ -17,7 +17,7 @@
 <div class="container container-grande">
 
     <div class="login-container">
-
+        <div id="error-general" class="text-danger" style="display: none;"></div>
         <div class="wrapper">
 
             <img class="cliente-img" src="/img/user.png" alt="Logo">
@@ -89,7 +89,6 @@
                 </div>
 
                 <button type="button" id="guardarCliente" class="btn mt-3">Guardar</button>
-
             </form>
 
         </div>
@@ -174,30 +173,6 @@
             if (!fechaNacimiento) {
                 $('#fecha-error').text('Campo obligatorio.');
                 camposValidos = false;
-            } else {
-                var fecha = new Date(fechaNacimiento);
-                var hoy = new Date();
-
-                // Comprobar si la fecha es futura
-                if (fecha > hoy) {
-                    $('#fecha-error').text('No puede ser en el futuro.');
-                    camposValidos = false;
-                } else {
-                    // Calcular edad
-                    var edad = hoy.getFullYear() - fecha.getFullYear();
-                    // Ajustar si el cumpleaños no ha ocurrido aún este año
-                    if (hoy.getMonth() < fecha.getMonth() || (hoy.getMonth() === fecha.getMonth() && hoy.getDate() < fecha.getDate())) {
-                        edad--;
-                    }
-
-                    if (edad < 14) {
-                        $('#fecha-error').text('Debe tener más de 14 años.');
-                        camposValidos = false;
-                    } else if (edad >= 100) {
-                        $('#fecha-error').text('La edad no puede ser superior a 100 años.');
-                        camposValidos = false;
-                    }
-                }
             }
 
             // Validar el campo de nombre
@@ -296,14 +271,16 @@
                 data: formData,
                 success: function (data) {
                     if (data.success) {
-                        // Redirige con el mensaje en el QueryString
+                        // Redirige si el registro fue exitoso
                         window.location.href = data.redirectUrl;
                     } else if (data.errors) {
-                        $('#cliente-existe').text(data.errors.MensajeError || '');
+                        // Mostrar mensaje de error general en la vista
+                        $('#error-general').text(data.errors).fadeIn();
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("Error al guardar el cliente:", error);
+                    // Manejar errores inesperados (error del servidor, red, etc.)
+                    $('#error-general').text('Error al procesar la solicitud: ' + error).fadeIn();
                 }
             });
 
@@ -393,7 +370,14 @@
         height: 40px;
     }
 
-
+    #error-general {
+        padding: 10px;
+        border: 1px solid red;
+        background-color: #f8d7da;
+        color: #721c24;
+        margin-top: 10px;
+        border-radius: 5px;
+    }
     .wrapper .btn {
         background-color: red;
         color: white;
