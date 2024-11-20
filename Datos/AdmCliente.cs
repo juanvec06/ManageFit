@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -61,7 +62,14 @@ namespace NET_MVC.Datos
             }
             catch (OracleException oex)
             {
-                throw new Exception("Error en Oracle: " + oex.Message);
+                if (oex.Number == 20008)
+                {
+                    throw new Exception("Error: es menor de 18 años");
+                }
+                else
+                {
+                    throw new Exception("Error en Oracle: " + oex.Message);
+                }
             }
             catch (Exception ex)
             {

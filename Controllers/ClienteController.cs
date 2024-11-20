@@ -360,7 +360,7 @@ namespace NET_MVC.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return Json(new { success = false, errors = new { MensajeError = ex.Message } });
+                    return Json(new { success = false, errors = ex.Message  });
                 }
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
