@@ -68,9 +68,15 @@
                 Actualizar Membresia
             </a>
         </li>
+
+        <li>
+            <a href="@Url.Action("BuscarActualizarMembresia", "Cliente")"
+               class="nav-btn @(currentAction == "" && currentController == "Cliente" ? "active" : "")">
+                Transferir Cliente
+            </a>
+        </li>
     </ul>
 
-    <img class="logo-img" src="/img/logoNegro 1.png" alt="logo2">
 
     <div class="actions-img">
 
