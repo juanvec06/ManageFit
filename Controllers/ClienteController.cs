@@ -92,6 +92,94 @@ namespace NET_MVC.Controllers
         }
 
         [Authorize(Roles = "Administrador")]
+        public IActionResult TransferirSedeCliente()
+        {
+
+            try
+            {
+                String IdSedeActual = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                // Preparar las sedes disponibles para la vista
+                ViewBag.SedesDisponibles = consultaCliente.ObtenerSedesDisponibles(IdSedeActual);
+
+                // Pasar el ID de la sede actual a la vista
+                ViewBag.SedeActual = IdSedeActual;
+
+                // Obtener las sedes disponibles desde AdmCliente
+                var sedesDisponibles = consultaCliente.ObtenerSedesDisponibles(IdSedeActual);
+
+                // Pasar las sedes al ViewBag
+                ViewBag.SedesDisponibles = sedesDisponibles;
+
+                return View("TransferirSedeCliente");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error al cargar las sedes: {ex.Message}";
+                return RedirectToAction("TransferirSedeCliente");
+            }
+        }
+
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult CambiarSede(string idCliente, string idSedeDestino)
+        {
+            try
+            {
+                string idSedeActual = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                // Validar los parámetros ingresados
+                if (string.IsNullOrWhiteSpace(idCliente))
+                {
+                    TempData["ErrorMessageTransc"] = "El campo 'Identificación del Cliente' no puede estar vacío.";
+                    return RedirectToAction("TransferirSedeCliente");
+                }
+
+                if (string.IsNullOrWhiteSpace(idSedeDestino))
+                {
+                    TempData["ErrorMessageTransc"] = "Debe seleccionar una sede destino.";
+                    return RedirectToAction("TransferirSedeCliente");
+                }
+
+                if (!int.TryParse(idCliente, out int idClienteNum))
+                {
+                    TempData["ErrorMessageTransc"] = "La identificación del cliente debe ser un número válido.";
+                    return RedirectToAction("TransferirSedeCliente");
+                }
+
+                if (!int.TryParse(idSedeActual, out int idSedeActualNum))
+                {
+                    TempData["ErrorMessageTransc"] = "La identificación de la sede debe ser un número válido.";
+                    return RedirectToAction("TransferirSedeCliente");
+                }
+
+                if (!int.TryParse(idSedeDestino, out int idSedeDestinoNum))
+                {
+                    TempData["ErrorMessageTransc"] = "El ID de la sede destino debe ser un número válido.";
+                    return RedirectToAction("TransferirSedeCliente");
+                }
+
+                // Verificar si el cliente pertenece a la sede actual
+                if (!consultaCliente.VerificarClienteEnSede(idClienteNum, idSedeActualNum))
+                {
+                    TempData["ErrorMessageTransc"] = "El cliente no pertenece a la sede actual.";
+                    return RedirectToAction("TransferirSedeCliente");
+                }
+
+                // Llamar al método de transferencia en AdmCliente
+                consultaCliente.TransferirClienteSede(idCliente, idSedeDestino, idSedeActual);
+
+                TempData["SuccessMessage"] = "El cliente ha sido transferido exitosamente.";
+                return RedirectToAction("TransferirSedeCliente");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("TransferirSedeCliente");
+            }
+        }
+
+
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult ActualizarMembresia(string identificacion)
         {
@@ -119,7 +207,6 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult GuardarActualizacionMembresia(ClienteModel cliente)
         {
-            Console.WriteLine($"Identificación del cliente: {cliente.Identificacion}");
             if (string.IsNullOrWhiteSpace(cliente.refMembresia))
             {
                 TempData["ErrorMessage"] = "Debe seleccionar un tipo de membresía.";
@@ -473,6 +560,8 @@ namespace NET_MVC.Controllers
                 return new List<ClienteModel> { };
             }
         }
+
+
 
     }
 }

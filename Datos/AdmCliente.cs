@@ -384,6 +384,53 @@ namespace NET_MVC.Datos
             return totalClientes;
         }
 
+        public bool VerificarClienteEnSede(int idCliente, int idSede)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("VerificarClienteEnSede", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada
+                        cmd.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = idCliente;
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
+
+                        // Parámetro de salida
+                        var existeParam = new OracleParameter("p_existe", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(existeParam);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Convertir el valor del parámetro de salida a un entero
+                        if (existeParam.Value != DBNull.Value)
+                        {
+                            var result = ((Oracle.ManagedDataAccess.Types.OracleDecimal)existeParam.Value).ToInt32();
+                            return result == 1;
+                        }
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception($"Error al verificar cliente en sede: {ex.Message}");
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
+            return false;
+        }
+
+
+
         public int ObtenerTotalClientesPorTipo(int idSede, string tipoMembresia)
         {
             int total = 0;
@@ -465,6 +512,110 @@ namespace NET_MVC.Datos
 
             return mensaje;
         }
+
+        public void TransferirClienteSede(string idCliente, string idSedeDestino, string sedeActual)
+        {
+            try
+            {
+                // Validar que los valores puedan convertirse a números
+                if (!int.TryParse(idCliente, out int idClienteInt))
+                {
+                    throw new ArgumentException("El ID del cliente no es un número válido.");
+                }
+                if (!int.TryParse(idSedeDestino, out int idSedeDestinoInt))
+                {
+                    throw new ArgumentException("El ID de la sede destino no es un número válido.");
+                }
+
+                if (!int.TryParse(sedeActual, out int sedeActualInt))
+                {
+                    throw new ArgumentException("El ID de la sede destino no es un número válido.");
+                }
+
+                // Abrir conexión y ejecutar procedimiento
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("GestionSedes.TransferirCliente", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros del procedimiento
+                        cmd.Parameters.Add("v_id_sede_origen", OracleDbType.Int32).Value = sedeActualInt; // Sede origen
+                        cmd.Parameters.Add("v_id_sede_destino", OracleDbType.Int32).Value = idSedeDestinoInt; // Sede destino
+                        cmd.Parameters.Add("v_id_cliente", OracleDbType.Int32).Value = idClienteInt; // ID del cliente
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception($"Error en Oracle al transferir cliente: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al procesar la transferencia: {ex.Message}");
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
+        public List<SedeModel> ObtenerSedesDisponibles(string idSedeActual)
+        {
+            List<SedeModel> sedes = new List<SedeModel>();
+
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("ObtenerSedesDisponibles", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetro de entrada para la sede actual
+                        cmd.Parameters.Add("p_sede_actual", OracleDbType.Int32).Value = idSedeActual;
+
+                        // Parámetro de salida para el cursor
+                        var cursorParam = new OracleParameter("p_cursor", OracleDbType.RefCursor)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(cursorParam);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Leer el cursor
+                        using (OracleDataReader reader = ((OracleRefCursor)cursorParam.Value).GetDataReader())
+                        {
+                            while (reader.Read())
+                            {
+                                sedes.Add(new SedeModel
+                                {
+                                    IdSede = reader.GetInt32(0),
+                                    Nombre = reader.GetString(1)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                throw new Exception($"Error al obtener sedes disponibles: {ex.Message}");
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+
+            return sedes;
+        }
+
+
 
     }
 

@@ -4,7 +4,8 @@
 
     bool isInNavbarPage =
         (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || 
-         currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente") || currentAction.StartsWith("BuscarActualizarMembresia"))) ||
+         currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente") 
+         || currentAction.StartsWith("BuscarActualizarMembresia") || currentAction.StartsWith("TransferirSedeCliente"))) ||
         (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar" || 
         currentAction == "InformacionEntrenador" || currentAction == "InformacionEntrenadorEspecifico" ||
         currentAction == "BuscarEntrenador"));
@@ -70,8 +71,8 @@
         </li>
 
         <li>
-            <a href="@Url.Action("BuscarActualizarMembresia", "Cliente")"
-               class="nav-btn @(currentAction == "" && currentController == "Cliente" ? "active" : "")">
+            <a href="@Url.Action("TransferirSedeCliente", "Cliente")"
+               class="nav-btn @(currentAction == "TransferirSedeCliente" && currentController == "Cliente" ? "active" : "")">
                 Transferir Cliente
             </a>
         </li>
