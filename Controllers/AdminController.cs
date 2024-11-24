@@ -34,5 +34,13 @@ namespace NET_MVC.Controllers
 
             return View();
         }
+
+        public IActionResult OtrasFunc()
+        {
+            return View("OtrasFuncionalidades");
+        }
     }
+
+   
+     
 }

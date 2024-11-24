@@ -198,5 +198,22 @@ namespace NET_MVC.Controllers
             });
         }
 
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult BuscarActualizarSalario()
+        {
+            return View("BuscarActualizarSalario");
+        }
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult ActualizarSalario()
+        {
+            return View("ActualizarSalario");
+        }
+
+        public IActionResult GuardarActualizacionSalario(EntrenadorModel Entrenador)
+        {
+            return View("ActualizarSalario");
+        }
     }
 }

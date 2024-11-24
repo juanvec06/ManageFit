@@ -1,0 +1,113 @@
+﻿@model NET_MVC.Models.EntrenadorModel
+
+@{
+    ViewData["Title"] = "Actualizar Salario Entrenador";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-grande">
+    <div class="cliente-info-left">
+        <div class="cliente-titulo">
+            <h1>Actualizar Salario</h1>
+        </div>
+    </div>
+
+    <div class="cliente-info-right">
+        <form method="post" asp-action="GuardarActualizacionSalario" asp-controller="Entrenador">
+
+            <div class="search-bar">
+
+                <h3>Identificación del Entrenador: <span>3</span></h3>
+
+                <div class="form-group">
+                    <div class="form-field">
+                        <h4>Salario: </h4>
+                        <input asp-for="Salario" type="number" id="Salario" name="Salario" required>
+                        <span asp-validation-for="Salario" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<style>
+
+    .container-grande {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .search-bar {
+        width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 20px;
+    }
+
+    .cliente-titulo h1 {
+        font-size: 50px;
+        font-weight: 900;
+        line-height: 70px;
+        color: #EE1C25;
+    }
+
+    .form-field {
+        display: flex;
+        align-items: center;
+    }
+
+        .form-field input {
+            margin-bottom: 8px;
+            width: 100%;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 1.2rem;
+            padding: 10px 10px;
+            background: white;
+            border-radius: 20px;
+            height: 40px;
+        }
+
+        .form-field h4 {
+            margin-right: 15px;
+            padding: 8px;
+            background-color: #969393;
+            border-radius: 10px;
+            color: black;
+            white-space: nowrap;
+        }
+
+    .search-bar button {
+        background-color: #EE1C25;
+        margin: 0;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 40px;
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 190px;
+        height: 45px;
+        font-family: Inter, sans-serif;
+        font-weight: bold;
+        font-size: 20px;
+        font-style: italic;
+        line-height: 70px;
+        word-wrap: break-word;
+    }
+</style>
+

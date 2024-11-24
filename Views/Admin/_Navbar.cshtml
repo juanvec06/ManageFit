@@ -3,18 +3,24 @@
     string currentController = ViewContext.RouteData.Values["controller"].ToString();
 
     bool isInNavbarPage =
-        (currentController == "Cliente" && (currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") || 
+        (currentController == "Cliente" && (currentAction.StartsWith("TransferirSedeCliente") || 
+        currentAction == "Registrar" || currentAction.StartsWith("AsignarEntrenador") ||
          currentAction == "BuscarCliente" || currentAction == "Listar" || currentAction.StartsWith("InformacionCliente") 
          || currentAction.StartsWith("BuscarActualizarMembresia") || currentAction.StartsWith("TransferirSedeCliente"))) ||
         (currentController == "Entrenador" && (currentAction == "RegistrarEntrenador" || currentAction == "Listar" || 
         currentAction == "InformacionEntrenador" || currentAction == "InformacionEntrenadorEspecifico" ||
-        currentAction == "BuscarEntrenador"));
+        currentAction == "BuscarEntrenador" || currentAction.StartsWith("BuscarActualizarSalario") || currentAction.StartsWith("ActualizarSalario"))
+        || (currentController == "Admin" && (currentAction.StartsWith("OtrasFunc"))));
 
     bool isInAsignarEntrenador = currentController == "Cliente" && (currentAction.StartsWith("AsignarEntrenador"));
 
     bool isInInfoClienteEspecifico = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
 
     bool isInInfoEntrenadorEspecifico = currentController == "Entrenador" && currentAction.StartsWith("BuscarEntrenador");
+
+    bool isInGenericGoBackPage = currentController == "Entrenador" && (currentAction.StartsWith("BuscarActualizarSalario") || currentAction.StartsWith("ActualizarSalario"))
+    || currentController == "Cliente" && (currentAction.StartsWith("TransferirSedeCliente"));
+
 }
 
 <head>
@@ -71,9 +77,9 @@
         </li>
 
         <li>
-            <a href="@Url.Action("TransferirSedeCliente", "Cliente")"
-               class="nav-btn @(currentAction == "TransferirSedeCliente" && currentController == "Cliente" ? "active" : "")">
-                Transferir Cliente
+            <a href="@Url.Action("OtrasFunc", "Admin")"
+               class="nav-btn @(currentAction == "OtrasFunc" && currentController == "Admin" ? "active" : "")">
+                Otras Opciones
             </a>
         </li>
     </ul>
@@ -111,6 +117,14 @@
         @if (isInInfoEntrenadorEspecifico)
         {
             <a href=" @Url.Action("PaginaAnteriorInfoEntrenador", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+
+
+        @if (isInGenericGoBackPage)
+        {
+            <a href="javascript:void(0);" onclick="window.history.back()">
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
             </a>
         }
