@@ -15,12 +15,35 @@ namespace NET_MVC.Controllers
         AdmCliente consultaCliente = new AdmCliente();
         AdmEntrenador consultaEntrenador = new AdmEntrenador();
 
+
         [Authorize(Roles = "Entrenador")]
         public IActionResult DashboardEntrenador()
         {
+
             if (HttpContext.Session.GetString("ClienteIdEjercicio") != null)
                 HttpContext.Session.Remove("ClienteIdEjercicio");
-            return View(); // Devuelve la vista Login.cshtml
+
+            try
+            {
+                string idEntrenador = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (!int.TryParse(idEntrenador, out int entrenadorId))
+                {
+                    TempData["ErrorMessage"] = "No se pudo obtener el ID del entrenador.";
+                    return View("DashboardEntrenador");
+                }
+
+                ViewBag.TotalClientes = consultaEntrenador.NumeroClientesAsignados(entrenadorId);
+                ViewBag.DiasRestantes = consultaEntrenador.DiasRestantesContrato(entrenadorId);
+                ViewBag.PesoPromedioClientes = consultaEntrenador.PesoPromedioClientesEntrenador(entrenadorId);
+
+                return View("DashboardEntrenador");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error al cargar el dashboard: {ex.Message}";
+                return View("DashboardEntrenador");
+            }
         }
 
         [Authorize(Roles = "Administrador")]

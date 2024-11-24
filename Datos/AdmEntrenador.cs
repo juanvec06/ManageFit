@@ -50,7 +50,7 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-        
+
         public List<EntrenadorModel> ListarEntrenadoresDisponibles(string idSede)
         {
             var entrenadores = new List<EntrenadorModel>();
@@ -251,19 +251,19 @@ namespace NET_MVC.Datos
 
                         // Ejecutamos el procedimiento almacenado
                         cmd.ExecuteNonQuery();
-                            // Crear objeto de modelo con los valores de salida
-                            EntrenadorEncontrado = new EntrenadorModel
-                            {
-                                Identificacion = cmd.Parameters["p_identificacion"].Value != DBNull.Value ? cmd.Parameters["p_identificacion"].Value.ToString() : "N/A",
-                                Nombre = cmd.Parameters["p_nombre"].Value != DBNull.Value ? cmd.Parameters["p_nombre"].Value.ToString() : "Desconocido",
-                                Telefono = cmd.Parameters["p_telefono"].Value != DBNull.Value ? cmd.Parameters["p_telefono"].Value.ToString() : "No disponible",
-                                Genero = cmd.Parameters["p_genero"].Value != DBNull.Value ? cmd.Parameters["p_genero"].Value.ToString() : "Desconocido",
-                                Especialidad = cmd.Parameters["p_especialidad"].Value != DBNull.Value ? cmd.Parameters["p_especialidad"].Value.ToString() : "No especificada",
-                                Salario = cmd.Parameters["p_salario"].Value != DBNull.Value ? cmd.Parameters["p_salario"].Value.ToString() : "No especificado",
-                                fechaInicioContrato = cmd.Parameters["p_fecha_contratacion"].Value != DBNull.Value
-                                ? ((OracleDate)cmd.Parameters["p_fecha_contratacion"].Value).Value // Uso de .Value para obtener DateTime
-                                : DateTime.MinValue
-                            };
+                        // Crear objeto de modelo con los valores de salida
+                        EntrenadorEncontrado = new EntrenadorModel
+                        {
+                            Identificacion = cmd.Parameters["p_identificacion"].Value != DBNull.Value ? cmd.Parameters["p_identificacion"].Value.ToString() : "N/A",
+                            Nombre = cmd.Parameters["p_nombre"].Value != DBNull.Value ? cmd.Parameters["p_nombre"].Value.ToString() : "Desconocido",
+                            Telefono = cmd.Parameters["p_telefono"].Value != DBNull.Value ? cmd.Parameters["p_telefono"].Value.ToString() : "No disponible",
+                            Genero = cmd.Parameters["p_genero"].Value != DBNull.Value ? cmd.Parameters["p_genero"].Value.ToString() : "Desconocido",
+                            Especialidad = cmd.Parameters["p_especialidad"].Value != DBNull.Value ? cmd.Parameters["p_especialidad"].Value.ToString() : "No especificada",
+                            Salario = cmd.Parameters["p_salario"].Value != DBNull.Value ? cmd.Parameters["p_salario"].Value.ToString() : "No especificado",
+                            fechaInicioContrato = cmd.Parameters["p_fecha_contratacion"].Value != DBNull.Value
+                            ? ((OracleDate)cmd.Parameters["p_fecha_contratacion"].Value).Value // Uso de .Value para obtener DateTime
+                            : DateTime.MinValue
+                        };
                     }
                 }
             }
@@ -369,7 +369,134 @@ namespace NET_MVC.Datos
             }
         }
 
+        public int NumeroClientesAsignados(int idEntrenador)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("NumeroClientesAsignados", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
+                        // Parámetros de entrada y salida
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        var totalClientes = new OracleParameter("p_total_clientes", OracleDbType.Int32)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(totalClientes);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Accede al valor de OracleDecimal correctamente
+                        if (totalClientes.Value != DBNull.Value)
+                        {
+                            OracleDecimal oracleDecimal = (OracleDecimal)totalClientes.Value;
+                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                return 0;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
+
+        public int DiasRestantesContrato(int idEntrenador)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("DiasRestantesContrato", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada y salida
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        var diasRestantes = new OracleParameter("p_dias_restantes", OracleDbType.Int32)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(diasRestantes);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Accede al valor de OracleDecimal correctamente
+                        if (diasRestantes.Value != DBNull.Value)
+                        {
+                            OracleDecimal oracleDecimal = (OracleDecimal)diasRestantes.Value;
+                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                return 0;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
+
+        public decimal PesoPromedioClientesEntrenador(int idEntrenador)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("PesoPromedioClientesEntrenador", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada y salida
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        var pesoPromedio = new OracleParameter("p_peso_promedio", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(pesoPromedio);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Accede al valor de OracleDecimal correctamente
+                        if (pesoPromedio.Value != DBNull.Value)
+                        {
+                            OracleDecimal oracleDecimal = (OracleDecimal)pesoPromedio.Value;
+                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                return 0;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
 
     }
+
 }
+
+
+ 

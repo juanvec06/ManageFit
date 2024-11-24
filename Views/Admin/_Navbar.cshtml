@@ -57,18 +57,22 @@
                 Registrar entrenador
             </a>
         </li>
+
         <li>
             <a href="@Url.Action("Listar", "Entrenador")"
                class="nav-btn @(currentAction == "Listar" && currentController == "Entrenador" ? "active" : "")">
                 Listar Entrenadores
             </a>
         </li>
+
+
         <li>
             <a href="@Url.Action("InformacionEntrenador", "Entrenador")"
                class="nav-btn @(currentAction == "InformacionEntrenador" && currentController == "Entrenador" ? "active" : "")">
                 Información entrenador
             </a>
         </li>
+
         <li>
             <a href="@Url.Action("BuscarActualizarMembresia", "Cliente")"
                class="nav-btn @(currentAction == "BuscarActualizarMembresia" && currentController == "Cliente" ? "active" : "")">
