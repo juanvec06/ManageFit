@@ -6,6 +6,7 @@
 }
 
 <div class="container-grande">
+
     <div class="cliente-info-left">
         <div class="cliente-titulo">
             <h1>Actualizar Salario</h1>
@@ -17,7 +18,9 @@
 
             <div class="search-bar">
 
-                <h3>Identificación del Entrenador: <span>3</span></h3>
+                <input type="hidden" name="Identificacion" value="@ViewBag.idEntrenador" />
+
+                <h3>Identificación del Entrenador: <span>@ViewBag.idEntrenador</span></h3>
 
                 <div class="form-group">
                     <div class="form-field">
@@ -32,6 +35,14 @@
             </div>
         </form>
     </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
 </div>
 
 
