@@ -8,6 +8,9 @@ using NuGet.Protocol.Plugins;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 using System.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NET_MVC.Datos
 {
@@ -81,7 +84,57 @@ namespace NET_MVC.Datos
             }
             return rpta;
         }
-
+        /// <summary>
+        /// se encarga de insertar un nuevo cliente haciendo uso de un trigger instead of que esta en la base de datos
+        /// </summary>
+        /// <param name="cliente">El modelo del cliente que se quiere insertar, aqui estan los datos del cliente</param>
+        /// <returns>true si la operacion de insercion se hizo correctamente, false si no se realizó correctamente</returns>
+        public bool RegistrarClienteInsteadOf(ClienteModel cliente)
+        {
+            if(cliente == null)
+            {
+                return false;
+            }
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    string query = @"
+                                    INSERT INTO view_clientes
+                                    VALUES (:id_cliente, :nombre, :telefono, TO_DATE(:fecha_nacimiento, 'DD-MM-YYYY'), :genero, :membresia, :id_entrenador, :idSede)";
+                    using (OracleCommand command = new OracleCommand(query, conexionBD))
+                    {
+                        //Ejecutamos la inserción
+                        command.Parameters.Add(":id_cliente", OracleDbType.Int64).Value = int.Parse(cliente.Identificacion);
+                        command.Parameters.Add(":nombre", OracleDbType.Varchar2).Value = cliente.Nombre;
+                        command.Parameters.Add(":telefono", OracleDbType.Int64).Value = long.Parse(cliente.Telefono);
+                        command.Parameters.Add(":fecha_nacimiento", OracleDbType.Date).Value = cliente.FechaNacimiento;
+                        command.Parameters.Add(":genero", OracleDbType.Varchar2).Value = cliente.Genero;
+                        command.Parameters.Add(":membresia", OracleDbType.Varchar2).Value = cliente.refMembresia;
+                        if(cliente.IdEntrenador != 0 && int.TryParse(cliente.IdEntrenador.ToString(),out int result))
+                        {
+                            command.Parameters.Add(":id_entrenador", OracleDbType.Int32).Value = result;
+                        }
+                        else
+                        {
+                            command.Parameters.Add(":id_entrenador", OracleDbType.Int32).Value = DBNull.Value ;
+                        }
+                        command.Parameters.Add(":idSede", OracleDbType.Int32).Value = cliente.IdSede;
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error al abrir la conexion o hacer insercion del nuevo cliente: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return true;
+        }
         public bool ActualizarMembresiaCliente(string identificacion, string nuevaMembresia)
         {
             try
@@ -161,7 +214,71 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); //Cerrar la conexión
             }
         }
+        public List<ClienteModel> ListarClientesVista(string idSede)
+        {
+            //si es nulo, no se mostrara nada
+            if (idSede == null)
+            {
+                return new List<ClienteModel> { };
+            }
+            List<ClienteModel> ListaClientesVista = new List<ClienteModel>();
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("LISTAR_CLIENTES_VISTA", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
+                        // Parámetro de salida (cursor)
+                        cmd.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add("P_IDSEDE", OracleDbType.Int32).Value = idSede;
+                        using (OracleDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                if(reader["id_entrenador"] != DBNull.Value && int.TryParse(reader["id_entrenador"].ToString(), out int idEntrenador))
+                                {
+                                    ClienteModel objcliente = new ClienteModel
+                                    {
+                                        Identificacion = reader["id_cliente"].ToString(),
+                                        Nombre = reader["nombre"].ToString(),
+                                        Telefono = reader["telefono"].ToString(),
+                                        FechaNacimiento = DateTime.Parse(reader["fecha_nacimiento"].ToString()),
+                                        Genero = reader["genero"].ToString(),
+                                        refMembresia = reader["membresia"].ToString(),
+                                        IdEntrenador = idEntrenador,
+                                    };
+                                    ListaClientesVista.Add(objcliente);
+                                }
+                                else
+                                {
+                                    ClienteModel objcliente = new ClienteModel
+                                    {
+                                        Identificacion = reader["id_cliente"].ToString(),
+                                        Nombre = reader["nombre"].ToString(),
+                                        Telefono = reader["telefono"].ToString(),
+                                        FechaNacimiento = DateTime.Parse(reader["fecha_nacimiento"].ToString()),
+                                        Genero = reader["genero"].ToString(),
+                                        refMembresia = reader["membresia"].ToString(),
+                                    };
+                                    ListaClientesVista.Add(objcliente);
+                                }
+                            }
+                        }
+                    }
+                }
+                return ListaClientesVista;
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+        }
         public List<ClienteModel> ListarClientesAsignados(string idEntrenador)
         {
             var clientes = new List<ClienteModel>();

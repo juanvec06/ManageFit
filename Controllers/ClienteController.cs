@@ -242,7 +242,6 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult AsignarEntrenadorCliente(string identificacionEntrenador)
         {
-            var a = auxCliente;
             if (auxCliente.IdEntrenador != 0)
             {
                 TempData["ErrorMessage"] = "El cliente ya tiene un entrenador asignado";
@@ -282,13 +281,8 @@ namespace NET_MVC.Controllers
                 {
                     auxCliente.IdEntrenador = int.Parse(identificacionEntrenador);
 
+                    var auxRegistrarPersona = consultaCliente.RegistrarClienteInsteadOf(auxCliente);
 
-                    auxCliente.IdEntrenador = int.Parse(identificacionEntrenador);
-                    var auxRegistrarPersona = consulta.RegistrarPersona(auxCliente);
-                    if (auxRegistrarPersona == true)
-                    {
-                        var auxRegistrarCliente = consultaCliente.RegistrarCliente(auxCliente);
-                    }
                     TempData["ClienteDatos"] = null;
                     TempData["SuccessMessage"] = "Cliente registrado correctamente";
                     return RedirectToAction("DashboardAdministrador", "Admin");
@@ -329,19 +323,14 @@ namespace NET_MVC.Controllers
                         auxCliente = Cliente;
                         return Json(new { success = true, redirectUrl = Url.Action("AsignarEntrenadorCliente", "Cliente") });
                     }
-                    else if (Cliente.refMembresia == "General")
+                    else if (Cliente.refMembresia == "General" )
                     {
-                        var respuesta = consulta.RegistrarPersona(Cliente);
-                        if (respuesta)
-                        {
-                            var respuesta2 = consultaCliente.RegistrarCliente(Cliente);
-                        }
+                        var respuesta = consultaCliente.RegistrarClienteInsteadOf(Cliente);
                         if (respuesta)
                         {
                             TempData["SuccessMessage"] = "Cliente registrado correctamente";
                             return Json(new { success = true, redirectUrl = Url.Action("DashboardAdministrador", "Admin") });
                         }
-                        else
                         {
                             return Json(new { success = false, errors = new { MensajeError = "Error al registrar cliente" } });
                         }
@@ -360,7 +349,7 @@ namespace NET_MVC.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return Json(new { success = false, errors = ex.Message  });
+                    return Json(new { success = false, errors = ex.Message });
                 }
             }
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
@@ -484,15 +473,19 @@ namespace NET_MVC.Controllers
         public JsonResult Filtrar(string filter)
         {
             List<ClienteModel> clientesFiltrados = new List<ClienteModel>();
+            List<ClienteModel> clientesConsultaVista = new List<ClienteModel>();
+
             String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
 
             //string sql = consultaCliente.cadenaListarClientes(filter, IdSede);
 
             // Ejecuta la consulta y obtiene la lista filtrada de clientes
             clientesFiltrados = consultaCliente.ListarClientes(filter, IdSede);
-
+            //Obtiene la lista de clientes de la vista view_clientes_sede1
+            clientesConsultaVista = consultaCliente.ListarClientesVista(IdSede);
             return Json(new
             {
+                clientesVista = clientesConsultaVista,
                 clientes = clientesFiltrados,
                 totalClientes = clientesFiltrados.Count
             });

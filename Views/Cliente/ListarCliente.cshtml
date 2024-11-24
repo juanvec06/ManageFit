@@ -6,11 +6,6 @@
 }
 
 <div class="container-grande">
-    <div class="text-Asignar" style="text-align: center;
-    color: #EE1C25; font-size: 50px; font-style: italic;
-    font-weight: 900; line-height: 70px; word-wrap: break-word">
-        CLIENTES
-    </div>
 
     <div class="filter-total-container">
         <h3 class="total-text">Total encontrados: <span id="total-clientes">@Model.Count</span></h3>
@@ -53,6 +48,36 @@
     </div>
 
     <button type="button" id="filtrar" class="btn mt-3">Filtrar</button>
+
+    <div class="table-container tbl2">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
+                    <th>fecha nacimiento</th>
+                    <th>membresia</th>
+                    <th>genero</th>
+                    <th>id_entrenador</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-clientes-vista">
+                @foreach (var cliente in Model)
+                {
+                    <tr>
+                        <td>@cliente.Identificacion</td>
+                        <td>@cliente.Nombre</td>
+                        <td>@cliente.Telefono</td>
+                        <td>@cliente.FechaNacimiento</td>
+                        <td>@cliente.refMembresia</td>
+                        <td>@cliente.Genero</td>
+                        <td>@cliente.IdEntrenador</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Asegúrate de que jQuery esté cargado -->
@@ -73,6 +98,7 @@
 
                     // Limpiar el cuerpo de la tabla
                     $('#tabla-clientes').empty();
+                    $('#tabla-clientes-vista').empty();
 
                     // Recorre los clientes devueltos y los agrega a la tabla
                     $.each(response.clientes, function (index, cliente) {
@@ -84,6 +110,21 @@
                                     <td>${cliente.refMembresia}</td>
                                     <td>${cliente.fechaMembresia}</td>
                                 </tr>`
+                        );
+                    });
+                    $.each(response.clientesVista, function (index, cliente) {
+                        const idEntrenador = cliente.idEntrenador !== 0 ? cliente.idEntrenador : '';
+            
+                        $('#tabla-clientes-vista').append(
+                            `<tr>
+                                <td>${cliente.identificacion}</td>
+                                <td>${cliente.nombre}</td>
+                                <td>${cliente.telefono}</td>
+                                <td>${cliente.fechaNacimiento}</td>
+                                <td>${cliente.refMembresia}</td>
+                                <td>${cliente.genero}</td>
+                                <td>${idEntrenador}</td>
+                            </tr>`
                         );
                     });
 
@@ -220,10 +261,8 @@
         word-wrap: break-word;
         font-size: 20px;
         font-style: italic;
-        margin-left: 130px;
-        position: absolute;
+        margin-left: 30px;
         bottom: 20px;
-        left: 64%;
     }
 
         .wrapper .btn:hover {
