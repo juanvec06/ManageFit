@@ -67,16 +67,16 @@
 
 
         <li>
-            <a href="@Url.Action("InformacionEntrenador", "Entrenador")"
-               class="nav-btn @(currentAction == "InformacionEntrenador" && currentController == "Entrenador" ? "active" : "")">
-                Información entrenador
+            <a href="@Url.Action("BuscarActualizarMembresia", "Cliente")"
+               class="nav-btn @(currentAction == "BuscarActualizarMembresia" && currentController == "Cliente" ? "active" : "")">
+                Actualizar Membresia
             </a>
         </li>
 
         <li>
-            <a href="@Url.Action("BuscarActualizarMembresia", "Cliente")"
-               class="nav-btn @(currentAction == "BuscarActualizarMembresia" && currentController == "Cliente" ? "active" : "")">
-                Actualizar Membresia
+            <a href="@Url.Action("InformacionEntrenador", "Entrenador")"
+               class="nav-btn @(currentAction == "InformacionEntrenador" && currentController == "Entrenador" ? "active" : "")">
+                Info entrenador
             </a>
         </li>
 
@@ -86,6 +86,9 @@
                 Otras Opciones
             </a>
         </li>
+
+
+
     </ul>
 
 

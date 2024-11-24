@@ -69,7 +69,7 @@
                         <td>@cliente.Identificacion</td>
                         <td>@cliente.Nombre</td>
                         <td>@cliente.Telefono</td>
-                        <td>@cliente.FechaNacimiento</td>
+                        <td>@(cliente?.FechaNacimiento.ToString("dd/MM/yyyy"))</td>
                         <td>@cliente.refMembresia</td>
                         <td>@cliente.Genero</td>
                         <td>@cliente.IdEntrenador</td>
