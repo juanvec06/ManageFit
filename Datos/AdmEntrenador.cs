@@ -327,5 +327,49 @@ namespace NET_MVC.Datos
             return totalEntrenadores;
         }
 
+        public void ActualizarSalarioEntrenador(int idEntrenador, decimal nuevoSalario)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("EntrenadorPkg.ActualizarSalario", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros del procedimiento
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        cmd.Parameters.Add("p_nuevo_salario", OracleDbType.Decimal).Value = nuevoSalario;
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (OracleException ex)
+            {
+                // Manejar las excepciones específicas basadas en los códigos de error
+                switch (ex.Number)
+                {
+                    case 20001:
+                        throw new Exception("Transacción fallida. El entrenador no existe.");
+                    case 20002:
+                        throw new Exception("Transacción fallida. El salario no puede ser negativo.");
+                    case 20003:
+                        throw new Exception("Transacción fallida. El entrenador no tiene un contrato activo.");
+                    case 20004:
+                        throw new Exception("Transacción fallida. El salario no puede superar los 10 millones.");
+                    default:
+                        throw new Exception($"Error al actualizar el salario: {ex.Message}");
+                }
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
+
+
     }
 }

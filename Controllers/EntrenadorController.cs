@@ -198,5 +198,87 @@ namespace NET_MVC.Controllers
             });
         }
 
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult BuscarActualizarSalario()
+        {
+            return View("BuscarActualizarSalario");
+        }
+
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult ActualizarSalario(string idEntrenador)
+        {
+            try
+            {
+                string idSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (string.IsNullOrWhiteSpace(idEntrenador))
+                {
+                    TempData["ErrorMessage"] = "Debe ingresar una identificación válida.";
+                    ViewBag.idEntrenador = idEntrenador;
+                    return View("BuscarActualizarSalario");
+                }
+
+                // Validar que el ID sea numérico
+                if (!int.TryParse(idEntrenador, out int idEntrenadorNum))
+                {
+                    TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
+                    ViewBag.idEntrenador = idEntrenador;
+                    return View("BuscarActualizarSalario");
+                }
+
+                // Obtener datos del entrenador
+                var entrenador = consultaEntrenador.ObtenerEntrenadorPorIdentificacion(idEntrenador, idSede);
+
+                if (entrenador == null)
+                {
+                    TempData["ErrorMessage"] = "El entrenador con esa identificación no existe.";
+                    ViewBag.idEntrenador = idEntrenador;
+                    return View("BuscarActualizarSalario");
+                }
+
+                // Configurar el ViewBag para pasar el ID
+                ViewBag.idEntrenador = idEntrenador;
+
+                return View("ActualizarSalario", entrenador);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error al buscar el entrenador: {ex.Message}";
+                ViewBag.idEntrenador = idEntrenador;
+                return View("BuscarActualizarSalario");
+            }
+        }
+
+
+        [Authorize(Roles = "Administrador")]
+        [HttpPost]
+        public IActionResult GuardarActualizacionSalario(string Identificacion, decimal Salario)
+        {
+            try
+            {
+                // Convertir identificación a entero y validar
+                if (!int.TryParse(Identificacion, out int idEntrenador))
+                {
+                    TempData["ErrorMessage"] = "Debe proporcionar una identificación numérica válida.";
+                    ViewBag.idEntrenador = Identificacion;
+                    return View("ActualizarSalario");
+                }
+
+                // Validar salario y actualizar
+                consultaEntrenador.ActualizarSalarioEntrenador(idEntrenador, Salario);
+
+                TempData["SuccessMessage"] = "Transacción Exitosa. El salario del entrenador se actualizó exitosamente.";
+                return RedirectToAction("BuscarActualizarSalario");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                ViewBag.idEntrenador = Identificacion;
+                return View("ActualizarSalario");
+            }
+        }
+
     }
 }

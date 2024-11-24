@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Buscar Actualizar Entrenador";
+    Layout = "~/Views/Admin/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-grande">
+    
+    <img class="cliente-img" src="/img/user.png" alt="Logo">
+
+    <form method="post" asp-action="ActualizarSalario" asp-controller="Entrenador">
+        <div class="search-bar">
+            <input type="text" id="idEntrenador" name="idEntrenador" placeholder="Identificación Entrenador:" required />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success tempdata-message">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<style>
+
+    .tempdata-message {
+        position: absolute;
+        border: none;
+        left: 20px;
+        top: 30px;
+        background-color: rgba(238, 28, 37, 0.8);
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        font-style: italic;
+        text-transform: uppercase;
+        padding: 10px 15px;
+        border-radius: 5px;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .TriggerMessage {
+        position: absolute;
+        border: none;
+        left: 15px;
+        top: 30px;
+        background-color: rgba(238, 28, 37, 0.8);
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        font-style: italic;
+        text-transform: uppercase;
+        padding: 10px 15px;
+        border-radius: 5px;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .container-grande {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .search-bar {
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .cliente-img {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+
+    .form-centrado {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+        .form-centrado input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+    .error-message {
+        color: red;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .container-grande {
+        position: relative;
+        min-height: 520px;
+    }
+
+    .search-bar input[type="text"] {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: none;
+        font-size: 1.2rem;
+        padding: 10px 10px;
+        background: white;
+        border-radius: 20px;
+        height: 40px;
+        margin-bottom: 10px;
+    }
+
+    .search-bar button {
+        background-color: #EE1C25;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 40px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 190px;
+        height: 45px;
+        font-family: Inter, sans-serif;
+        font-weight: bold;
+        font-size: 20px;
+        font-style: italic;
+        line-height: 70px;
+        word-wrap: break-word;
+    }
+
+</style>
