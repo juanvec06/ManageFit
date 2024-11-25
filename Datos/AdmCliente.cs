@@ -476,23 +476,21 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_obtener_total_clientes", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand())
                     {
-                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Connection = conexionBD;
+                        cmd.CommandType = System.Data.CommandType.Text;
 
+                        cmd.CommandText = "SELECT pkg_Estadisticas_Poblacion.fn_Total_Clientes_Sede(:p_id_sede) FROM DUAL";
                         // Parámetro de entrada
                         cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
 
-                        // Parámetro de salida
-                        cmd.Parameters.Add("p_total_clientes", OracleDbType.Int32).Direction = System.Data.ParameterDirection.Output;
+                        // Ejecutar
+                        object result = cmd.ExecuteScalar();
 
-                        // Ejecutar el procedimiento
-                        cmd.ExecuteNonQuery();
-
-                        // Obtener el valor del parámetro de salida
-                        if (cmd.Parameters["p_total_clientes"].Value != DBNull.Value)
+                        if (result != null)
                         {
-                            totalClientes = Convert.ToInt32(((OracleDecimal)cmd.Parameters["p_total_clientes"].Value).Value);
+                            totalClientes = int.Parse(result.ToString());
                         }
                     }
                 }
@@ -563,24 +561,23 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_obtener_total_clientes_por_tipo", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand())
                     {
-                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Connection = conexionBD;
+                        cmd.CommandType = System.Data.CommandType.Text;
 
-                        // Parámetros de entrada
+                        cmd.CommandText = "SELECT pkg_Estadisticas_Poblacion.fn_Total_Clientes_Tipo_Sede(:p_id_sede, :p_tipo_membresia) FROM DUAL";
+                        // Parámetro de entrada
                         cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
                         cmd.Parameters.Add("p_tipo_membresia", OracleDbType.Varchar2).Value = tipoMembresia;
 
-                        // Parámetro de salida
-                        cmd.Parameters.Add("p_total", OracleDbType.Int32).Direction = System.Data.ParameterDirection.Output;
 
-                        // Ejecutar el procedimiento almacenado
-                        cmd.ExecuteNonQuery();
+                        // Ejecutar
+                        object result = cmd.ExecuteScalar();
 
-                        // Obtener el valor del parámetro de salida
-                        if (cmd.Parameters["p_total"].Value != DBNull.Value)
+                        if (result != null)
                         {
-                            total = Convert.ToInt32(((OracleDecimal)cmd.Parameters["p_total"].Value).Value);
+                            total = int.Parse(result.ToString());
                         }
                     }
                 }

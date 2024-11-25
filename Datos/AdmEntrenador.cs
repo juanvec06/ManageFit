@@ -59,7 +59,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_listar_entrenadores_disponibles", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_consultas.pcd_listar_entrenadores_disponibles", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -292,22 +292,22 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("ObtenerTotalEntrenadoresPorSede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = conexionBD;
+                        cmd.CommandType = System.Data.CommandType.Text;
 
+                        cmd.CommandText = "SELECT pkg_Estadisticas_Poblacion.fn_Total_Entrenadores_Sede(:p_id_sede) FROM DUAL";
                         // Parámetro de entrada
                         cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
 
-                        // Parámetro de salida
-                        cmd.Parameters.Add("p_total_entrenadores", OracleDbType.Int32).Direction = ParameterDirection.Output;
+                        // Ejecutar
+                        object result = cmd.ExecuteScalar();
 
-                        // Ejecutar el procedimiento almacenado
-                        cmd.ExecuteNonQuery();
-
-                        // Obtener el valor del parámetro de salida y convertirlo a entero
-                        OracleDecimal oracleDecimalValue = (OracleDecimal)cmd.Parameters["p_total_entrenadores"].Value;
-                        totalEntrenadores = oracleDecimalValue.ToInt32();  // Convertir de OracleDecimal a int
+                        if (result != null)
+                        {
+                            totalEntrenadores = int.Parse(result.ToString());
+                        }
                     }
                 }
             }

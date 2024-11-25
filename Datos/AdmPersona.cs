@@ -149,26 +149,22 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("OBTENER_TOTAL_PERSONAS_POR_SEDE", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = conexionBD;
+                        cmd.CommandType = System.Data.CommandType.Text;
 
+                        cmd.CommandText = "SELECT pkg_Estadisticas_Poblacion.fn_Total_Personas_Sede(:p_id_sede) FROM DUAL";
                         // Parámetro de entrada
-                        cmd.Parameters.Add("P_ID_SEDE", OracleDbType.Int32).Value = idSede;
+                        cmd.Parameters.Add("p_id_sede", OracleDbType.Int32).Value = idSede;
 
-                        // Parámetro de salida
-                        var totalPersonasParam = new OracleParameter("P_TOTAL_PERSONAS", OracleDbType.Decimal)
+                        // Ejecutar
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null)
                         {
-                            Direction = ParameterDirection.Output
-                        };
-                        cmd.Parameters.Add(totalPersonasParam);
-
-                        // Ejecutar el procedimiento almacenado
-                        cmd.ExecuteNonQuery();
-
-                        // Obtener el total de personas desde el parámetro de salida
-                        var totalDecimal = (Oracle.ManagedDataAccess.Types.OracleDecimal)totalPersonasParam.Value;
-                        totalPersonas = totalDecimal.ToInt32();
+                            totalPersonas = int.Parse(result.ToString());
+                        }
                     }
                 }
             }

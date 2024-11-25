@@ -91,59 +91,50 @@ namespace NET_MVC.Controllers
                 if (Conexion.abrirConexion())
                 {
                     //llamada a procedimiento almacenado en base de datos para validar Administrador
-                    using (OracleCommand cmd = new OracleCommand("validar_logina", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand())
                     {
-                        // Especifica que es una función
-                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Connection = conexionBD; 
+                        cmd.CommandType = System.Data.CommandType.Text;
 
-                        // Agrega los parámetros de entrada
+                        // Configura la llamada a la función
+                        cmd.CommandText = "SELECT pkg_Validar.fn_Validar_LoginA(:p_usuario, :p_contraseña) FROM dual";
+
+                        // Agrega los parámetros
                         cmd.Parameters.Add("p_usuario", OracleDbType.Int32).Value = idUsuario;
                         cmd.Parameters.Add("p_contraseña", OracleDbType.Varchar2).Value = contraseña;
 
-                        // Parámetro de retorno (el valor que retorna la función)
-                        OracleParameter vCountParam = new OracleParameter("p_count", OracleDbType.Int32);
-                        vCountParam.Direction = System.Data.ParameterDirection.Output;
-                        cmd.Parameters.Add(vCountParam);
-                        // Ejecuta la función
+                        // Ejecuta la consulta y obtiene el resultado
+                        object result = cmd.ExecuteScalar();
 
-                        cmd.ExecuteNonQuery();
-
-                        // Obtiene el valor de retorno
-                        OracleDecimal resultadoOracle = (OracleDecimal)cmd.Parameters["p_count"].Value;
-                        int resultado = resultadoOracle.ToInt32();
-                        if (resultado > 0)
+                        if (result != null && int.Parse(result.ToString()) > 0)
                         {
-                            rol = "Administrador";
-                            return true;
+                            rol = "Administrador"; // Asignar rol según el contexto
+                            return true; // Usuario válido
                         }
                     }
                     //llamada a procedimiento almacenado en base de datos para validar entrenador
-                    using (OracleCommand cmd = new OracleCommand("validar_logine", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand())
                     {
-                        // Especifica que es una función
-                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Connection = conexionBD; 
+                        cmd.CommandType = System.Data.CommandType.Text;
 
-                        // Agrega los parámetros de entrada
+                        // Configura la llamada a la función
+                        cmd.CommandText = "SELECT pkg_Validar.fn_Validar_LoginE(:p_usuario, :p_contraseña) FROM dual";
+
+                        // Agrega los parámetros
                         cmd.Parameters.Add("p_usuario", OracleDbType.Int32).Value = idUsuario;
                         cmd.Parameters.Add("p_contraseña", OracleDbType.Varchar2).Value = contraseña;
 
-                        // Parámetro de retorno (el valor que retorna la función)
-                        OracleParameter vCountParam = new OracleParameter("p_count", OracleDbType.Int32);
-                        vCountParam.Direction = System.Data.ParameterDirection.Output;
-                        cmd.Parameters.Add(vCountParam);
-                        // Ejecuta la función
+                        // Ejecuta la consulta y obtiene el resultado
+                        object result = cmd.ExecuteScalar();
 
-                        cmd.ExecuteNonQuery();
-
-                        // Obtiene el valor de retorno
-                        OracleDecimal resultadoOracle = (OracleDecimal)cmd.Parameters["p_count"].Value;
-                        int resultado = resultadoOracle.ToInt32();
-                        if (resultado > 0)
+                        if (result != null && int.Parse(result.ToString()) > 0)
                         {
-                            rol = "Entrenador";
-                            return true;
+                            rol = "Entrenador"; // Asignar rol según el contexto
+                            return true; // Usuario válido
                         }
                     }
+                    return false;
                 }
             }
             catch (OracleException Ex)
