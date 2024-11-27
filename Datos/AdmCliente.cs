@@ -22,7 +22,7 @@ namespace NET_MVC.Datos
                 if (Conexion.abrirConexion())
                 {
                     // llamada a procedimiento almacenado en base de datos 
-                    using (OracleCommand cmd = new OracleCommand("insertar_cliente", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Inserciones.insertar_cliente", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -45,7 +45,7 @@ namespace NET_MVC.Datos
                         cmd.ExecuteNonQuery();
                     }
 
-                    using (OracleCommand cmdMembresia = new OracleCommand("insertar_membresia", conexionBD))
+                    using (OracleCommand cmdMembresia = new OracleCommand("pkg_Inserciones.insertar_membresia", conexionBD))
                     {
                         cmdMembresia.CommandType = System.Data.CommandType.StoredProcedure;
                         cmdMembresia.Parameters.Add("p_id_cliente", OracleDbType.Int32).Value = cliente.Identificacion;
@@ -81,7 +81,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("LISTAR_CLIENTES", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.LISTAR_CLIENTES", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -132,7 +132,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("LISTAR_CLIENTES_ASIGNADOS", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.LISTAR_CLIENTES_ASIGNADOS", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -222,7 +222,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("CLIENTE_EXISTE", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.CLIENTE_EXISTE", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -266,7 +266,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_obtener_cliente", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.sp_obtener_cliente", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -322,7 +322,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_obtener_total_clientes", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.sp_obtener_total_clientes", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -362,7 +362,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_obtener_total_clientes_por_tipo", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.sp_obtener_total_clientes_por_tipo", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 

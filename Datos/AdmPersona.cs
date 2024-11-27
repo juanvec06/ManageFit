@@ -17,7 +17,7 @@ namespace NET_MVC.Datos
                 if (Conexion.abrirConexion())
                 {
                     // llamada a procedimiento almacenado en base de datos 
-                    using (OracleCommand cmd = new OracleCommand("insertar_persona", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Inserciones.insertar_persona", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -72,7 +72,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("PERSONA_EXISTE", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.PERSONA_EXISTE", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -149,7 +149,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("OBTENER_TOTAL_PERSONAS_POR_SEDE", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.OBTENER_TOTAL_PERSONAS_POR_SEDE", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 

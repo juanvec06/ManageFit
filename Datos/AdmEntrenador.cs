@@ -19,7 +19,7 @@ namespace NET_MVC.Datos
                 if (Conexion.abrirConexion())
                 {
                     //llamada a procedimiento almacenado en base de datos 
-                    using (OracleCommand cmd = new OracleCommand("insertar_Entrenador", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand("pkg_Inserciones.insertar_Entrenador", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
                     {
                         // Especifica que es un procedimiento
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -59,7 +59,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("sp_listar_entrenadores_disponibles", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.sp_listar_entrenadores_disponibles", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -125,7 +125,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("ENTRENADOR_EXISTE", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.ENTRENADOR_EXISTE", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -169,7 +169,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("LISTAR_ENTRENADORES", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.LISTAR_ENTRENADORES", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -232,7 +232,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("ObtenerEntrenadorPorIdentificacion", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.ObtenerEntrenadorPorIdentificacion", conexionBD))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -292,7 +292,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("ObtenerTotalEntrenadoresPorSede", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.ObtenerTotalEntrenadoresPorSede", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 

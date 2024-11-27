@@ -19,7 +19,7 @@ namespace NET_MVC.Datos
                 {
 
                     // llamada a procedimiento almacenado en base de datos 
-                    using (OracleCommand cmd = new OracleCommand("crearPMF", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Inserciones.crearPMF", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -54,7 +54,7 @@ namespace NET_MVC.Datos
                 {
 
                     // llamada a procedimiento almacenado en base de datos 
-                    using (OracleCommand cmd = new OracleCommand("crearEjercicio", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Inserciones.crearEjercicio", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -95,7 +95,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("modificarGeneralEjercicio", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.modificarGeneralEjercicio", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -144,7 +144,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("eliminarEjercicio", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.eliminarEjercicio", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -223,7 +223,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("ListarEjercicios", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.ListarEjercicios", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -286,7 +286,7 @@ namespace NET_MVC.Datos
                 if (Conexion.abrirConexion())
                 {
                     // Llamar al procedimiento almacenado
-                    using (OracleCommand cmd = new OracleCommand("PmfExistente", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.PmfExistente", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -336,7 +336,7 @@ namespace NET_MVC.Datos
                 if (Conexion.abrirConexion())
                 {
                     // Llamar al procedimiento almacenado
-                    using (OracleCommand cmd = new OracleCommand("SP_EJERCICIO_EXISTENTE", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.SP_EJERCICIO_EXISTENTE", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -383,7 +383,7 @@ namespace NET_MVC.Datos
             {
                 if (Conexion.abrirConexion())
                 {
-                    using (OracleCommand cmd = new OracleCommand("SP_OBTENER_DATOS_EJERCICIO", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.SP_OBTENER_DATOS_EJERCICIO", conexionBD))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 

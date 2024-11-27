@@ -91,7 +91,7 @@ namespace NET_MVC.Controllers
                 if (Conexion.abrirConexion())
                 {
                     //llamada a procedimiento almacenado en base de datos para validar Administrador
-                    using (OracleCommand cmd = new OracleCommand("validar_logina", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand("pkg_inicio_sesion.validar_logina", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
                     {
                         // Especifica que es una función
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -118,7 +118,7 @@ namespace NET_MVC.Controllers
                         }
                     }
                     //llamada a procedimiento almacenado en base de datos para validar entrenador
-                    using (OracleCommand cmd = new OracleCommand("validar_logine", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
+                    using (OracleCommand cmd = new OracleCommand("pkg_inicio_sesion.validar_logine", conexionBD)) //VERIFICAR TENER CREADO EL METODO EN PLSQL
                     {
                         // Especifica que es una función
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
