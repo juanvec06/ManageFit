@@ -55,8 +55,8 @@ Este manual describe los pasos necesarios para instalar y configurar el software
 ### 5. **Crear administrador**
    - Inserta un registro en la tabla `Cuentasede` para establecer un administrador del sistema. Este será el encargado de administrar el software y tendrá acceso total. Utiliza una consulta como la siguiente:
      ```sql
-     INSERT INTO Cuentasede (id, nombre, contraseña, permisos) 
-     VALUES (1, 'admin', 'adminpassword', 'FULL');
+     INSERT INTO Cuentasede (id_sede, password_sede) 
+     VALUES (1,"password123");
      ```
 
 ### 6. **Configurar Visual Studio 2019**
