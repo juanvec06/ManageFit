@@ -259,17 +259,26 @@ namespace NET_MVC.Controllers
 
             if (clienteExiste)
             {
-                var cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion, IdSede);
+                ClienteModel cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion, IdSede);
                 HttpContext.Session.SetString("ClienteIdEjercicio", identificacion.ToString());
-                // Verificar si se pudo obtener la información del cliente
+
+                //Hacer validacion de que es un cliente asignado para el entrenador y no acceda a otros clientes ajenos.
+                List<ClienteModel> clientesAsignados = ObtenerClientesAsignados();
+                bool clienteAsignadoResult = clientesAsignados.Any(c => c.Identificacion == cliente.Identificacion);
+
+
                 if (cliente != null && User.IsInRole("Administrador"))
                 {
                     return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
                 }
-                else if (cliente != null && User.IsInRole("Entrenador"))
+                else if (cliente != null && User.IsInRole("Entrenador")&& clienteAsignadoResult == true)
                 {
                     TempData["ClienteId"] = identificacion;
                     return View("InformacionClienteAsignado", cliente); // Mostrar la información del cliente
+                }
+                else if(clienteAsignadoResult == false)
+                {
+                    TempData["ErrorMessage"] = "Cliente no pertenece a este entrenador.";
                 }
                 else if(User.IsInRole("Administrador"))
                 {
