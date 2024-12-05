@@ -1,7 +1,6 @@
 # **MANAGE FIT**
 - **Nombre del negocio:** SPARTAN BOX
-- **Enlace de documentación:** [Google Drive](https://drive.google.com/drive/folders/1tzVd3TiebFHKVvatkEM1LrsQ_Wvo_t76?usp=sharing)
-
+  
 ---
 
 ## **Manual de Instalación para el Software**
