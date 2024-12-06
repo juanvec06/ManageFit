@@ -108,7 +108,7 @@ namespace NET_MVC.Datos
                         // Ejecutar el procedimiento almacenado
                         cmd.ExecuteNonQuery();
                     }
-                    using (OracleCommand cmd = new OracleCommand("modificarNombreEjercicio", conexionBD))
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.modificarNombreEjercicio", conexionBD))
                     {
                         // Especifica que es un procedimiento almacenado
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
