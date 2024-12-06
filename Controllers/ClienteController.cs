@@ -116,6 +116,15 @@ namespace NET_MVC.Controllers
                 TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
                 return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
             }
+
+            bool entrenadorExistente = consultaEntrenador.EntrenadorExistente(identificacionEntrenador);
+
+            if (!entrenadorExistente)
+            {
+                TempData["ErrorMessage"] = "Entrenador no existente";
+                return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
+            }
+
             List<EntrenadorModel> entrenadoresDisponibles = ObtenerEntrenadoresDisponibles();
             // Verifica si el entrenador está en la lista de disponibles
             for (int varIdx = 0; varIdx < entrenadoresDisponibles.Count; varIdx++)
@@ -142,6 +151,7 @@ namespace NET_MVC.Controllers
                 TempData["ErrorMessage"] = "Entrenador no disponible";
                 return RedirectToAction("AsignarEntrenadorCliente", "Cliente");
             }
+
             return Json(new { success = false, errors = ModelState.ToDictionary(k => k.Key, v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()) });
         }
 

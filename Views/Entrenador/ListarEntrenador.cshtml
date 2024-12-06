@@ -18,6 +18,7 @@
                 <option value="crossfit">Crossfit</option>
                 <option value="fuerza">Fuerza</option>
                 <option value="reduccion">Reducción de peso</option>
+                <option value="culturismo">Culturismo</option>
                 <option value="masculino">Género Masculino</option>
                 <option value="femenino">Género Femenino</option>
                 <option value="no-especificado">Género No especificado</option>
@@ -77,7 +78,9 @@
                 type: 'POST',
                 data: { filter: selectedFilter },
                 success: function (response) {
-                    
+                    // Imprime en la consola el objeto response
+                    console.log("Datos recibidos:", response);
+
                     $('#tabla-entrenadores').empty();
                     $.each(response.entrenadores, function (index, entrenador) {
                         $('#tabla-entrenadores').append(

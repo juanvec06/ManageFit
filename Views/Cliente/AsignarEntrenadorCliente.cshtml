@@ -17,7 +17,9 @@
 <form id="asignarEntrenadorForm" method="post" asp-action="AsignarEntrenadorCliente">
     <<div class="search-bar">
         <label for="identificacionEntrenador">Identificación:</label>
-        <input type="text" id="identificacionEntrenador" name="identificacionEntrenador" placeholder="Ingrese la identificación" />
+        <input type="text" id="identificacionEntrenador" 
+            name="identificacionEntrenador" 
+            placeholder="Ingrese la identificación" />
         <button type="submit" class="btn btn-primary">Asignar</button>
     </div>
 </form>
@@ -61,6 +63,9 @@
             @ViewData["ValidationError"]
         </div>
     }
+
+    <div id="tempDataContainer" data-error-message="@TempData["ErrorMessage"]" style="display:none;"></div>
+
 </div>
 
 <script>
@@ -86,6 +91,19 @@
     }
 
     */
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Obtén el contenedor y su atributo de datos
+        const tempDataContainer = document.getElementById("tempDataContainer");
+        const errorMessage = tempDataContainer.getAttribute("data-error-message");
+
+        // Verifica si hay un mensaje de error y muéstralo
+        if (errorMessage) {
+            console.log("Mensaje de error desde TempData:", errorMessage); // Imprime en la consola
+            alert(errorMessage); // O muestra en un modal, alerta, etc.
+        }
+    });
+
 </script>
 
 <style>
