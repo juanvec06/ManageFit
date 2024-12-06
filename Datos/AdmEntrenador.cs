@@ -327,5 +327,128 @@ namespace NET_MVC.Datos
             return totalEntrenadores;
         }
 
+        public int NumeroClientesAsignados(int idEntrenador)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.NumeroClientesAsignados", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada y salida
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        var totalClientes = new OracleParameter("p_total_clientes", OracleDbType.Int32)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(totalClientes);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Accede al valor de OracleDecimal correctamente
+                        if (totalClientes.Value != DBNull.Value)
+                        {
+                            OracleDecimal oracleDecimal = (OracleDecimal)totalClientes.Value;
+                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                return 0;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
+        public int DiasRestantesContrato(int idEntrenador)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.DiasRestantesContrato", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada y salida
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        var diasRestantes = new OracleParameter("p_dias_restantes", OracleDbType.Int32)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(diasRestantes);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Accede al valor de OracleDecimal correctamente
+                        if (diasRestantes.Value != DBNull.Value)
+                        {
+                            OracleDecimal oracleDecimal = (OracleDecimal)diasRestantes.Value;
+                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                return 0;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
+        public decimal PesoPromedioClientesEntrenador(int idEntrenador)
+        {
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.PesoPromedioClientesEntrenador", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada y salida
+                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
+                        var pesoPromedio = new OracleParameter("p_peso_promedio", OracleDbType.Decimal)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(pesoPromedio);
+
+                        // Ejecutar el procedimiento
+                        cmd.ExecuteNonQuery();
+
+                        // Accede al valor de OracleDecimal correctamente
+                        if (pesoPromedio.Value != DBNull.Value)
+                        {
+                            OracleDecimal oracleDecimal = (OracleDecimal)pesoPromedio.Value;
+                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                return 0;
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+        }
+
     }
 }

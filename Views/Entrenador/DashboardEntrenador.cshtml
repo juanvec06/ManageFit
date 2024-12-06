@@ -3,14 +3,141 @@
     Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
 }
 
-@if (TempData["MensajeValidacion"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["MensajeValidacion"]
-    </div>
-}
-
-<img class="user-img" src="/img/user.png" alt="boton de salida">
 <script>
     window.history.replaceState(null, null, window.location.href);
 </script>
+
+
+<div class="container-flex">
+
+    @if (TempData["MensajeValidacion"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeValidacion"]
+        </div>
+    }
+
+    <div class="admin-info">
+        <img class="user-img" src="/img/user.png" alt="boton de salida">
+        <div style="text-align: center; color: #EE1C25; font-size: 35px; font-style: italic; font-weight: 900; line-height: 70px; word-wrap: break-word;">
+            Bienvenido/a Entrenador
+        </div>
+    </div>
+
+    <p class="pesoPromedio">El peso promedio de los clientes asignados al entrenador es de @ViewBag.PesoPromedioClientes kg.</p>
+
+    <div class="chart-section">
+        <div class="chart-container">
+            <canvas id="clientesChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="diasRestantesChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Gráfica de Clientes
+    var ctxClientes = document.getElementById('clientesChart').getContext('2d');
+    new Chart(ctxClientes, {
+        type: 'bar',
+        data: {
+            labels: ['Clientes Asignados'],
+            datasets: [{
+                label: 'Número de Clientes',
+                data: [@ViewBag.TotalClientes],
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: { display: true, text: 'Clientes Asignados' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfica de Días Restantes de Contrato
+    var ctxDias = document.getElementById('diasRestantesChart').getContext('2d');
+    new Chart(ctxDias, {
+        type: 'pie',
+        data: {
+            labels: ['Días Restantes', 'Días Pasados'],
+            datasets: [{
+                label: 'Contrato',
+                data: [@ViewBag.DiasRestantes, 365 - @ViewBag.DiasRestantes],
+                backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(192, 75, 75, 0.7)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: { display: true, text: 'Días Restantes de Contrato' }
+            }
+        }
+    });
+</script>
+
+
+<style>
+    
+    .pesoPromedio{
+        margin-top:-30px;
+    }
+
+    .container-flex {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .admin-info {
+        margin-top: 35px;
+        display: flex;
+        justify-content: center; /* Centra la imagen y el texto */
+        align-items: center; /* Alinea verticalmente */
+        text-align: center;
+    }
+
+    .user-img {
+        width: 150px;
+        height: auto;
+        margin-right: 15px; /* Espacio entre la imagen y el texto */
+    }
+
+    .chart-section {
+        display: flex;
+        justify-content: center; /* Asegura que las gráficas estén centradas horizontalmente */
+        gap: 20px; /* Ajusta el espacio entre las gráficas */
+        width: 100%;
+        flex-wrap: wrap; /* Permite que las gráficas se ajusten si el espacio es limitado */
+        justify-items: center; /* Alinea las gráficas correctamente en el contenedor */
+    }
+
+    .chart-container {
+        width: 45%; /* Ajusta el ancho de cada gráfica */
+        max-width: 300px; /* Limita el tamaño máximo */
+        text-align: center;
+        margin: 0 auto; /* Asegura que el contenido esté centrado */
+    }
+
+    #clientesChart, #diasRestantesChart {
+        width: 100%; /* Ajusta los gráficos al tamaño de su contenedor */
+        height: 140px; /* Altura fija */
+    }
+
+
+</style>
+
