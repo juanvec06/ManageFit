@@ -4,16 +4,12 @@
 }
 
 <div class="container-grande">
-    <div class="text-CLIENTE" style="text-align:
-        center; color: #EE1C25; font-size: 50px;
-        font-style: italic; font-weight: 900; line-height: 70px;
-        word-wrap: break-word">
-        CLIENTE
-    </div>
+    
+    <img class="cliente-img" src="/img/user.png" alt="Logo">
+
 
     <form id="buscarClienteForm" method="post" asp-action="BuscarCliente">
         <div class="search-bar">
-            <label for="identificacion">Identificación:</label>
             <input type="text" id="identificacion" name="identificacion" placeholder="Ingrese la identificación">
         
             <button type="submit" class="btn btn-primary">Buscar</button>
@@ -39,35 +35,60 @@
 
 
 <style>
-    .text-CLIENTE {
-        margin-top: 20px;
+    .container-grande {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .search-bar {
+        width: 400px;
+        display: flex;
+        flex-direction: column; 
+        align-items: center;
+        gap: 10px; 
         margin-bottom: 20px;
+    }
+
+    .cliente-img {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+
+    .form-centrado {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px; 
+        width: 100%;
+        max-width: 400px;
+    }
+
+        .form-centrado input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+    .error-message {
+        color: red;
+        font-size: 16px;
+        text-align: center;
     }
 
     .container-grande {
         position: relative;
-        min-height: 520px; 
+        min-height: 520px;
     }
-
-    .search-bar {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        margin-left: 40px;
-    }
-
-        .search-bar label {
-            padding: 10px 15px;
-            border-top-left-radius: 5px;
-            border-bottom-left-radius: 5px;
-            background-color: #969393;
-            border-radius: 10px;
-            color: black;
-            margin-right: 15px;
-        }
 
         .search-bar input[type="text"] {
-            width: 60%;
+            width: 100%;
             border: none;
             outline: none;
             background: none;
@@ -76,6 +97,7 @@
             background: white;
             border-radius: 20px;
             height: 40px;
+            margin-bottom:10px;
         }
 
         .search-bar button {
@@ -98,11 +120,4 @@
             line-height: 70px;
             word-wrap: break-word;
         }
-    .error-message {
-        position: absolute;
-        bottom: 10px; 
-        left: 30px; 
-        font-size: 15px;
-        color: red;
-    }
 </style>
