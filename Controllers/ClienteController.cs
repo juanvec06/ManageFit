@@ -223,95 +223,93 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Administrador, Entrenador")]
         public IActionResult BuscarCliente(string identificacion)
         {
+            // Si la identificación está almacenada en la sesión y el usuario es un entrenador
             if (HttpContext.Session.GetString("ClienteIdEjercicio") != null && User.IsInRole("Entrenador"))
             {
-                identificacion = HttpContext.Session.GetString("ClienteIdEjercicio");//esto para el boton de ir atras de la pagina, se envia nulo cuando se usa
+                identificacion = HttpContext.Session.GetString("ClienteIdEjercicio"); // Para manejar el botón "Atrás"
             }
 
-            String IdSede = User.FindFirst(ClaimTypes.Name)?.Value;
-            // Verificar que la identificación no esté vacía
+            string idSede = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            // Validaciones de la identificación
+
+            // 1. Verificar que la identificación no esté vacía
             if (string.IsNullOrWhiteSpace(identificacion))
             {
-                if (User.IsInRole("Administrador"))
-                {
-                    TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
-                }
-                else if (User.IsInRole("Entrenador"))
-                {
-                    TempData["ErrorMessage"] = "Por favor diligenciar los campos marcados como obligatorios.";
-                }
-                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+                TempData["ErrorMessage"] = User.IsInRole("Administrador")
+                    ? "La identificación no puede estar vacía."
+                    : "Por favor diligenciar los campos marcados como obligatorios.";
+                return RedirectToAction("InformacionCliente");
             }
 
-            // Verificar que la identificación no tenga más de 10 dígitos
+            // 2. Verificar que la longitud no supere los 10 caracteres
             if (identificacion.Length > 10)
             {
                 TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
-                return RedirectToAction("InformacionCliente"); // Redirigir a la página donde se muestra el formulario
+                return RedirectToAction("InformacionCliente");
             }
 
-            // Verificar si la identificación es numérica
+            // 3. Verificar que sea numérica
             if (!int.TryParse(identificacion, out _))
             {
                 TempData["ErrorMessage"] = "La identificación debe ser un número válido.";
                 return RedirectToAction("InformacionCliente");
             }
 
-            // Verificar que la identificación no sea menor a 0
+            // 4. Verificar que sea un número positivo
             if (int.Parse(identificacion) < 0)
             {
                 TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
-                return RedirectToAction("InformacionEntrenador");
+                return RedirectToAction("InformacionCliente");
             }
 
-            // Verificar si la persona existe en la base de datos
+            // Verificar si el cliente existe
             bool clienteExiste = consultaCliente.ClienteExiste(identificacion);
 
-            if (clienteExiste)
+            if (!clienteExiste)
             {
-                ClienteModel cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion, IdSede);
-                HttpContext.Session.SetString("ClienteIdEjercicio", identificacion.ToString());
+                TempData["ErrorMessage"] = User.IsInRole("Administrador")
+                    ? "Cliente no encontrado."
+                    : "El cliente no existe en el sistema.";
+                return RedirectToAction("InformacionCliente");
+            }
 
-                //Hacer validacion de que es un cliente asignado para el entrenador y no acceda a otros clientes ajenos.
-                List<ClienteModel> clientesAsignados = ObtenerClientesAsignados();
-                bool clienteAsignadoResult = clientesAsignados.Any(c => c.Identificacion == cliente.Identificacion);
+            // Obtener información del cliente
+            ClienteModel cliente = consultaCliente.ObtenerClientePorIdentificacion(identificacion, idSede);
 
+            if (cliente == null)
+            {
+                TempData["ErrorMessage"] = "No se pudo obtener la información del cliente. Por favor intente nuevamente.";
+                return RedirectToAction("InformacionCliente");
+            }
 
-                if (cliente != null && User.IsInRole("Administrador"))
-                {
-                    return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
-                }
-                else if (cliente != null && User.IsInRole("Entrenador")&& clienteAsignadoResult == true)
+            // Guardar identificación en la sesión
+            HttpContext.Session.SetString("ClienteIdEjercicio", identificacion);
+
+            // Verificar si el cliente está asignado al entrenador
+            List<ClienteModel> clientesAsignados = ObtenerClientesAsignados();
+            bool clienteAsignadoResult = clientesAsignados != null && clientesAsignados.Any(c => c.Identificacion == cliente.Identificacion);
+
+            if (User.IsInRole("Administrador"))
+            {
+                return View("InformacionClienteEspecifico", cliente); // Mostrar la información del cliente
+            }
+            else if (User.IsInRole("Entrenador"))
+            {
+                if (clienteAsignadoResult)
                 {
                     TempData["ClienteId"] = identificacion;
                     return View("InformacionClienteAsignado", cliente); // Mostrar la información del cliente
                 }
-                else if(clienteAsignadoResult == false)
+                else
                 {
-                    TempData["ErrorMessage"] = "Cliente no pertenece a este entrenador.";
-                }
-                else if(User.IsInRole("Administrador"))
-                {
-                    TempData["ErrorMessage"] = "Cliente no encontrado.";
-                }
-                else if (User.IsInRole("Entrenador"))
-                {
-                    TempData["ErrorMessage"] = "Cliente no existente.";
+                    TempData["ErrorMessage"] = "El cliente no está asignado a este entrenador.";
                 }
             }
-            else
-            {
-                if (User.IsInRole("Administrador"))
-                {
-                    TempData["ErrorMessage"] = "Cliente no encontrado.";
-                }
-                else if (User.IsInRole("Entrenador"))
-                {
-                    TempData["ErrorMessage"] = "Cliente no existente.";
-                }
-            }
+
             return RedirectToAction("InformacionCliente");
         }
+
 
         [Authorize(Roles = "Administrador")]
         [HttpPost]
