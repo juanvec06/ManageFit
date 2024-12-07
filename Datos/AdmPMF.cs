@@ -438,6 +438,44 @@ namespace NET_MVC.Datos
             return objejercicio ?? throw new Exception("Ejercicio no encontrado.");
         }
 
-
+        public DateTime ObtenerDateUltimoPMD(string idCliente)
+        {
+            bool isIdValid = int.TryParse(idCliente, out int newIdCliente);
+            if (!isIdValid)
+            {
+                throw new Exception("El id del cliente no es valido");
+            }
+            DateTime result = default;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    using (OracleCommand cmd = new OracleCommand("pkg_procedimientos.consultarDateUltimoPMF", conexionBD))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        //parametro de entrada
+                        cmd.Parameters.Add("p_id_cliente",OracleDbType.Int32).Value = newIdCliente;
+                        //parametro de salida 
+                        cmd.Parameters.Add("p_date", OracleDbType.Date).Direction = ParameterDirection.Output;
+                        //ejecucion
+                        cmd.ExecuteNonQuery();
+                        result = ((Oracle.ManagedDataAccess.Types.OracleDate)cmd.Parameters["p_date"].Value).Value;
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error general: " + ex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion(); // Cerrar la conexión
+            }
+            return result;
+        }
     }
 }

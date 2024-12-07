@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NET_MVC.Datos;
@@ -81,7 +82,22 @@ namespace NET_MVC.Controllers
                 return new List<EjercicioModel> { };
             }
         }
+        /// <summary>
+        /// Obtiene los ejercicios del ultimo plan de mejoramiento del cliente y los carga en la vista
+        /// </summary>
+        /// <param name="idCliente"> es el id del cliente al que se le quiere consultar en ultimo plan de mejoramiento</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Entrenador")]
+        public IActionResult PMF()
+        {
+            //obtengo el id del cliente almacenado en HttpContext.Session
+            string idCliente = HttpContext.Session.GetString("ClienteIdEjercicio");
 
+            //Recupero el ultimo PMF desde la base de datos
+            DateTime dateTimeUltimoPMF = consulta.ObtenerDateUltimoPMD(idCliente);
+            HttpContext.Session.SetString("FechaValoracion", dateTimeUltimoPMF.ToString());
+            return View("PMF", ObtenerEjercicios());
+        }
         [Authorize(Roles = "Entrenador")]
         public IActionResult modificarEjercicios()
         {
