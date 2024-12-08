@@ -49,12 +49,6 @@
     @if (TempData["ErrorMessage"] != null)
     {
 
-         <script>
-            const tempDataErrorMessage = "@TempData["ErrorMessage"]";
-
-            console.log("Error Message from TempData:", tempDataErrorMessage);
-        </script>
-
         <div class="error-message">
             @TempData["ErrorMessage"]
         </div>
@@ -69,12 +63,22 @@
 
 <!-- Asegúrate de que jQuery esté cargado -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-            const tempDataErrorMessage = "@TempData["ErrorMessage"]";
+<script>
+        // Pasar el valor de TempData["ErrorMessage"] a una variable de JavaScript
+        const tempDataErrorMessage = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]));
 
-            console.log("Error Message from TempData:", tempDataErrorMessage);
-        </script>
+        // Imprimir en la consola
+        console.log("Error Message from TempData:", tempDataErrorMessage);
+    </script>
+
+    <script>
+    // Serializar el modelo en formato JSON para verificar en consola
+    const clienteModel = @Html.Raw(Json.Serialize(Model));
+    console.log("Datos del modelo:", clienteModel);
+</script>
+
 <style>
+
 
     .search-bar {
         display: flex;

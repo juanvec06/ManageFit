@@ -134,6 +134,30 @@ namespace NET_MVC.Controllers
                 return View("BuscarEjercicioActualizar"); // Redirigir a la página donde se muestra el formulario
             }
 
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (ejercicio.IdEjercicio.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return View("BuscarEjercicioActualizar");
+            }
+
+            // Verificar que la identificación no sea un número negativo
+            if (int.TryParse(ejercicio.IdEjercicio, out int idEjercicio))
+            {
+                if (idEjercicio < 0)
+                {
+                    TempData["ErrorMessage"] = "La identificación no puede ser un número negativo.";
+                    return View("BuscarEjercicioActualizar");
+                }
+            }
+
+            // Verificar que la identificación solo contenga números
+            if (!ejercicio.IdEjercicio.All(char.IsDigit))
+            {
+                TempData["ErrorMessage"] = "La identificación solo puede contener números.";
+                return View("BuscarEjercicioActualizar");
+            }
+
             ejercicio.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
             // Verificar si el ejercicio existe en la base de datos
@@ -145,7 +169,6 @@ namespace NET_MVC.Controllers
                 // Verificar si se pudo obtener la información del cliente
                 if (ejercicio != null)
                 {
-                    
                     return View("ActualizarEjercicio", ejercicio); // Mostrar la información del ejercicio
                 }
                 else
@@ -156,7 +179,7 @@ namespace NET_MVC.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "Ejercicio no existente en el el PMF";
+                TempData["ErrorMessage"] = "Ejercicio no existente en el PMF";
                 return View("BuscarEjercicioActualizar");
             }
         }
@@ -178,6 +201,30 @@ namespace NET_MVC.Controllers
                 return View("EliminarEjercicio"); // Redirigir a la página donde se muestra el formulario
             }
 
+            // Verificar que la identificación no tenga más de 10 dígitos
+            if (ejercicio.IdEjercicio.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return View("BuscarEjercicioActualizar");
+            }
+
+            // Verificar que la identificación no sea un número negativo
+            if (int.TryParse(ejercicio.IdEjercicio, out int idEjercicio))
+            {
+                if (idEjercicio < 0)
+                {
+                    TempData["ErrorMessage"] = "La identificación no puede ser un número negativo.";
+                    return View("BuscarEjercicioActualizar");
+                }
+            }
+
+            // Verificar que la identificación solo contenga números
+            if (!ejercicio.IdEjercicio.All(char.IsDigit))
+            {
+                TempData["ErrorMessage"] = "La identificación solo puede contener números.";
+                return View("BuscarEjercicioActualizar");
+            }
+
             ejercicio.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
             // Verificar si el ejercicio existe en la base de datos
@@ -189,7 +236,8 @@ namespace NET_MVC.Controllers
                 // Verificar si se pudo obtener la información del cliente
                 if (eliminar)
                 {
-                    return RedirectToAction("modificarEjercicios");
+                    TempData["SuccessMessage"] = "Ejercicio Eliminado";
+                    return RedirectToAction("ModificarEjercicios");
                 }
                 else
                 {

@@ -5,6 +5,7 @@
     Layout = "~/Views/Entrenador/_LayoutEntrenador.cshtml";
 }
 <div class="container-grande">
+
     <div class="text-asignar"> PMF </div>
     @using Microsoft.AspNetCore.Http
     <label class="bg-white">Fecha de la ultima Valoración: @(Context.Session.GetString("FechaValoracion") ?? "No encontrada")</label>
@@ -36,6 +37,7 @@
     </div>
 </div>
 <style>
+
     .bg-white {
         padding: 10px 15px;
         background-color: #969393;

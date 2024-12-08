@@ -6,6 +6,14 @@
 }
 
 <div class="container-grande">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success tempdata-message">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
     <div class="text-Asignar" style="text-align: center;
     color: #EE1C25;
     font-size: 50px;
@@ -62,6 +70,23 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <style>
+
+     .tempdata-message {
+         margin-top: 10px; 
+            position: absolute; 
+            border: none; 
+            left:20px;
+            background-color: rgba(238, 28, 37, 0.8); 
+            color: white; 
+            font-size: 14px; 
+            font-weight: bold;
+            font-style: italic;
+            text-transform: uppercase;
+            padding: 10px 15px; 
+            border-radius: 5px; 
+            z-index: 1000; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+        }
 
     #default-datepicker {
         width: 400px;

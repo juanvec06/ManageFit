@@ -92,6 +92,7 @@
         // Enviar el formulario
         $('#guardarEjercicio').on('click', function () {
             // Limpia mensajes de error anteriores
+            console.log("Inicio de validaciones");
             $('#nombre-error').text('');
             $('#repeticiones-error').text('');
             $('#series-error').text('');
@@ -100,57 +101,73 @@
             // Validación de campos vacíos
             let camposValidos = true;
 
-            // Validar el campo de dia de la semana
+            // Validar el campo de nombre
             var nombre = $('#Nombre').val();
+            console.log("Validando Nombre:", nombre);
             if (!nombre) {
                 $('#nombre-error').text('Campo obligatorio.');
                 camposValidos = false;
+                console.log("Error en Nombre: Campo obligatorio.");
             }
 
             // Validar el campo de repeticiones
             var repeticiones = $('#Repeticiones').val().trim();
+            console.log("Validando Repeticiones:", repeticiones);
             if (repeticiones === '') {
                 $('#repeticiones-error').text('Campo obligatorio.');
                 camposValidos = false;
+                console.log("Error en Repeticiones: Campo obligatorio.");
             } else if (!$.isNumeric(repeticiones)) {
                 $('#repeticiones-error').text('Debe ser un número.');
                 camposValidos = false;
+                console.log("Error en Repeticiones: No es un número.");
             } else if (repeticiones < 0) {
                 $('#repeticiones-error').text('No puede ser un número negativo.');
                 camposValidos = false;
-            } else if (repeticiones.length > 10) {
-                $('#repeticiones-error').text('No puede tener más de 10 dígitos.');
+                console.log("Error en Repeticiones: Número negativo.");
+            } else if (repeticiones < 1 || repeticiones > 50) {
+                $('#repeticiones-error').text('El rango recomendado debe estar entre 1 y 50.');
                 camposValidos = false;
-            }
-
+                console.log("Error en Repeticiones: Fuera de rango (1 a 50).");
+        }
 
             // Validar el campo de series
             var series = $('#Series').val().trim();
+            console.log("Validando Series:", series);
             if (series === '') {
                 $('#series-error').text('Campo obligatorio.');
                 camposValidos = false;
+                console.log("Error en Series: Campo obligatorio.");
             } else if (!$.isNumeric(series)) {
                 $('#series-error').text('Debe ser un número.');
                 camposValidos = false;
+                console.log("Error en Series: No es un número.");
             } else if (series < 0) {
                 $('#series-error').text('No puede ser un número negativo.');
                 camposValidos = false;
-            } else if (repeticiones.length > 10) {
-                $('#series-error').text('No puede tener más de 10 dígitos.');
+                console.log("Error en Series: Número negativo.");
+            } else if (series < 1 || series > 6) {
+                $('#series-error').text('El rango recomendado debe estar entre 1 y 6.');
                 camposValidos = false;
-            }
+                console.log("Error en Series: Fuera de rango (1 a 6).");
+        }
 
-            // Validar el campo de dia de la semana
+            // Validar el campo de día de la semana
             var dia = $('#Dia').val();
+            console.log("Validando Día:", dia);
             if (!dia) {
                 $('#dia-error').text('Campo obligatorio.');
                 camposValidos = false;
+                console.log("Error en Día: Campo obligatorio.");
             }
 
             // Comprobar si todos los campos son válidos
             if (!camposValidos) {
+                console.log("Validaciones fallidas, formulario no enviado.");
                 return; // No continuar si hay errores
             }
+
+            console.log("Validaciones exitosas, enviando formulario.");
 
             // Si todo está bien, prepara los datos del formulario
             var formData = {
@@ -160,16 +177,20 @@
                 Dia: dia
             };
 
+
             // Envía los datos mediante AJAX
             $.ajax({
                 url: '@Url.Action("AgregarEjercicioProc", "PlanMejoramientoFisico")',
                 type: 'POST',
                 data: formData,
                 success: function (data) {
+                    console.log("Respuesta del servidor:", data);
                     if (data.success) {
                         // Redirige con el mensaje en el QueryString
+                        console.log("Redirigiendo a:", data.redirectUrl);
                         window.location.href = data.redirectUrl;
                     } else if (data.errors) {
+                        console.log("Errores del servidor:", data.errors);
                         $('#ejercicio-existe').text(data.errors.MensajeError || '');
                     }
                 },
@@ -177,7 +198,6 @@
                     console.error("Error al guardar el ejercicio:", error);
                 }
             });
-
         });
     });
 </script>
@@ -190,6 +210,7 @@
 
     .num-rep{
         margin-top:10px;
+        margin-bottom:10px;
     }
 
     .text-registrar {

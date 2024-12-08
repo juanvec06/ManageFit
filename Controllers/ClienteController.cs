@@ -270,7 +270,7 @@ namespace NET_MVC.Controllers
             {
                 TempData["ErrorMessage"] = User.IsInRole("Administrador")
                     ? "Cliente no encontrado."
-                    : "El cliente no existe en el sistema.";
+                    : "Cliente no existente.";
                 return RedirectToAction("InformacionCliente");
             }
 
