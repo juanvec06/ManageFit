@@ -43,12 +43,10 @@ CREATE TABLE Persona
     CONSTRAINT fk_SedePersona FOREIGN KEY (id_Sede) REFERENCES Sede(id_Sede)
 );
 
-CREATE TABLE AreaEspecialidad
-(
+CREATE TABLE AreaEspecialidad (
     id_AE NUMBER NOT NULL,
     nombre_AE VARCHAR2(20) NOT NULL,
-    CONSTRAINT pk_AreaEspecialidad PRIMARY KEY(id_AE),
-    CONSTRAINT ck_nombre_especialidad CHECK (nombre_AE IN ('Crossfit', 'Fuerza', 'Reduccion de peso', 'Culturismo'))
+    CONSTRAINT pk_AreaEspecialidad PRIMARY KEY(id_AE)
 );
 
 CREATE TABLE Entrenador
@@ -98,7 +96,6 @@ CREATE TABLE Membresia
     CONSTRAINT fk_ClienteMembresia FOREIGN KEY (id_Cliente) REFERENCES Cliente(id_Cliente)
 );
 
-
 CREATE TABLE ProgresoFisico
 (
     id_Cliente NUMBER NOT NULL,          
@@ -119,12 +116,10 @@ CREATE TABLE PMF
     CONSTRAINT fk_ClientePMF FOREIGN KEY (id_Cliente) REFERENCES Cliente(id_Cliente) 
 );
 
-CREATE TABLE NombreEjercicio
-(
+CREATE TABLE NombreEjercicio (
     id_nombre_ejercicio NUMBER NOT NULL, 
-    nombre_ejercicio VARCHAR2(30) NOT NULL, -- mayor tamaño para el nombre
-    CONSTRAINT pk_NombreEjercicio PRIMARY KEY(id_nombre_ejercicio),
-    CONSTRAINT ck_NombreEjercicio CHECK (nombre_ejercicio IN ('Squad', 'Leg press', 'Bench press', 'Pull-ups','Bicep curls', 'Hip thrust', 'Deadlifts','Press banca', 'Planks', 'Bulgarian split squats'))
+    nombre_ejercicio VARCHAR2(30) NOT NULL, 
+    CONSTRAINT pk_NombreEjercicio PRIMARY KEY(id_nombre_ejercicio)
 );
 
 CREATE TABLE Ejercicio 
