@@ -46,71 +46,98 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    var ctx = document.getElementById('estadisticasChart').getContext('2d');
-    var estadisticasChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Clientes', 'Entrenadores', 'Personas'],
-            datasets: [{
-                label: 'Total por Sede',
-                data: [
-    @ViewBag.TotalClientes,
-    @ViewBag.TotalEntrenadores,
-    @ViewBag.TotalPersonas
-                    ],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)', // rojo pastel claro (más evidente)
-                    'rgba(255, 105, 97, 0.8)',  // rojo coral suave
-                    'rgba(255, 160, 122, 0.8)'  // rojo suave anaranjado
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 0.8)', // rojo pastel claro
-                    'rgba(255, 105, 97, 0.8)',  // rojo coral suave
-                    'rgba(255, 160, 122, 0.8)'  // rojo suave anaranjado
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Estadísticas de Clientes, Entrenadores y Personas por Sede'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    let estadisticasChartInstance;
+    let clientesChartInstance;
 
-    var ctx2 = document.getElementById('clientesChart').getContext('2d');
-    var clientesChart = new Chart(ctx2, {
-        type: 'pie',
-        data: {
-            labels: ['Clientes Premium', 'Clientes General'],
-            datasets: [{
-                label: 'Distribución de Membresía',
-                data: [@ViewBag.ClientesPremium, @ViewBag.ClientesGeneral],
-                backgroundColor: ['rgba(255, 69, 0, 0.8)', 'rgba(255, 140, 0, 0.8)'],
-                borderColor: ['rgba(255, 69, 0, 1)', 'rgba(255, 140, 0, 1)'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: false, // Desactiva el ajuste automático
-            plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Distribución de Clientes Premium y General' }
-            }
+    function renderEstadisticasChart() {
+        const ctx = document.getElementById('estadisticasChart').getContext('2d');
+        
+        if (estadisticasChartInstance) {
+            estadisticasChartInstance.destroy();
         }
-    });
+
+        estadisticasChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Clientes', 'Entrenadores', 'Personas'],
+                datasets: [{
+                    label: 'Total por Sede',
+                    data: [
+                        @ViewBag.TotalClientes,
+                        @ViewBag.TotalEntrenadores,
+                        @ViewBag.TotalPersonas
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(255, 105, 97, 0.8)',
+                        'rgba(255, 160, 122, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 105, 97, 1)',
+                        'rgba(255, 160, 122, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Estadísticas de Clientes, Entrenadores y Personas por Sede'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function renderClientesChart() {
+        const ctx2 = document.getElementById('clientesChart').getContext('2d');
+        
+        if (clientesChartInstance) {
+            clientesChartInstance.destroy();
+        }
+
+        clientesChartInstance = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['Clientes Premium', 'Clientes General'],
+                datasets: [{
+                    label: 'Distribución de Membresía',
+                    data: [@ViewBag.ClientesPremium, @ViewBag.ClientesGeneral],
+                    backgroundColor: ['rgba(255, 69, 0, 0.8)', 'rgba(255, 140, 0, 0.8)'],
+                    borderColor: ['rgba(255, 69, 0, 1)', 'rgba(255, 140, 0, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Distribución de Clientes Premium y General' }
+                }
+            }
+        });
+    }
+
+    function initializeCharts() {
+        renderEstadisticasChart();
+        renderClientesChart();
+    }
+
+    window.addEventListener('resize', initializeCharts);
+    document.addEventListener('DOMContentLoaded', initializeCharts);
 </script>
 
 <style>
@@ -135,10 +162,14 @@
     }
 
     .chart-container {
-        width: 40%; 
-        max-width: 400px; 
-        text-align: center; 
-    }
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+}
+canvas {
+    max-width: 100%;
+    height: auto;
+}
 
     #clientesChart {
         width: 250px; 
@@ -172,7 +203,4 @@
             z-index: 1000; 
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
         }
-</style>
-
-
-            
+</style>          

@@ -40,9 +40,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Gráfica de Clientes
+    var clientesChartInstance;
+    var diasRestantesChartInstance;
+
+   function renderClientesChart() {
+    if (clientesChartInstance) {
+        clientesChartInstance.destroy();
+    }
+
     var ctxClientes = document.getElementById('clientesChart').getContext('2d');
-    new Chart(ctxClientes, {
+    clientesChartInstance = new Chart(ctxClientes, {
         type: 'bar',
         data: {
             labels: ['Clientes Asignados'],
@@ -55,7 +62,8 @@
             }]
         },
         options: {
-            responsive: true,
+            responsive: false, // Deshabilitar responsividad automática
+            maintainAspectRatio: false, // Permitir tamaños personalizados
             plugins: {
                 title: { display: true, text: 'Clientes Asignados' }
             },
@@ -64,10 +72,15 @@
             }
         }
     });
+}
 
-    // Gráfica de Días Restantes de Contrato
+function renderDiasRestantesChart() {
+    if (diasRestantesChartInstance) {
+        diasRestantesChartInstance.destroy();
+    }
+
     var ctxDias = document.getElementById('diasRestantesChart').getContext('2d');
-    new Chart(ctxDias, {
+    diasRestantesChartInstance = new Chart(ctxDias, {
         type: 'pie',
         data: {
             labels: ['Días Restantes', 'Días Pasados'],
@@ -79,13 +92,21 @@
             }]
         },
         options: {
-            responsive: true,
+            responsive: false, // Deshabilitar responsividad automática
+            maintainAspectRatio: false, // Permitir tamaños personalizados
             plugins: {
                 title: { display: true, text: 'Días Restantes de Contrato' }
             }
         }
     });
+}
+
+
+    // Renderizar ambas gráficas
+    renderClientesChart();
+    renderDiasRestantesChart();
 </script>
+
 
 
 <style>
@@ -127,16 +148,16 @@
     }
 
     .chart-container {
-        width: 45%; /* Ajusta el ancho de cada gráfica */
-        max-width: 300px; /* Limita el tamaño máximo */
-        text-align: center;
-        margin: 0 auto; /* Asegura que el contenido esté centrado */
-    }
+    width: 300px; /* Ancho fijo */
+    height: 300px; /* Altura fija */
+    text-align: center;
+    margin: 0 auto;
+}
 
-    #clientesChart, #diasRestantesChart {
-        width: 100%; /* Ajusta los gráficos al tamaño de su contenedor */
-        height: 140px; /* Altura fija */
-    }
+#clientesChart, #diasRestantesChart {
+    width: 100%; /* Ajusta al tamaño del contenedor */
+    height: 100%; /* Ajusta al tamaño del contenedor */
+}
 
 
 </style>
