@@ -194,36 +194,33 @@ namespace NET_MVC.Controllers
         [HttpPost]
         public IActionResult EliminarEjercicio(EjercicioModel ejercicio)
         {
-            // Verificar que la identificación no esté vacía
+            // Verificar que la identificación no esté vacía o compuesta solo por espacios
             if (string.IsNullOrWhiteSpace(ejercicio.IdEjercicio))
             {
                 TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
-                return View("EliminarEjercicio"); // Redirigir a la página donde se muestra el formulario
+                return View("EliminarEjercicio");
             }
-
-            // Verificar que la identificación no tenga más de 10 dígitos
-            if (ejercicio.IdEjercicio.Length > 10)
+            // Convertir a entero y verificar que sea mayor a 0
+            if (!int.TryParse(ejercicio.IdEjercicio, out int identificacionNumero) || identificacionNumero <= 0)
             {
-                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
-                return View("BuscarEjercicioActualizar");
+                TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
+                return View("EliminarEjercicio");
             }
-
-            // Verificar que la identificación no sea un número negativo
-            if (int.TryParse(ejercicio.IdEjercicio, out int idEjercicio))
-            {
-                if (idEjercicio < 0)
-                {
-                    TempData["ErrorMessage"] = "La identificación no puede ser un número negativo.";
-                    return View("BuscarEjercicioActualizar");
-                }
-            }
-
             // Verificar que la identificación solo contenga números
             if (!ejercicio.IdEjercicio.All(char.IsDigit))
             {
                 TempData["ErrorMessage"] = "La identificación solo puede contener números.";
-                return View("BuscarEjercicioActualizar");
+                return View("EliminarEjercicio");
             }
+
+            // Verificar que la longitud no sea mayor a 10 dígitos
+            if (ejercicio.IdEjercicio.Length > 10)
+            {
+                TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
+                return View("EliminarEjercicio");
+            }
+
+
 
             ejercicio.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
@@ -236,8 +233,7 @@ namespace NET_MVC.Controllers
                 // Verificar si se pudo obtener la información del cliente
                 if (eliminar)
                 {
-                    TempData["SuccessMessage"] = "Ejercicio Eliminado";
-                    return RedirectToAction("ModificarEjercicios");
+                    return RedirectToAction("modificarEjercicios");
                 }
                 else
                 {
