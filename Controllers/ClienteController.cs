@@ -237,8 +237,8 @@ namespace NET_MVC.Controllers
             if (string.IsNullOrWhiteSpace(identificacion))
             {
                 TempData["ErrorMessage"] = User.IsInRole("Administrador")
-                    ? "La identificación no puede estar vacía."
-                    : "Por favor diligenciar los campos marcados como obligatorios.";
+                    ? "Por favor diligenciar los campos marcados como obligatorios."
+                    : "La identificación no puede estar vacía.";
                 return RedirectToAction("InformacionCliente");
             }
 
@@ -279,7 +279,7 @@ namespace NET_MVC.Controllers
 
             if (cliente == null)
             {
-                TempData["ErrorMessage"] = "No se pudo obtener la información del cliente. Por favor intente nuevamente.";
+                TempData["ErrorMessage"] = "El cliente no existe en esta sede. Por favor intente nuevamente.";
                 return RedirectToAction("InformacionCliente");
             }
 

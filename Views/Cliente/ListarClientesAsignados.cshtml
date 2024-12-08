@@ -48,6 +48,13 @@
     </div>
     @if (TempData["ErrorMessage"] != null)
     {
+
+         <script>
+            const tempDataErrorMessage = "@TempData["ErrorMessage"]";
+
+            console.log("Error Message from TempData:", tempDataErrorMessage);
+        </script>
+
         <div class="error-message">
             @TempData["ErrorMessage"]
         </div>
@@ -62,7 +69,11 @@
 
 <!-- Asegúrate de que jQuery esté cargado -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+            const tempDataErrorMessage = "@TempData["ErrorMessage"]";
 
+            console.log("Error Message from TempData:", tempDataErrorMessage);
+        </script>
 <style>
 
     .search-bar {

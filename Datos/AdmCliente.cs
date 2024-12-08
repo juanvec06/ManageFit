@@ -313,8 +313,6 @@ namespace NET_MVC.Datos
             return clienteEncontrado;
         }
 
-        
-
         public int ObtenerTotalClientesPorSede(int idSede)
         {
             int totalClientes = 0;
