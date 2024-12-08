@@ -110,8 +110,7 @@ CREATE TABLE ProgresoFisico
 CREATE TABLE PMF 
 (
     id_Cliente NUMBER NOT NULL,         
-    fecha_valoracion DATE NOT NULL,     
-    objetivo VARCHAR2(100) NOT NULL,    
+    fecha_valoracion DATE NOT NULL,       
     CONSTRAINT pk_PMF PRIMARY KEY(id_Cliente, fecha_valoracion), 
     CONSTRAINT fk_ClientePMF FOREIGN KEY (id_Cliente) REFERENCES Cliente(id_Cliente) 
 );

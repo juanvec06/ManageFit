@@ -27,7 +27,7 @@ FOR EACH ROW
 BEGIN
     :NEW.id_ejercicio := seq_idejercicio.NEXTVAL;
 END; 
-
+/
 CREATE OR REPLACE PACKAGE pkg_inicio_sesion AS
     -- Inicio de sesion adiminstrador
     PROCEDURE validar_logina(
@@ -40,7 +40,7 @@ CREATE OR REPLACE PACKAGE pkg_inicio_sesion AS
         p_contraseña IN cuentasede.password_sede%TYPE, 
         p_count OUT NUMBER);
 END pkg_inicio_sesion;
-
+/
 CREATE OR REPLACE PACKAGE BODY pkg_inicio_sesion AS
     -- Inicio de sesion adiminstrador
     PROCEDURE validar_logina(
@@ -83,7 +83,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_inicio_sesion AS
     END validar_logine;
     
 END pkg_inicio_sesion;
-
+/
 CREATE OR REPLACE PACKAGE pkg_Inserciones AS
     -- Insertar Persona
     PROCEDURE insertar_persona(
@@ -132,7 +132,7 @@ CREATE OR REPLACE PACKAGE pkg_Inserciones AS
         p_dia_semana IN ejercicio.dia_semana%type) ;     
     
 END pkg_Inserciones;
-
+/
 CREATE OR REPLACE PACKAGE BODY pkg_Inserciones AS
     -- Insertar Persona
     PROCEDURE insertar_persona(
@@ -261,7 +261,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_Inserciones AS
             END IF;
     END crearEjercicio;
 END pkg_Inserciones;
-
+/
 CREATE OR REPLACE PACKAGE pkg_Procedimientos AS
     -- Funcion calcular dias restantes de membresia
     FUNCTION calcular_dias_restantes(p_id_cliente IN NUMBER)  
@@ -406,8 +406,13 @@ CREATE OR REPLACE PACKAGE pkg_Procedimientos AS
     p_id_ejercicio IN nombreEjercicio.id_nombre_ejercicio%type, 
     p_id_nombre_ejercicio IN nombreEjercicio.nombre_ejercicio%type);
     
+    --consultar ultimo date de un cliente
+    PROCEDURE consultarDateUltimoPMF(
+    p_id_cliente IN persona.id_persona%TYPE,
+    p_date OUT DATE
+    );
 END pkg_Procedimientos;
-
+/
 CREATE OR REPLACE PACKAGE BODY pkg_Procedimientos AS
     -- Funcion calcular dias restantes de membresia
     FUNCTION calcular_dias_restantes(p_id_cliente IN NUMBER)  
@@ -973,6 +978,35 @@ CREATE OR REPLACE PACKAGE BODY pkg_Procedimientos AS
         UPDATE ejercicio 
         SET id_nombre_ejercicio = p_id_nombre_ejercicio 
         WHERE id_ejercicio = p_id_ejercicio;
+        
     END modificarNombreEjercicio;
-    
+    PROCEDURE consultarDateUltimoPMF(
+    p_id_cliente IN persona.id_persona%TYPE,
+    p_date OUT DATE
+    )
+    AS
+    v_count NUMBER;
+    BEGIN
+        --verificar parametro nulo
+        IF p_id_cliente IS NULL THEN
+            RAISE_APPLICATION_ERROR(-20001,'EL ID DEL CLIENTE ES NULO, VERIFIQUE PARAMETRO DE ENTRADA');
+        END IF;
+        --verificar existencia de cliente premium
+        SELECT COUNT(*) 
+        INTO v_count
+        FROM MEMBRESIA 
+        WHERE membresia.id_cliente = p_id_cliente AND  TIPO = 'Premium';
+        
+        IF v_count = 0 THEN
+            RAISE_APPLICATION_ERROR(-20001,'NO EXISTE EL CLIENTE PREMIUM CON ID'||p_id_cliente);
+        END IF;
+        
+        --consluta para recuperar ultima fecha de PMF 
+        SELECT FECHA_VALORACION
+        INTO p_date
+        FROM PMF WHERE ID_CLIENTE = p_id_cliente
+        ORDER BY FECHA_VALORACION DESC
+        FETCH FIRST ROW ONLY;
+    END consultarDateUltimoPMF;
 END pkg_Procedimientos;
+
