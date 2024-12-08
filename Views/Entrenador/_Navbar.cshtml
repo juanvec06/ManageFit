@@ -16,12 +16,14 @@
     bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
     bool isInModificarPMF = (currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF"));
     
+    bool isInModificarEjercicios =  (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("modificarEjercicios"));
+
+    bool isInBuscarActualizarEjercicio = (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("BuscarActualizarEjercicio"));
+    
     bool isInGenericGoBackPage = 
     (currentController == "PlanMejoramientoFisico" && (
-    currentAction.StartsWith("AgregarEjercicio") || 
-    currentAction.StartsWith("modificarEjercicios") ||
+    currentAction.StartsWith("AgregarEjercicio") ||
     currentAction.StartsWith("BuscarEjercicio") ||
-    currentAction.StartsWith("BuscarActualizarEjercicio") ||
     currentAction.StartsWith("ModificarEjercicio") ||
     currentAction.StartsWith("EliminarEjercicio")
     ));
@@ -110,6 +112,20 @@
         @if (isInModificarPMF)
         {
             <a href=" @Url.Action("PaginaAnteriorPMF", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+
+        @if (isInModificarEjercicios)
+        {
+            <a href=" @Url.Action("PaginaAnteriorModificarEjercicios", "Cuenta")">
+                <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
+            </a>
+        }
+
+        @if (isInBuscarActualizarEjercicio)
+        {
+            <a href=" @Url.Action("PaginaAnteriorisInBuscarActualizarEjercicio", "Cuenta")">
                 <img class="regresarFlecha-img" src="/img/regresarFlecha.png" alt="regresar">
             </a>
         }

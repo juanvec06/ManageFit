@@ -409,46 +409,5 @@ namespace NET_MVC.Datos
             }
         }
 
-        public decimal PesoPromedioClientesEntrenador(int idEntrenador)
-        {
-            try
-            {
-                if (Conexion.abrirConexion())
-                {
-                    using (OracleCommand cmd = new OracleCommand("pkg_Procedimientos.PesoPromedioClientesEntrenador", conexionBD))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        // Parámetros de entrada y salida
-                        cmd.Parameters.Add("p_id_entrenador", OracleDbType.Int32).Value = idEntrenador;
-                        var pesoPromedio = new OracleParameter("p_peso_promedio", OracleDbType.Decimal)
-                        {
-                            Direction = ParameterDirection.Output
-                        };
-                        cmd.Parameters.Add(pesoPromedio);
-
-                        // Ejecutar el procedimiento
-                        cmd.ExecuteNonQuery();
-
-                        // Accede al valor de OracleDecimal correctamente
-                        if (pesoPromedio.Value != DBNull.Value)
-                        {
-                            OracleDecimal oracleDecimal = (OracleDecimal)pesoPromedio.Value;
-                            return oracleDecimal.IsNull ? 0 : oracleDecimal.ToInt32(); // Asegúrate de que no sea nulo antes de convertir
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
-                }
-                return 0;
-            }
-            finally
-            {
-                Conexion.cerrarConexion();
-            }
-        }
-
     }
 }

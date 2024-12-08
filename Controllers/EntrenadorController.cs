@@ -34,7 +34,6 @@ namespace NET_MVC.Controllers
 
                 ViewBag.TotalClientes = consultaEntrenador.NumeroClientesAsignados(entrenadorId);
                 ViewBag.DiasRestantes = consultaEntrenador.DiasRestantesContrato(entrenadorId);
-                ViewBag.PesoPromedioClientes = consultaEntrenador.PesoPromedioClientesEntrenador(entrenadorId);
 
                 return View("DashboardEntrenador");
             }

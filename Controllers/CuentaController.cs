@@ -215,20 +215,22 @@ namespace NET_MVC.Controllers
         {
             return RedirectToAction("Listar", "Cliente");
         }
+
         public IActionResult PaginaAnteriorPMF()
         {
-            string previousUrl = TempData["prevousUrl"].ToString();
-
-            if (!string.IsNullOrEmpty(previousUrl))
-            {
-                
-                return Redirect(previousUrl); // Redirige a la URL anterior
-            }
-
-            // Si no hay URL anterior (por ejemplo, si se accedió directamente), redirigir a una página predeterminada
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("BuscarCliente", "Cliente");
         }
 
+        public IActionResult PaginaAnteriorModificarEjercicios()
+        {
+            return RedirectToAction("modificarPMF", "PlanMejoramientoFisico");
+        }
+
+        public IActionResult PaginaAnteriorisInBuscarActualizarEjercicio()
+        {
+            return RedirectToAction("modificarEjercicios", "PlanMejoramientoFisico");
+        }
+        
 
     }
 }
