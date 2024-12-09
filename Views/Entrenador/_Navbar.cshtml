@@ -14,8 +14,7 @@
 
 
     bool isInClientePremium = currentController == "Cliente" && currentAction.StartsWith("BuscarCliente");
-    bool isInModificarPMF = (currentController == "PlanMejoramientoFisico" && (currentAction == "modificarPMF"));
-    
+    bool isInModificarPMF = (currentController == "PlanMejoramientoFisico" && currentAction == "modificarPMF") || (currentController == "PlanMejoramientoFisico" && currentAction == "PMF");
     bool isInModificarEjercicios =  (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("modificarEjercicios"));
 
     bool isInBuscarActualizarEjercicio = (currentController == "PlanMejoramientoFisico" && currentAction.StartsWith("BuscarActualizarEjercicio"));

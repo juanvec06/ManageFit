@@ -8,7 +8,7 @@
 
     <div class="text-asignar"> PMF </div>
     @using Microsoft.AspNetCore.Http
-    <label class="bg-white">Fecha de la ultima Valoración: @(Context.Session.GetString("FechaValoracion") ?? "No encontrada")</label>
+    <label class="bg-white">Fecha de la ultima Valoración: @(Context.Session.GetString("FechaValoracion") ?? "No tiene ningún PMF")</label>
     <div class="table-container">
         <table class="table table-bordered">
             <thead>

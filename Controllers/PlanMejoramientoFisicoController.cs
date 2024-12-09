@@ -69,16 +69,23 @@ namespace NET_MVC.Controllers
         [Authorize(Roles = "Entrenador")]
         private List<EjercicioModel> ObtenerEjercicios()
         {
-            int idCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
-            DateTime FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
-            List<EjercicioModel> ejercicios = consulta.ListarEjercicios(idCliente, FechaValoracion);
-            if (ejercicios.Count() > 0)
+            int idCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio"));
+            if (HttpContext.Session.GetString("FechaValoracion") != null)
             {
-                return ejercicios;
+                DateTime FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
+                List<EjercicioModel> ejercicios = consulta.ListarEjercicios(idCliente, FechaValoracion);
+                if (ejercicios.Count() > 0)
+                {
+                    return ejercicios;
+                }
+                else
+                {
+                    // Mensaje no hay entrenadores disponibles
+                    return new List<EjercicioModel> { };
+                }
             }
             else
             {
-                // Mensaje no hay entrenadores disponibles
                 return new List<EjercicioModel> { };
             }
         }
@@ -95,7 +102,10 @@ namespace NET_MVC.Controllers
 
             //Recupero el ultimo PMF desde la base de datos
             DateTime dateTimeUltimoPMF = consulta.ObtenerDateUltimoPMD(idCliente);
-            HttpContext.Session.SetString("FechaValoracion", dateTimeUltimoPMF.ToString());
+            if (dateTimeUltimoPMF != default)
+            {
+                HttpContext.Session.SetString("FechaValoracion", dateTimeUltimoPMF.ToString());
+            }
             return View("PMF", ObtenerEjercicios());
         }
         [Authorize(Roles = "Entrenador")]

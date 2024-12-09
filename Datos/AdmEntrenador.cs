@@ -409,5 +409,38 @@ namespace NET_MVC.Datos
             }
         }
 
+        public int GetIdSede(string idSesion)
+        {
+            int idSede = -1;
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    string query = @"
+                                    SELECT ID_SEDE
+                                    FROM PERSONA
+                                    INNER JOIN ENTRENADOR ON id_persona = id_entrenador
+                                    WHERE ID_PERSONA = :parametro";
+                    using (OracleCommand cmd = new OracleCommand(query, conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter(":parametro", OracleDbType.Int64)).Value = idSesion;
+                        object result = cmd.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            idSede = Convert.ToInt32(result);
+                        }
+                    }
+                }
+            }
+            catch (OracleException oex)
+            {
+                throw new Exception("Error en Oracle: " + oex.Message);
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return idSede;
+        }
     }
 }
