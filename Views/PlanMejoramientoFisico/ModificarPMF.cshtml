@@ -90,7 +90,7 @@
                     if (data.success) {
                         window.location.href = data.redirectUrl;
                     } else if (data.errors) {
-                        $('#fecha-error').text('PMF existente');
+                        $('#fecha-error').text('La fecha debe ser hoy, ya que es el primer PMF');
                     }
                 },
                 error: function (xhr, status, error) {
