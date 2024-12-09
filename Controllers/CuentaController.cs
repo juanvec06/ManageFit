@@ -13,6 +13,28 @@ namespace NET_MVC.Controllers
 {
     public class CuentaController : Controller
     {
+
+        [Authorize]
+        public IActionResult AccesoDenegado()
+        {
+            var rolClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (rolClaim == "Administrador")
+            {
+                // Redirige al Dashboard del Administrador
+                return RedirectToAction("DashboardAdministrador", "Admin");
+            }
+            else if (rolClaim == "Entrenador")
+            {
+                // Redirige al Dashboard del Entrenador
+                return RedirectToAction("DashboardEntrenador", "Entrenador");
+            }
+
+            // Si el rol no coincide, redirige a una página genérica o al login
+            return RedirectToAction("Login", "Cuenta");
+        }
+
+
         public OracleConnection conexionBD = Conexion.GetConnection();
         [HttpGet]
         public IActionResult Login()

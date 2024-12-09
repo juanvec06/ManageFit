@@ -229,7 +229,17 @@ namespace NET_MVC.Controllers
                 identificacion = HttpContext.Session.GetString("ClienteIdEjercicio"); // Para manejar el botón "Atrás"
             }
 
-            string idSede = User.FindFirst(ClaimTypes.Name)?.Value;
+            string idSesion = User.FindFirst(ClaimTypes.Name)?.Value;
+            string idSede = "-1";
+
+            if (User.IsInRole("Administrador"))
+            {
+                idSede = idSesion;
+            }
+            if (User.IsInRole("Entrenador"))
+            {
+                idSede = consultaEntrenador.GetIdSede(idSesion).ToString();
+            }
 
             // Validaciones de la identificación
 

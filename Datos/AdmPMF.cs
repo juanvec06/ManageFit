@@ -465,7 +465,10 @@ namespace NET_MVC.Datos
             }
             catch (OracleException oex)
             {
-                throw new Exception("Error en Oracle: " + oex.Message);
+                if (oex.Number != 20006)
+                {
+                    throw new Exception("Error en Oracle: " + oex.Message);
+                }
             }
             catch (Exception ex)
             {
