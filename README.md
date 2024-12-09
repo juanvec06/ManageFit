@@ -15,7 +15,8 @@ Este manual describe los pasos necesarios para instalar y configurar el software
    - SQL Developer (versión 24.3.0.284).
 
 2. **IDE:**
-   - Visual Studio 2019 (versión 16.0.31110) con las librerías necesarias para C#.
+   - Visual Studio 2019 (versión 16.0.31110).
+   - Workloads: ASP.NET and web developement.
 
 3. **Navegador web:**
    - Asegúrate de tener un navegador actualizado (Chrome, Firefox, Edge, etc.).
@@ -68,7 +69,7 @@ Este manual describe los pasos necesarios para instalar y configurar el software
    - Dentro del proyecto en Visual Studio, localiza el archivo de configuración para la conexión a la base de datos (`conexion.cs`) dentro de la carpeta `Datos`.
    - Asegúrate de colocar la contraseña en la ruta de conexión, reemplazando `{contraseña_managefit_oracle}`:
      ```csharp
-     private static string ruta = "User Id=C##MANAGEFIT;Password={contraseña_managefit_oracle};Data Source=192.168.1.2:1521/xe";
+     private static string ruta = "User Id=C##MANAGEFIT;Password={contraseña_managefit_oracle};Data Source={cadena_conexión_oracle}";
      ```
 
 ### 8. **Ejecutar la aplicación**
@@ -80,8 +81,6 @@ Este manual describe los pasos necesarios para instalar y configurar el software
 ## **Notas Finales**
 - Asegúrate de que todos los servicios necesarios (como Oracle Database) estén en ejecución antes de iniciar la aplicación.
 - Verifica que el firewall permita la conexión entre Visual Studio y Oracle Database si estás ejecutándolos en máquinas distintas.
-- Si surge algún error, consulta los logs generados por la aplicación para identificar posibles problemas.
 
 ---
 
-¡Gracias por usar nuestro software! Si tienes preguntas, no dudes en contactarnos.
