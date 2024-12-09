@@ -31,6 +31,11 @@ namespace NET_MVC.Controllers
         {
             HttpContext.Session.SetString("FechaValoracion", pmf.FechaValoracion.ToString());
             pmf.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio"));
+            DateTime fechaActual = DateTime.Now.Date;
+            if (!consulta.ValidarExistencia(pmf.IdCliente) && pmf.FechaValoracion != fechaActual)
+            {
+                return Json(new { success = false, errors = new { MensajeError = "La fecha debe ser hoy, ya que es el primer PMF" } });
+            }
             if (ModelState.IsValid)
             {
                 try

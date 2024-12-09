@@ -3,6 +3,8 @@ using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.Metrics;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace NET_MVC.Datos
 {
@@ -479,6 +481,42 @@ namespace NET_MVC.Datos
                 Conexion.cerrarConexion(); // Cerrar la conexión
             }
             return result;
+        }
+        public bool ValidarExistencia(int? idCliente)
+        {
+            if(idCliente < 0)
+            {
+                return false;
+            }
+            try
+            {
+                if (Conexion.abrirConexion())
+                {
+                    int conteo = 0;
+                    string query = @"SELECT COUNT(*) FROM PMF WHERE ID_CLIENTE = :idCliente";
+                    using (OracleCommand cmd = new OracleCommand(query, conexionBD))
+                    {
+                        cmd.Parameters.Add(new OracleParameter("idCliente", OracleDbType.Int32)).Value = idCliente;
+
+                        // Ejecutar la consulta y obtener el resultado
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            conteo = Convert.ToInt32(result);
+                        }
+                        if (conteo == 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                Conexion.cerrarConexion();
+            }
+            return true;
         }
     }
 }
