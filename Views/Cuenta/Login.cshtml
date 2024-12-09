@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="/css/login.css"/>
+    <link rel="stylesheet" href="/css/login.css" />
 </head>
 <body>
     <div class="login-container">
@@ -19,7 +19,7 @@
                 <img src="/img/iniciar_sesion.png" alt="Iniciar Sesión">
             </div>
 
-            <form asp-action="Login" asp-controller="Cuenta" method="post" class="form p-3 mt-3">
+            <form asp-action="Login" asp-controller="Cuenta" method="post" class="form p-3 mt-3" id="loginForm">
                 <div class="form-field">
                     <img src="/img/id-card.png" alt="User Icon" class="input-icon">
                     <input type="text" name="Usuario" id="userName" placeholder="Identificación:">
@@ -34,20 +34,20 @@
                     <span asp-validation-for="Contraseña" class="text-danger"></span>
                 </div>
 
-                
+
                 <div class="form-group horizontal-align">
                     <!-- Mensaje de error general -->
                     @if (ViewBag.MensajeError != null)
                     {
-                        <div class="text-center error-message" style="visibility: visible; 
+                        <div class="text-center error-message" style="visibility: visible;
                         color: red; text-align: start; margin-top: 10px;">
                             @Html.Raw(ViewBag.MensajeError)
                         </div>
                     }
                     else
                     {
-                        <div class="text-center error-message" 
-                        style="visibility: hidden; color: red; text-align: start; margin-top: 10px;">
+                        <div class="text-center error-message"
+                             style="visibility: hidden; color: red; text-align: start; margin-top: 10px;">
                             Identificación o contraseña requeridos
                         </div>
                     }
@@ -57,7 +57,7 @@
 
         </div>
     </div>
-        @* Si el usuario ya está autenticado, redirige con JavaScript *@
+    @* Si el usuario ya está autenticado, redirige con JavaScript *@
     @if (User.Identity.IsAuthenticated)
     {
         <script>
@@ -73,6 +73,50 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.7/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // Función para decodificar caracteres HTML
+        function decodeHTML(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        $(document).ready(function () {
+            // Validación personalizada
+            $('#loginForm').submit(function (event) {
+                // Obtener los valores de los campos
+                var usuario = $('#userName').val();
+                var contraseña = $('#pwd').val();
+
+                console.log("Datos del formulario antes de enviar:");
+                console.log("Usuario: " + usuario);
+                console.log("Contraseña: " + contraseña);
+
+                // Verificar si los campos son válidos
+                if (!usuario || !contraseña) {
+                    console.log("Validación fallida: los campos de Usuario o Contraseña están vacíos.");
+                }
+
+                // Mostrar mensaje de error en caso de fallar la validación
+                if (!usuario) {
+                    console.log("Error: El campo 'Usuario' está vacío.");
+                }
+
+                if (!contraseña) {
+                    console.log("Error: El campo 'Contraseña' está vacío.");
+                }
+            });
+
+            // Verificar si hay mensajes de error del backend
+            var backendMessage = "@ViewBag.MensajeError";
+            if (backendMessage !== "") {
+                // Decodificar el mensaje de error antes de imprimirlo
+                var decodedMessage = decodeHTML(backendMessage);
+                console.log("Mensaje de error del backend:", decodedMessage);
+            }
+        });
+    </script>
+
 </body>
 </html>
-

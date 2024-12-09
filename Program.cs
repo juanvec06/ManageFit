@@ -11,7 +11,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Cuenta/Login";  // Ruta de inicio de sesión
-        options.AccessDeniedPath = "/Home/Index";  // Ruta de acceso denegado
+        //options.AccessDeniedPath = "/Home/Index";  // Ruta de acceso denegado
+        options.AccessDeniedPath = "/Cuenta/AccesoDenegado";
     });
 
 builder.Services.AddAuthorization();
