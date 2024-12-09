@@ -270,8 +270,8 @@
             if (contraseña === '') {
                 $('#contraseña-error').text('Campo obligatorio.');
                 camposValidos = false;
-            } else if (contraseña.length > 20) {
-                $('#contraseña-error').text('No puede exceder los 20 caracteres.');
+            } else if (contraseña.length > 15) {
+                $('#contraseña-error').text('No puede exceder los 15 caracteres.');
                 camposValidos = false;
             }
 
