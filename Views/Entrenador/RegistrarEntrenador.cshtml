@@ -42,9 +42,9 @@
                 <div class="form-field">
                     <h4>Identificación:</h4>
                     <input asp-for="Identificacion" type="text" id="Identificacion">
-                    <span id="entrenador-existe" class="text-danger error-message"></span>
-                    <span id="persona-existe" class="text-danger error-message"></span>
-                    <span id="identificacion-error" class="text-danger error-message"></span>
+                    <span id="entrenador-existe" class="text-danger error-message2"></span>
+                    <span id="persona-existe" class="text-danger error-message2"></span>
+                    <span id="identificacion-error" class="text-danger error-message2"></span>
                 </div>
 
                 <div class="data-field">
@@ -104,6 +104,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     $(document).ready(function () {
@@ -270,12 +271,12 @@
             if (contraseña === '') {
                 $('#contraseña-error').text('Campo obligatorio.');
                 camposValidos = false;
-            } else if (contraseña.length > 15) {
-                $('#contraseña-error').text('No puede exceder los 15 caracteres.');
+            } else if (contraseña.length > 20) {
+                $('#contraseña-error').text('No puede exceder los 20 caracteres.');
                 camposValidos = false;
             }
 
-             // Validar el campo de género
+            // Validar el campo de género
             var genero = $('#Genero').val();  // Define la variable 'genero'
             if (!genero) {
                 $('#genero-error').text('Campo obligatorio.');
@@ -337,7 +338,7 @@
             max-width: 400px; 
         }
 
-    .error-message {
+    .error-message, .error-message2 {
         margin-top: 0;
         color: #d9534f;
         font-size: 0.7rem;
