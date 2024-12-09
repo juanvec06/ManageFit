@@ -215,12 +215,6 @@ namespace NET_MVC.Controllers
                 TempData["ErrorMessage"] = "La identificación no puede estar vacía.";
                 return View("EliminarEjercicio");
             }
-            // Convertir a entero y verificar que sea mayor a 0
-            if (!int.TryParse(ejercicio.IdEjercicio, out int identificacionNumero) || identificacionNumero <= 0)
-            {
-                TempData["ErrorMessage"] = "La identificación debe ser un número positivo.";
-                return View("EliminarEjercicio");
-            }
             // Verificar que la identificación solo contenga números
             if (!ejercicio.IdEjercicio.All(char.IsDigit))
             {
@@ -234,6 +228,7 @@ namespace NET_MVC.Controllers
                 TempData["ErrorMessage"] = "La identificación no puede tener más de 10 dígitos.";
                 return View("EliminarEjercicio");
             }
+            
 
             ejercicio.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
@@ -256,7 +251,7 @@ namespace NET_MVC.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "Ejercicio no existente en el el PMF";
+                TempData["ErrorMessage"] = "Ejercicio no existente en el PMF";
                 return View("EliminarEjercicio");
             }
         }
