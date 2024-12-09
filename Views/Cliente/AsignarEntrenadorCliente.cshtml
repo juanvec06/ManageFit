@@ -68,43 +68,6 @@
 
 </div>
 
-<script>
-    /*
-    function asignarEntrenador() {
-    let identificacionEntrenador = document.getElementById('identificacion').value;
-
-    $.ajax({
-        url: '/Cliente/AsignarEntrenadorCliente',
-        type: 'POST',
-        data: { identificacionEntrenador: identificacionEntrenador },
-        success: function (response) {
-            if (response.success) {
-                alert(response.mensaje);  // Muestra mensaje de éxito
-            } else {
-                alert(response.mensaje);  // Muestra mensaje de error
-            }
-        },
-        error: function () {
-            alert('Ocurrió un error al intentar asignar el entrenador.');
-        }
-    });
-    }
-
-    */
-
-    document.addEventListener("DOMContentLoaded", function () {
-        // Obtén el contenedor y su atributo de datos
-        const tempDataContainer = document.getElementById("tempDataContainer");
-        const errorMessage = tempDataContainer.getAttribute("data-error-message");
-
-        // Verifica si hay un mensaje de error y muéstralo
-        if (errorMessage) {
-            console.log("Mensaje de error desde TempData:", errorMessage); // Imprime en la consola
-            alert(errorMessage); // O muestra en un modal, alerta, etc.
-        }
-    });
-
-</script>
 
 <style>
     

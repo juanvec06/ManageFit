@@ -125,9 +125,9 @@
                             if (data.existe) {
                                 $('#cliente-existe').text('Cliente existente');
                                 $('#persona-existe').text(''); // Limpiar cualquier mensaje de persona
-                            } else {
-                                $('#cliente-existe').text(''); // Limpiar cualquier mensaje de cliente
 
+                            } else {
+                                
                                 // Si el cliente no existe, verificar si la persona existe
                                 $.ajax({
                                     url: '@Url.Action("VerificarPersonaExistente", "Cliente")',
@@ -164,7 +164,6 @@
             $('#telefono-error').text('');
             $('#genero-error').text('');
             $('#membresia-error').text('');
-            $('#cliente-existe').text(''); // Limpia el mensaje de cliente existente
 
             // Validación de campos vacíos
             let camposValidos = true;
@@ -248,9 +247,9 @@
             } else if (!$.isNumeric(telefono)) {
                 $('#telefono-error').text('Debe ser un número.');
                 camposValidos = false;
-            }else if (telefono < 0) {
-                    $('#telefono-error').text('No puede ser un número negativo.');
-                    camposValidos = false;
+            } else if (telefono < 0) {
+                $('#telefono-error').text('No puede ser un número negativo.');
+                camposValidos = false;
             } else if (telefono.length !== 10) {
                 $('#telefono-error').text('Debe tener exactamente 10 dígitos.');
                 camposValidos = false;
@@ -310,6 +309,7 @@
         });
     });
 </script>
+
 
 
 <style>
