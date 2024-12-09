@@ -230,8 +230,6 @@ namespace NET_MVC.Controllers
                 return View("EliminarEjercicio");
             }
 
-
-
             ejercicio.IdCliente = int.Parse(HttpContext.Session.GetString("ClienteIdEjercicio")); ;
             ejercicio.FechaValoracion = DateTime.Parse(HttpContext.Session.GetString("FechaValoracion"));
             // Verificar si el ejercicio existe en la base de datos
