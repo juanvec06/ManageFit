@@ -1,0 +1,71 @@
+﻿
+Universo del discurso:
+
+Un gimnasio tiene empleados, de los que se quiere conocer la identificación del empleado, nombres, apellidos, 
+género, fecha de contratación y salario. Los empleados pueden ser administradores o entrenadores.
+De los administradores se desea saber el horario de trabajo y de los entrenadores el tipo de entrenamiento 
+(especialización) que realiza (crossfit, fuerza, reducción de peso, culturismo).  Un administrador gestiona 
+a varios clientes y entrenadores del gimnasio. Los clientes compran una membresía y una membresía puede ser 
+comprada por varios clientes, de la cual se quiere guardar, identificación, fecha de adquisición  y fecha de 
+vencimiento. De los clientes se quiere conocer, identificación, nombres, apellidos y género. Un entrenador 
+puede realizar muchos planes de entrenamiento para un cliente y un plan de entrenamiento es realizado por 
+un entrenador, a un cliente se le asigna un plan de entrenamiento y un plan de entrenamiento es asignado a 
+un cliente, del plan de entrenamiento se quiere conocer su código, los ejercicios y las comidas recomendadas.
+Los entrenadores tienen retroalimentación dada a los clientes asignados y los clientes pueden dar retroalimentación 
+al entrenador asignado, de la retroalimentación se desea guardar la descripción. 
+
+
+* Nombre de la entidad: Persona
+   * Atributos:
+      * Identificación: Cadena de caracteres
+      * Nombres: Cadena de caracteres
+      * Apellidos: Cadena de caracteres
+      * Género: Cadena de caracteres
+* Nombre de la entidad: Empleado
+   * Atributos:
+      * Fecha de contratación: Fecha
+      * Salario: Numérico
+   * Herencia:
+      * Un empleado es una persona
+* Nombre de la entidad: Cliente
+   * Atributos:
+      * Los mismos de persona
+   * Herencia:
+      * Un cliente es una persona
+* Nombre de la entidad: Entrenador
+   * Atributos:
+      * Los mismos de Empleado y Persona
+      * Horario: Cadena de caracteres
+   * Herencia:
+      * Un entrenador es un empleado
+* Nombre de la entidad: Administrador
+   * Atributos:
+      * Los mismos de Empleado y Persona
+   * Herencia:
+      * Un entrenador es un empleado
+* Nombre de la entidad: Membresía
+   * Atributos:
+      * Código: Cadena de caracteres
+      * Fecha de adquisición: Fecha
+      * Fecha de vencimiento: Fecha
+* Nombre de la entidad: Plan de entrenamiento
+   * Atributos:
+      * Código: Cadena de caracteres
+      * Ejercicios:  Cadena de caracteres
+      * Comidas: Cadena de caractere
+* Nombre de la entidad: Retroalimentación
+   * Atributos:
+      * Descripción: Cadena de caracteres
+Relaciones
+Cliente del Gimnasio (1) - tiene  - (1) Plan de Mejoramiento:
+* Relación: Un cliente tiene un único plan de mejoramiento físico, el cual le es asignado por un entrenador, igualmente para el plan de entrenamiento, este solo tiene asignado a un cliente.
+Entrenador  (1) - realiza  - (0..*) Plan de Mejoramiento:
+* Relación: Un entrenador puede realizar varios planes de mejoramiento físico y un plan de entrenamiento físico es realizado por un entrenador.
+Entrenador  (1) - tiene  - (0..*) Retroalimentación:
+* Relación: Un entrenador puede tener muchas retroalimentaciones por cliente, pero una retroalimentación solo la tiene un entrenador.
+Cliente del Gimnasio  (1) - realiza  - (0..1) Retroalimentación:
+* Relación: Un cliente puede realizar una retroalimentación a un entrenador y una retroalimentación es realizada por un cliente.
+Administrador  (1..*) - gestiona  - (1..*) Cliente del Gimnasio:
+* Relación: Un administrador gestiona a varios clientes del gimnasio y un cliente es gestionado por uno o muchos administradores.
+Administrador  (1..*) - gestiona  - (1..*) Entrenador:
+* Relación: Un administrador gestiona a varios entrenadores y un entrenador es gestionado por uno o muchos administradores.
